@@ -102,3 +102,19 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Expo .gitignore
+
+web/node_modules/**/*
+web/.expo/*
+web/npm-debug.*
+web/*.jks
+web/*.p8
+web/*.p12
+web/*.key
+web/*.mobileprovision
+web/*.orig.*
+web/web-build/
+
+# macOS
+web/.DS_Store
