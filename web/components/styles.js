@@ -8,11 +8,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   header: {
-    fontSize: 30,
-    marginTop: 10,
-    margin: "auto",
+    fontSize: 40,
+    marginTop: 15,
+    marginBottom: 60,
     color: "black",
   },
+  input: { width: "70%", marginBottom: 20 },
 });
 
 export { styles };
