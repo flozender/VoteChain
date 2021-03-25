@@ -18,7 +18,7 @@ export const AuthScreen = ({ navigation }) => {
   });
 
   const navigateOTP = () => {
-    // navigation.navigate("OTP");
+    navigation.navigate("OTP");
   };
 
   const now = new Date();
