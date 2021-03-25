@@ -10,7 +10,9 @@ export default () => (
   <>
     <IconRegistry icons={EvaIconsPack} />
     <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
-      <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight }}>
+      <SafeAreaView
+        style={{ flex: 1, marginTop: StatusBar.currentHeight || 0 }}
+      >
         <AppNavigator />
       </SafeAreaView>
     </ApplicationProvider>
