@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { SafeAreaView } from "react-native";
 import {
   Divider,
   Icon,
@@ -17,7 +18,7 @@ const BackwardIcon = (props) => (
   <Icon {...props} name="corner-down-left-outline" />
 );
 
-export const ConfirmVoteScreen = ({ navigation }) => {
+export const ConfirmVoteScreen = ({ navigation, route }) => {
   const navigateBack = () => {
     navigation.goBack();
   };
@@ -29,6 +30,8 @@ export const ConfirmVoteScreen = ({ navigation }) => {
   const BackAction = () => (
     <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
   );
+
+  const { electionId } = route.params;
 
   return (
     <>
