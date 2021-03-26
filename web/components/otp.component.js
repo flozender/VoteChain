@@ -18,12 +18,13 @@ export const OTPScreen = ({ navigation }) => {
   const [state, setState] = useState({
     OTP: "",
   });
+
   const navigateBack = () => {
     navigation.goBack();
   };
 
   const navigateElections = () => {
-    //navigation.navigate("Elections");
+    navigation.navigate("Elections");
   };
 
   const BackAction = () => (
