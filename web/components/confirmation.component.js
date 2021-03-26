@@ -67,7 +67,7 @@ export const ConfirmationScreen = ({ navigation, route }) => {
             fontWeight: "bold",
           }}
         >
-          General Assembly 2021
+          {electionId}
         </Text>
 
         <Layout style={styles.tab}>
