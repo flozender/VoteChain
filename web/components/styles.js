@@ -15,6 +15,21 @@ const styles = StyleSheet.create({
     color: "black",
   },
   input: { width: "70%", marginBottom: 20 },
+  tab: {
+    height: "35%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 30,
+    width: "85%",
+    marginHorizontal: "auto",
+    backgroundColor: "#f4f4f4",
+    borderWidth: 2,
+    borderColor: "gray",
+    borderStyle: "dashed",
+    borderRadius: 10,
+  },
 });
 
 export { styles };

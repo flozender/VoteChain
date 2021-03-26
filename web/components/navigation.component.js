@@ -5,6 +5,7 @@ import { AuthScreen } from "./auth.component";
 import { DetailsScreen } from "./details.component";
 import { OTPScreen } from "./otp.component";
 import { ElectionsScreen } from "./elections.component";
+import { ConfirmVoteScreen } from "./confirmVote.component";
 import { SignOutScreen } from "./signOut.component";
 
 const { Navigator, Screen } = createStackNavigator();
@@ -15,6 +16,7 @@ const HomeNavigator = () => (
     <Screen name="Details" component={DetailsScreen} />
     <Screen name="OTP" component={OTPScreen} />
     <Screen name="Elections" component={ElectionsScreen} />
+    <Screen name="Confirm Vote" component={ConfirmVoteScreen} />
     <Screen name="Sign Out" component={SignOutScreen} />
   </Navigator>
 );
