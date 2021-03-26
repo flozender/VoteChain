@@ -15,6 +15,24 @@ const styles = StyleSheet.create({
     color: "black",
   },
   input: { width: "70%", marginBottom: 20 },
+  card: {
+    backgroundColor: "#f4f4f4",
+    marginVertical: 8,
+    marginHorizontal: 4,
+    paddingHorizontal: 20,
+    borderRadius: 4,
+    height: 70,
+  },
+  cardText: {
+    padding: 2,
+    fontSize: 22,
+    paddingLeft: 30,
+    alignSelf: "center",
+    backgroundColor: "transparent",
+    width: "100%",
+    fontWeight: "bold",
+    color: "black",
+  },
 });
 
 export { styles };

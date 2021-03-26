@@ -14,15 +14,10 @@ import {
 import { styles } from "./styles";
 
 export const ElectionsScreen = ({ navigation }) => {
-  const [state, setState] = useState({
-    voter_id: "",
-    date_of_birth: "",
-  });
-
   const theme = useTheme();
 
-  const navigateCastVote = () => {
-    navigation.navigate("Cast Vote");
+  const navigateCastVote = (id) => {
+    navigation.navigate("Cast Vote", { electionId: id });
   };
 
   const navigateSignOut = () => {
@@ -37,7 +32,11 @@ export const ElectionsScreen = ({ navigation }) => {
 
   const renderItemAccessory = (props, item) => {
     return (
-      <Button status={item.active ? null : "disabled"} size="small">
+      <Button
+        status={item.active ? null : "disabled"}
+        size="small"
+        onPress={() => navigateCastVote(item.id)}
+      >
         {item.active ? "VOTE" : "VIEW"}
       </Button>
     );
@@ -70,14 +69,7 @@ export const ElectionsScreen = ({ navigation }) => {
         </Text>
       )}
       accessoryRight={(props) => renderItemAccessory(props, item)}
-      style={{
-        backgroundColor: "#f4f4f4",
-        marginVertical: 8,
-        marginHorizontal: 4,
-        borderRadius: 4,
-        height: 60,
-        padding: 10,
-      }}
+      style={styles.card}
     />
   );
 
@@ -115,16 +107,19 @@ export const ElectionsScreen = ({ navigation }) => {
           <List
             data={[
               {
+                id: "GA2021",
                 title: "General Assembly 2021",
                 description: "Hyderabad, Telangana",
                 active: true,
               },
               {
+                id: "SG2021",
                 title: "State Government 2021",
                 description: "Chennai, Tamil Nadu",
                 active: true,
               },
               {
+                id: "ME2020",
                 title: "Municipal Elections 2020",
                 description: "Bangalore, Karnataka",
                 active: false,
