@@ -5,6 +5,7 @@ import { AuthScreen } from "./auth.component";
 import { OTPScreen } from "./otp.component";
 import { ElectionsScreen } from "./elections.component";
 import { CastVoteScreen } from "./castVote.component";
+import { ConfirmVoteScreen } from "./confirmVote.component";
 import { ConfirmationScreen } from "./confirmation.component";
 import { SignOutScreen } from "./signOut.component";
 
@@ -16,6 +17,7 @@ const HomeNavigator = () => (
     <Screen name="OTP" component={OTPScreen} />
     <Screen name="Elections" component={ElectionsScreen} />
     <Screen name="Cast Vote" component={CastVoteScreen} />
+    <Screen name="Confirm Vote" component={ConfirmVoteScreen} />
     <Screen name="Confirmation" component={ConfirmationScreen} />
     <Screen name="Sign Out" component={SignOutScreen} />
   </Navigator>

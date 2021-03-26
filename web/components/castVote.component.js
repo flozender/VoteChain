@@ -25,7 +25,10 @@ export const CastVoteScreen = ({ navigation, route }) => {
   };
 
   const navigateConfirmVote = (id) => {
-    navigation.navigate("Confirm Vote", { candidateId: id });
+    navigation.navigate("Confirm Vote", {
+      candidateId: id,
+      electionId,
+    });
   };
 
   const { electionId } = route.params;
@@ -120,7 +123,7 @@ export const CastVoteScreen = ({ navigation, route }) => {
 
 export const CandidateCard = ({ id, name, party, selection, onPress }) => {
   const theme = useTheme();
-  const selected = selection.id === id;
+  const selected = id && selection?.id === id;
   let activeStyles = {};
   if (selected) {
     activeStyles = {
