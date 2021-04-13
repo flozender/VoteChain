@@ -19,10 +19,18 @@ import logo from './assets/icon.png';
 // Page imports
 import Dashboard from './pages/dashboard';
 import Login from './pages/login';
+import Elections from './pages/elections';
 
 const App = props => {
   let user = JSON.parse(localStorage.getItem('app-user'));
-  if (!user) user = null;
+  if (!user)
+    user = {
+      token: 'aeqweqweqwewqe',
+      user: {
+        username: 'flozender',
+        name: 'Tayeeb',
+      },
+    };
   const [currentUser, setCurrentUser] = useState(user);
   return (
     <ChakraProvider theme={theme}>
@@ -44,6 +52,16 @@ const App = props => {
           path="/login"
           component={() => <Login setCurrentUser={setCurrentUser} />}
         />
+        <Route
+          exact
+          path="/elections"
+          component={() => (
+            <Elections
+              currentUser={currentUser}
+              setCurrentUser={setCurrentUser}
+            />
+          )}
+        />
         <Route exact path="/dashboard" component={() => <Dashboard />} />
       </Switch>
     </ChakraProvider>
@@ -60,7 +78,7 @@ const Nav = ({ history, currentUser }) => {
           fontFamily="Allan"
           cursor="pointer"
         >
-          <Image src={logo} height="100px" ml={3} mt={2} />
+          <Image src={logo} height="100px" ml={3} mt={3} />
         </Heading>
       </Box>
       <Spacer />
@@ -68,7 +86,7 @@ const Nav = ({ history, currentUser }) => {
         // Signed In User
         <Box>
           <Button
-            mr="1rem"
+            mr={3}
             colorScheme="teal"
             variant="outline"
             onClick={() => history.push('/profile')}
@@ -76,26 +94,27 @@ const Nav = ({ history, currentUser }) => {
             Profile
           </Button>
           <Button
-            mr="1rem"
+            mr={3}
             colorScheme="teal"
             onClick={() => history.push('/logout')}
           >
             Log out
           </Button>
+          <ColorModeSwitcher justifySelf="flex-end" mr={3} ml={0} />
         </Box>
       ) : (
         // No user
         <Box>
           <Button
             colorScheme="teal"
-            mr="1rem"
+            mr={3}
             onClick={() => history.push('/login')}
           >
             Login
           </Button>
+          <ColorModeSwitcher justifySelf="flex-end" mr={3} ml={0} />
         </Box>
       )}
-      <ColorModeSwitcher justifySelf="flex-end" mr={3} />
     </Flex>
   );
 };
