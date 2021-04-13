@@ -39,11 +39,11 @@ build/Release
 
 # Dependency directories
 node_modules/
+*/node_modules/
 jspm_packages/
-server/config/id_rsa
 
-# TypeScript v1 declaration files
-typings/
+# Snowpack dependency directory (https://snowpack.dev/)
+web_modules/
 
 # TypeScript cache
 *.tsbuildinfo
@@ -75,9 +75,11 @@ typings/
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
+.parcel-cache
 
 # Next.js build output
 .next
+out
 
 # Nuxt.js build / generate output
 .nuxt
@@ -85,7 +87,7 @@ dist
 
 # Gatsby files
 .cache/
-# Comment in the public line in if your project uses Gatsby and *not* Next.js
+# Comment in the public line in if your project uses Gatsby and not Next.js
 # https://nextjs.org/blog/next-9-1#public-directory-support
 # public
 
@@ -104,8 +106,34 @@ dist
 # TernJS port file
 .tern-port
 
-# Expo .gitignore
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
 
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# admin
+
+# dependencies
+admin/node_modules
+admin/.pnp
+admin/.pnp.js
+admin/coverage
+admin/build
+admin/.DS_Store
+admin/.env.local
+admin/.env.development.local
+admin/.env.test.local
+admin/.env.production.local
+admin/npm-debug.log*
+admin/yarn-debug.log*
+admin/yarn-error.log*
+
+# web
 web/node_modules/**/*
 web/.expo/*
 web/npm-debug.*
@@ -116,6 +144,4 @@ web/*.key
 web/*.mobileprovision
 web/*.orig.*
 web/web-build/
-
-# macOS
 web/.DS_Store
