@@ -38,7 +38,6 @@ const Login = ({ history }) => {
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
-          className="arrange-to-top"
           >
           <Input
           placeholder="Username"
