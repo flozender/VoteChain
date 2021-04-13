@@ -49,7 +49,7 @@ const Login = ({ history }) => {
           marginBottom='40px'
         />
         <Button
-          colorScheme="green"
+          colorScheme="teal"
           size="lg"
           width="10vw"
         >
