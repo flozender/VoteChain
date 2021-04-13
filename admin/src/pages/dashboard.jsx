@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Heading, Flex, Button } from '@chakra-ui/react';
+import { Heading, Flex, Button, HStack, Container } from '@chakra-ui/react';
 
 const Dashboard = ({ history }) => {
   return (
@@ -8,7 +8,7 @@ const Dashboard = ({ history }) => {
       <Flex
         textAlign="center"
         fontSize="md"
-        p={6}
+        p={3}
         borderRadius="md"
         flexDirection="column"
         justifyContent="space-between"
@@ -23,29 +23,41 @@ const Dashboard = ({ history }) => {
           rounded="md"
           flexDirection="column"
         >
-          <Heading fontSize="2xl" mb={10}>
-            Management Dashboard
-          </Heading>
+          <Heading mb={20}>VoteChain Administration</Heading>
+          <Flex width="100%">
+            <Card history={history} name="Voter Management" link="/voters" />
+            <Card
+              history={history}
+              name="Election Management"
+              link="/elections"
+            />
+          </Flex>
         </Flex>
       </Flex>
     </Flex>
   );
 };
 
-const DashboardButton = ({ name, fn, ...props }) => {
-  let color = { backgroundColor: 'yellow' };
-
+const Card = ({ name, link, history }) => {
   return (
-    <Button
-      colorScheme="green"
-      onClick={fn}
-      size="lg"
-      width="10vw"
-      {...color}
-      {...props}
+    <Container
+      p={10}
+      width="35%"
+      height="30vh"
+      alignItems="center"
+      rounded="md"
+      flexDirection="column"
+      borderColor="teal"
+      borderWidth="2px"
+      borderStyle="solid"
+      display="flex"
+      justifyContent="space-between"
     >
-      {name}
-    </Button>
+      <Heading size="lg">{name}</Heading>
+      <Button colorScheme="teal" onClick={() => history.push(link)}>
+        MANAGE
+      </Button>
+    </Container>
   );
 };
 
