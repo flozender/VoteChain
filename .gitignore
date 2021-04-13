@@ -145,3 +145,6 @@ web/*.mobileprovision
 web/*.orig.*
 web/web-build/
 web/.DS_Store
+
+# server
+server/node_modules
