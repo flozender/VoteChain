@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Heading, Flex, Button, Container } from '@chakra-ui/react';
+import { Heading, Flex, Button, Container, Input } from '@chakra-ui/react';
 
 const Login = ({ history }) => {
   return (
@@ -28,8 +28,34 @@ const Login = ({ history }) => {
           height="80vh"
         >
           <Heading fontSize="2xl" mt={4}>
-            Login
+            Sign In
           </Heading>
+          <Flex 
+          textAlign="center"
+          fontSize="md"
+          p={6}
+          borderRadius="md"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          className="arrange-to-top"
+          >
+          <Input
+          placeholder="Username"
+          marginBottom='40px'
+        />
+          <Input
+          placeholder="Password"
+          marginBottom='40px'
+        />
+        <Button
+          colorScheme="green"
+          size="lg"
+          width="10vw"
+        >
+          Submit
+        </Button>
+          </Flex>
         </Container>
       </Flex>
     </Flex>
