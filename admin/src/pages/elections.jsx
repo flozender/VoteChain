@@ -1,6 +1,25 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Heading, Flex, Button, Text } from '@chakra-ui/react';
+import {
+  Heading,
+  Flex,
+  Button,
+  Text,
+  Modal,
+  ModalContent,
+  ModalOverlay,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+  useDisclosure,
+  Input,
+  useToast,
+  VStack,
+  Radio,
+  RadioGroup,
+  Stack,
+} from '@chakra-ui/react';
 import DataTable from 'react-data-table-component';
 import '../assets/scroll.css';
 
@@ -195,6 +214,8 @@ const columns = [
 ];
 
 const Elections = ({ history }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <Flex justifyContent="center" alignItems="center">
       <Flex
@@ -224,7 +245,7 @@ const Elections = ({ history }) => {
             mb={5}
           >
             <Heading width="100%">Election Management</Heading>
-            <Button colorScheme="green" alignSelf="flex-end">
+            <Button colorScheme="green" alignSelf="flex-end" onClick={onOpen}>
               CREATE
             </Button>
           </Flex>
@@ -235,9 +256,155 @@ const Elections = ({ history }) => {
             conditionalRowStyles={conditionalRowStyles}
             customStyles={{ table: { style: { marginBottom: '30px' } } }}
           />
+          <CreateModal isOpen={isOpen} onClose={onClose} />
         </Flex>
       </Flex>
     </Flex>
+  );
+};
+
+const CreateModal = ({ isOpen, onClose }) => {
+  const toast = useToast();
+  const [data, setData] = useState({
+    name: '',
+    startDate: '',
+    endDate: '',
+    location: '',
+    minAge: '',
+    assemblyConstituency: '',
+    education: '0',
+    national: '0',
+  });
+
+  const submitData = data => {
+    if (Object.values(data).includes('')) {
+      toast({
+        title: 'Data missing.',
+        description: 'Please fill in all the details',
+        status: 'warning',
+        duration: 1000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: 'Election created.',
+        description: 'New election has been created',
+        status: 'success',
+        duration: 1000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleChange = e => {
+    setData(data => ({ ...data, [e.target.name]: e.target.value }));
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Create Election</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <VStack spacing={4}>
+            <Input
+              name="name"
+              placeholder="Election Name"
+              onChange={handleChange}
+            />
+            <Input
+              name="startDate"
+              placeholder="Start Date"
+              type="date"
+              onChange={handleChange}
+            />
+            <Input
+              name="endDate"
+              placeholder="End Date"
+              type="date"
+              onChange={handleChange}
+            />
+            <Input
+              name="location"
+              placeholder="Location"
+              onChange={handleChange}
+            />
+            <Input
+              name="minAge"
+              placeholder="Minimum Age"
+              value={data.minAge}
+              type="number"
+              onChange={handleChange}
+            />
+            <Input
+              name="assemblyConstituency"
+              placeholder="Assembly Constituency"
+              onChange={handleChange}
+            />
+            <RadioGroup
+              defaultValue="0"
+              alignSelf="flex-start"
+              onChange={value =>
+                setData(data => ({ ...data, education: value }))
+              }
+              name="education"
+              width="100%"
+            >
+              <Stack
+                spacing={5}
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                width="100%"
+              >
+                <Heading size="md">Education</Heading>
+                <Radio colorScheme="red" value="0">
+                  Not Required
+                </Radio>
+                <Radio colorScheme="green" value="1">
+                  Required
+                </Radio>
+              </Stack>
+            </RadioGroup>
+            <RadioGroup
+              defaultValue="0"
+              alignSelf="flex-start"
+              onChange={value =>
+                setData(data => ({ ...data, national: value }))
+              }
+              name="national"
+              width="100%"
+            >
+              <Stack
+                spacing={5}
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                width="100%"
+              >
+                <Heading size="md">National</Heading>
+                <Radio colorScheme="red" value="0">
+                  Closed
+                </Radio>
+                <Radio colorScheme="green" value="1">
+                  Open
+                </Radio>
+              </Stack>
+            </RadioGroup>
+          </VStack>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button colorScheme="blue" mr={3} onClick={() => submitData(data)}>
+            Save
+          </Button>
+          <Button variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 
