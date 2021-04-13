@@ -1,42 +1,103 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  ChakraProvider,
+  Button,
   Box,
+  Heading,
+  Spacer,
+  Flex,
   Text,
-  Link,
-  VStack,
-  Code,
+  ChakraProvider,
   Grid,
+  VStack,
+  Image,
   theme,
 } from '@chakra-ui/react';
+import { Redirect, Route, Switch, withRouter } from 'react-router-dom';
 import { ColorModeSwitcher } from './ColorModeSwitcher';
-import { Logo } from './Logo';
+import logo from './assets/icon.png';
 
-function App() {
+// Page imports
+import Dashboard from './pages/dashboard';
+import Login from './pages/login';
+
+const App = props => {
+  let user = JSON.parse(localStorage.getItem('app-user'));
+  if (!user) user = null;
+  const [currentUser, setCurrentUser] = useState(user);
   return (
     <ChakraProvider theme={theme}>
-      <Box textAlign="center" fontSize="xl">
-        <Grid minH="100vh" p={3}>
-          <ColorModeSwitcher justifySelf="flex-end" />
-          <VStack spacing={8}>
-            <Logo h="40vmin" pointerEvents="none" />
-            <Text>
-              Edit <Code fontSize="xl">src/App.js</Code> and save to reload.
-            </Text>
-            <Link
-              color="teal.500"
-              href="https://chakra-ui.com"
-              fontSize="2xl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn Chakra
-            </Link>
-          </VStack>
-        </Grid>
-      </Box>
+      <Nav history={props.history} currentUser={currentUser} />
+      <Switch>
+        <Route
+          exact
+          path="/"
+          component={() => {
+            return currentUser ? (
+              <Redirect to="/dashboard" />
+            ) : (
+              <Redirect to="/login" />
+            );
+          }}
+        />
+        <Route
+          exact
+          path="/login"
+          component={() => <Login setCurrentUser={setCurrentUser} />}
+        />
+        <Route exact path="/dashboard" component={() => <Dashboard />} />
+      </Switch>
     </ChakraProvider>
   );
-}
+};
 
-export default App;
+const Nav = ({ history, currentUser }) => {
+  return (
+    <Flex marginBottom={3} alignItems="center" height="100px">
+      <Box>
+        <Heading
+          onClick={() => history.push('/')}
+          size="2xl"
+          fontFamily="Allan"
+          cursor="pointer"
+        >
+          <Image src={logo} height="100px" ml={3} mt={2} />
+        </Heading>
+      </Box>
+      <Spacer />
+      {currentUser ? (
+        // Signed In User
+        <Box>
+          <Button
+            mr="1rem"
+            colorScheme="teal"
+            variant="outline"
+            onClick={() => history.push('/profile')}
+          >
+            Profile
+          </Button>
+          <Button
+            mr="1rem"
+            colorScheme="teal"
+            onClick={() => history.push('/logout')}
+          >
+            Log out
+          </Button>
+        </Box>
+      ) : (
+        // No user
+        <Box>
+          <Button
+            colorScheme="teal"
+            mr="1rem"
+            onClick={() => history.push('/login')}
+          >
+            Login
+          </Button>
+        </Box>
+      )}
+      <ColorModeSwitcher justifySelf="flex-end" mr={3} />
+    </Flex>
+  );
+};
+
+export default withRouter(App);
