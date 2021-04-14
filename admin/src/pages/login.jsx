@@ -14,7 +14,7 @@ const Login = ({ history }) => {
         justifyContent="space-between"
         width="85%"
         alignItems="center"
-        height="76vh"
+        height="50vh"
         className="arrange-to-top"
       >
         <Container
@@ -51,6 +51,7 @@ const Login = ({ history }) => {
           colorScheme="teal"
           size="lg"
           width="10vw"
+          onClick={() => history.push("/dashboard")}
         >
           Submit
         </Button>
