@@ -1,17 +1,26 @@
-const fs = require("fs");
-const pg = require("pg");
 require("dotenv").config();
+let Sequelize = require("sequelize"),
+  db;
 
-const config = {
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.PORT,
-  ssl: {
-    ca: fs.readFileSync('config/cc-ca.crt').toString(),
-  },
-};
+db = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    dialect: "mysql",
+    port: process.env.DB_PORT,
+    logging: true,
+    query: { raw: true },
 
-var db = new pg.Pool(config);
+    pool: {
+      max: 5,
+      min: 0,
+      idle: 10000,
+    },
+
+    timezone: process.env.TIMEZONE,
+  }
+);
+
 module.exports = db;

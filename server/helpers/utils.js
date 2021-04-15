@@ -1,4 +1,4 @@
-const fs = require ('fs');
+const fs = require('fs');
 const readfile = require('fs-readfile-promise');
 const jwt = require('jsonwebtoken');
 
@@ -12,7 +12,8 @@ exports.addToken = async (user) => {
       username: user.username,
       id: user.id,
       name: user.name,
-      token
+      token,
+      user
     }
   } catch (err) {
     throw err;

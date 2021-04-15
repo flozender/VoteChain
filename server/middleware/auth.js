@@ -10,7 +10,7 @@ let fetchData = function (req, res) {
 }
 
 module.exports = {
-  tokenValidate: function (req, res, next) {
+  adminTokenValidate: function (req, res, next) {
     let token = fetchData(req, res);
     if (token) {
       let decoded_data = {};
@@ -25,15 +25,61 @@ module.exports = {
                 message: 'Session expired. Please logout and login once again'
               });
             } else {
-              auth = true;
-              decoded_data = decoded;
+              if (decoded.type == 'admin') {
+                auth = true;
+                decoded_data = decoded;
+                req.token_data = {
+                  data: decoded_data,
+                  auth: auth
+                };
+                res.locals.type = decoded_data.type;
+                next();
+              } else {
+                return res.send({ not_verified: true, message: 'Not Authorised' });
+              }
             }
-            req.token_data = {
-              data: decoded_data,
-              auth: auth
-            };
-            res.locals.type = decoded_data.type;
-            next();
+          })
+        })
+        .catch(err => {
+          console.log(err);
+          next();
+        })
+    } else {
+      return res.send({ not_verified: true });
+    }
+  },
+
+  tokenValidate: function (req, res, next) {
+    let token = fetchData(req, res);
+    console.log(token);
+    if (token) {
+      let decoded_data = {};
+      let auth = false;
+
+      readfile('config/id_rsa', 'base64')
+        .then(key_value => {
+          jwt.verify(token, key_value.toString(), function (error, decoded) {
+            if (error) {
+              return res.send({
+                not_verified: true,
+                message: 'Session expired. Please logout and login once again'
+              });
+            } else {
+              if (decoded.type == 'voter') {
+                auth = true;
+                decoded_data = decoded;
+                req.token_data = {
+                  data: decoded_data,
+                  auth: auth
+                };
+                res.locals.type = decoded_data.type;
+                next();
+
+              } else {
+                return res.send({ not_verified: true, message: 'Not Authorised' });
+              }
+            }
+
           })
         })
         .catch(err => {
