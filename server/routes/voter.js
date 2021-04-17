@@ -16,6 +16,46 @@ oauth2Client.setCredentials({
   refresh_token: process.env.OAuthRefreshToken,
 });
 
+const sendEmailWithOTP = async (voterName, voterEmail, otp) => {
+  const accessToken = oauth2Client.getAccessToken();
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      type: "OAuth2",
+      user: "votechain.iare@gmail.com",
+      clientId: process.env.OAuthClientID,
+      clientSecret: process.env.OAuthClientSecret,
+      refreshToken: process.env.OAuthRefreshToken,
+      accessToken: accessToken,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  const html = fs
+    .readFileSync(path.join(__dirname, "../templates/email.html"))
+    .toString();
+  const template = handlebars.compile(html);
+  const replacements = {
+    voterName,
+    otp,
+  };
+  const htmlToSend = template(replacements);
+
+  const mailOptions = {
+    from: "votechain.iare@gmail.com",
+    to: voterEmail,
+    subject: "VoteChain Platform - OTP",
+    generateTextFromHTML: true,
+    html: htmlToSend,
+  };
+
+  const result = await transporter.sendMail(mailOptions);
+  transporter.close();
+  return result;
+};
+
 module.exports = (app) => {
   const voterController = require("../controllers/voter.js");
   app.use("/", autho.tokenValidate);
@@ -50,54 +90,18 @@ module.exports = (app) => {
     }
   });
 
-  app.post("/otp", (req, res) => {
+  app.post("/otp", async (req, res) => {
     let body = Object.assign({}, req.body);
     body.id = body.voterId || null;
     body.dob = body.dob || null;
 
-    const accessToken = oauth2Client.getAccessToken();
-    const smtpTransport = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        type: "OAuth2",
-        user: "votechain.iare@gmail.com",
-        clientId: process.env.OAuthClientID,
-        clientSecret: process.env.OAuthClientSecret,
-        refreshToken: process.env.OAuthRefreshToken,
-        accessToken: accessToken,
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
-
-    const html = fs
-      .readFileSync(path.join(__dirname, "../templates/email.html"))
-      .toString();
-    const template = handlebars.compile(html);
-    const replacements = {
-      name: "VoteChain", // add voter's name here
-      otp: "203051", // add dynamic OTP here
-    };
-    const htmlToSend = template(replacements);
-
-    const mailOptions = {
-      from: "votechain.iare@gmail.com",
-      to: "votechain.iare@gmail.com", // Add the voter's email here
-      subject: "VoteChain Platform - OTP",
-      generateTextFromHTML: true,
-      html: htmlToSend,
-    };
-
-    smtpTransport.sendMail(mailOptions, (error) => {
-      if (error) {
-        console.log(error);
-      }
-      smtpTransport.close();
-      res.json({
-        success: true,
-        message: "Email sent",
-      });
+    const response = await sendEmailWithOTP(
+      "VoteChain User",
+      "votechain.iare@gmail.com",
+      "000000"
+    );
+    res.json({
+      ...response,
     });
   });
 
