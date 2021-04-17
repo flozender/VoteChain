@@ -5,7 +5,7 @@ import { Heading, Flex, Button, Container, Input } from '@chakra-ui/react';
 const Login = ({ history }) => {
 
   const [data, setData] = useState({
-    user: '',
+    username: '',
     pass: '',
   });
 
