@@ -6,7 +6,7 @@ const Login = ({ history }) => {
 
   const [data, setData] = useState({
     username: '',
-    pass: '',
+    password: '',
   });
 
   const handleChange = e => {
