@@ -54,6 +54,7 @@ const Login = ({ history }) => {
           placeholder="Username"
           marginBottom='40px'
           onChange = {handleChange}
+          value={username}
         />
           <Input
           name = 'pass'
