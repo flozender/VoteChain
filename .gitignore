@@ -148,7 +148,9 @@ web/.DS_Store
 
 # server
 server/node_modules
+server/.env
 
 # ethereum
 ethereum/build
 ethereum/node_modules
+ethereum/config/id_rsa
