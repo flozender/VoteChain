@@ -1,8 +1,19 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Heading, Flex, Button, Container } from '@chakra-ui/react';
+import { Heading, Flex, Button, Container, Input } from '@chakra-ui/react';
 
 const Login = ({ history }) => {
+
+  const [data, setData] = useState({
+    username: '',
+    password: '',
+  });
+
+  const handleChange = e => {
+    setData(data => ({ ...data, [e.target.name]: e.target.value }));
+  };
+const {username, password} = data;
+
   return (
     <Flex justifyContent="center" alignItems="center">
       <Flex
@@ -14,7 +25,7 @@ const Login = ({ history }) => {
         justifyContent="space-between"
         width="85%"
         alignItems="center"
-        height="76vh"
+        height="50vh"
         className="arrange-to-top"
       >
         <Container
@@ -28,8 +39,40 @@ const Login = ({ history }) => {
           height="80vh"
         >
           <Heading fontSize="2xl" mt={4}>
-            Login
+            Sign In
           </Heading>
+          <Flex 
+          textAlign="center"
+          fontSize="md"
+          p={6}
+          borderRadius="md"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          >
+          <Input
+          name = 'user'
+          placeholder="Username"
+          marginBottom='40px'
+          onChange = {handleChange}
+          value={username}
+        />
+          <Input
+          name = 'pass'
+          placeholder="Password"
+          marginBottom='40px'
+          onChange = {handleChange}
+          value={password}
+        />
+        <Button
+          colorScheme="teal"
+          size="lg"
+          width="10vw"
+          onClick={() => history.push("/dashboard")}
+        >
+          Submit
+        </Button>
+          </Flex>
         </Container>
       </Flex>
     </Flex>
