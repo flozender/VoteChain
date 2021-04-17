@@ -148,3 +148,7 @@ web/.DS_Store
 
 # server
 server/node_modules
+
+# ethereum
+ethereum/build
+ethereum/node_modules
