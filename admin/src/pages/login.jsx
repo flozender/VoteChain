@@ -12,6 +12,7 @@ const Login = ({ history }) => {
   const handleChange = e => {
     setData(data => ({ ...data, [e.target.name]: e.target.value }));
   };
+const {username, password} = data;
 
   return (
     <Flex justifyContent="center" alignItems="center">
