@@ -152,15 +152,11 @@ const columns = [
   {
     name: 'Manage',
     right: true,
-    cell: row => {
-      if (row.active) {
-        return (
-          <Button size="sm" colorScheme="teal">
-            EDIT
-          </Button>
-        );
-      }
-    },
+    cell: row => (
+      <Button size="sm" colorScheme="teal">
+        EDIT
+      </Button>
+    ),
   },
 ];
 
@@ -362,11 +358,11 @@ const CreateModal = ({ isOpen, onClose}) => {
                 width="100%"
               >
                 <Text size="md"> Educated </Text>
-                <Radio value="1">
-                  Yes
-                </Radio>
                 <Radio value="0">
                   No
+                </Radio>
+                <Radio value="1">
+                  Yes
                 </Radio>
               </Stack>
             </RadioGroup>
