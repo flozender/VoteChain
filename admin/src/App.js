@@ -20,6 +20,7 @@ import logo from './assets/icon.png';
 import Dashboard from './pages/dashboard';
 import Login from './pages/login';
 import Elections from './pages/elections';
+import Voters from './pages/voters';
 
 const App = props => {
   let user = JSON.parse(localStorage.getItem('app-user'));
@@ -60,6 +61,13 @@ const App = props => {
               currentUser={currentUser}
               setCurrentUser={setCurrentUser}
             />
+          )}
+        />
+        <Route
+          exact
+          path="/voters"
+          component={() => (
+            <Voters currentUser={currentUser} setCurrentUser={setCurrentUser} />
           )}
         />
         <Route exact path="/dashboard" component={() => <Dashboard />} />
