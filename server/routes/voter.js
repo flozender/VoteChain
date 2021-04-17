@@ -8,7 +8,7 @@ module.exports = (app) => {
       body.id = body.voterId || null;
       body.dob = body.dob || null;
 
-      let data = await voterController.verifyAndAuthorize(body);
+      let data = await voterController.verifyUserAndSendOTP(body);
       if (data && data.success) {
         res.send({
           success: true,
@@ -30,6 +30,12 @@ module.exports = (app) => {
         error: JSON.stringify(error)
       });
     }
+  })
+
+  app.post('/otp', (req, res) => {
+    let body = Object.assign({}, req.body);
+    body.id = body.voterId || null;
+    body.dob = body.dob || null;
   })
 
   app.use('/', autho.tokenValidate);
