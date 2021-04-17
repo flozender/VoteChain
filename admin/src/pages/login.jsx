@@ -61,6 +61,7 @@ const Login = ({ history }) => {
           placeholder="Password"
           marginBottom='40px'
           onChange = {handleChange}
+          value={password}
         />
         <Button
           colorScheme="teal"
