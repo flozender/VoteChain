@@ -3,6 +3,16 @@ import { withRouter } from 'react-router-dom';
 import { Heading, Flex, Button, Container, Input } from '@chakra-ui/react';
 
 const Login = ({ history }) => {
+
+  const [data, setData] = useState({
+    user: '',
+    pass: '',
+  });
+
+  const handleChange = e => {
+    setData(data => ({ ...data, [e.target.name]: e.target.value }));
+  };
+
   return (
     <Flex justifyContent="center" alignItems="center">
       <Flex
@@ -40,12 +50,16 @@ const Login = ({ history }) => {
           alignItems="center"
           >
           <Input
+          name = 'user'
           placeholder="Username"
           marginBottom='40px'
+          onChange = {handleChange}
         />
           <Input
+          name = 'pass'
           placeholder="Password"
           marginBottom='40px'
+          onChange = {handleChange}
         />
         <Button
           colorScheme="teal"
