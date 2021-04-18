@@ -156,17 +156,6 @@ const columns = [
     },
   },
   { name: 'Party ID', selector: 'pid', sortable: true },
-  {
-    name: 'Active',
-    sortable: true,
-    cell: row => {
-      if (row.active) {
-        return <Text>Yes</Text>;
-      } else {
-        return <Text>No</Text>;
-      }
-    },
-  },
 
   {
     name: 'Manage',
@@ -237,7 +226,6 @@ const CreateModal = ({ isOpen, onClose}) => {
     gender: '',
     assemblyConstituency: '',
     education: '0',
-    active: '0',
   });
 
   const submitData = data => {
@@ -400,31 +388,6 @@ const CreateModal = ({ isOpen, onClose}) => {
               width='72%'
               />
             </Stack>
-            <RadioGroup
-              defaultValue="0"
-              alignSelf="flex-start"
-              onChange={value =>
-                setData(data => ({ ...data, active: value }))
-              }
-              name="active"
-              width="100%"
-            >
-              <Stack
-                spacing={5}
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                width="100%"
-              >
-                <Text size="md"> Active </Text>
-                <Radio value="0">
-                  No
-                </Radio>
-                <Radio value="1">
-                  Yes
-                </Radio>
-              </Stack>
-              </RadioGroup>
           </VStack>
         </ModalBody>
 
