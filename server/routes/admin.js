@@ -1,5 +1,5 @@
 let auth = require(`../middleware/auth`);
-module.exports = (app) => {
+module.exports = app => {
   const voterController = require(`../controllers/voter.js`);
   const adminController = require(`../controllers/admin.js`);
   const electionController = require(`../controllers/election.js`);
@@ -139,7 +139,7 @@ module.exports = (app) => {
 
       let data = await electionController.assignCandidates(
         body,
-        req.params.electionId,
+        req.params.electionId
       );
       if (data && data.success) {
         res.status(200).send({
@@ -160,14 +160,14 @@ module.exports = (app) => {
   });
 
   app.delete(
-    `/admin/deleteSssignedCandidates/:electionId`,
+    `/admin/deleteAssignedCandidates/:electionId`,
     async (req, res) => {
       try {
         let body = Object.assign({}, req.body);
 
         let data = await electionController.deleteAssignedCandidates(
           body,
-          req.params.electionId,
+          req.params.electionId
         );
         if (data && data.success) {
           res.status(200).send({
@@ -185,7 +185,7 @@ module.exports = (app) => {
           error: JSON.stringify(error),
         });
       }
-    },
+    }
   );
 
   app.put(`/admin/updateElection/:electionId`, async (req, res) => {
@@ -194,7 +194,7 @@ module.exports = (app) => {
 
       let data = await electionController.updateElection(
         body,
-        req.params.electionId,
+        req.params.electionId
       );
       if (data && data.success) {
         res.status(200).send(data);
@@ -213,7 +213,7 @@ module.exports = (app) => {
 
   app.get(`/admin/candidates`, async (req, res) => {
     try {
-      let candidates = await candidateController.getAll();
+      let candidates = await candidateController.getAllCandidates();
       res.status(200).send(candidates);
     } catch (error) {
       res.status(400).send({
@@ -251,7 +251,7 @@ module.exports = (app) => {
 
       let data = await candidateController.updateCandidate(
         body,
-        req.params.candidateId,
+        req.params.candidateId
       );
       if (data && data.success) {
         res.status(200).send(data);
@@ -271,7 +271,7 @@ module.exports = (app) => {
   app.delete(`/admin/deleteCandidate/:candidateId`, async (req, res) => {
     try {
       let data = await candidateController.deleteCandidate(
-        req.params.candidateId,
+        req.params.candidateId
       );
       if (data && data.success) {
         res.status(200).send(data);
