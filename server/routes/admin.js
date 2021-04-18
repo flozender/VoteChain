@@ -34,7 +34,7 @@ module.exports = app => {
     }
   });
 
-  app.post(`/admin/createVoter`, async (req, res) => {
+  app.post(`/admin/createVoter`, auth.adminTokenValidate, async (req, res) => {
     try {
       let body = Object.assign({}, req.body);
 
@@ -57,7 +57,7 @@ module.exports = app => {
     }
   });
 
-  app.put(`/admin/updateVoter/:voterId`, async (req, res) => {
+  app.put(`/admin/updateVoter/:voterId`, auth.adminTokenValidate, async (req, res) => {
     try {
       let body = Object.assign({}, req.body);
 
@@ -88,7 +88,7 @@ module.exports = app => {
     }
   });
 
-  app.get(`/admin/voter/:voterId`, async (req, res) => {
+  app.get(`/admin/voter/:voterId`, auth.adminTokenValidate, async (req, res) => {
     try {
       let voter = await voterController.getVoter(req.params.voterId);
       res.status(200).send(voter);
@@ -99,7 +99,7 @@ module.exports = app => {
     }
   });
 
-  app.get(`/admin/elections`, async (req, res) => {
+  app.get(`/admin/elections`, auth.adminTokenValidate, async (req, res) => {
     try {
       let voter = await electionController.getAll();
       res.status(200).send(voter);
@@ -110,7 +110,7 @@ module.exports = app => {
     }
   });
 
-  app.post(`/admin/createElection`, async (req, res) => {
+  app.post(`/admin/createElection`, auth.adminTokenValidate, async (req, res) => {
     try {
       let body = Object.assign({}, req.body);
 
@@ -133,7 +133,7 @@ module.exports = app => {
     }
   });
 
-  app.post(`/admin/assignCandidates/:electionId`, async (req, res) => {
+  app.post(`/admin/assignCandidates/:electionId`, auth.adminTokenValidate, async (req, res) => {
     try {
       let body = Object.assign({}, req.body);
 
@@ -159,8 +159,7 @@ module.exports = app => {
     }
   });
 
-  app.delete(
-    `/admin/deleteAssignedCandidates/:electionId`,
+  app.delete(`/admin/deleteAssignedCandidates/:electionId`, auth.adminTokenValidate,
     async (req, res) => {
       try {
         let body = Object.assign({}, req.body);
@@ -188,7 +187,7 @@ module.exports = app => {
     }
   );
 
-  app.put(`/admin/updateElection/:electionId`, async (req, res) => {
+  app.put(`/admin/updateElection/:electionId`, auth.adminTokenValidate, async (req, res) => {
     try {
       let body = Object.assign({}, req.body);
 
@@ -211,7 +210,7 @@ module.exports = app => {
     }
   });
 
-  app.get(`/admin/candidates`, async (req, res) => {
+  app.get(`/admin/candidates`, auth.adminTokenValidate, async (req, res) => {
     try {
       let candidates = await candidateController.getAllCandidates();
       res.status(200).send(candidates);
@@ -222,7 +221,7 @@ module.exports = app => {
     }
   });
 
-  app.post(`/admin/createCandidate`, async (req, res) => {
+  app.post(`/admin/createCandidate`, auth.adminTokenValidate, async (req, res) => {
     try {
       let body = Object.assign({}, req.body);
 
@@ -245,7 +244,7 @@ module.exports = app => {
     }
   });
 
-  app.put(`/admin/updateCandidate/:candidateId`, async (req, res) => {
+  app.put(`/admin/updateCandidate/:candidateId`, auth.adminTokenValidate, async (req, res) => {
     try {
       let body = Object.assign({}, req.body);
 
@@ -268,7 +267,7 @@ module.exports = app => {
     }
   });
 
-  app.delete(`/admin/deleteCandidate/:candidateId`, async (req, res) => {
+  app.delete(`/admin/deleteCandidate/:candidateId`, auth.adminTokenValidate, async (req, res) => {
     try {
       let data = await candidateController.deleteCandidate(
         req.params.candidateId
