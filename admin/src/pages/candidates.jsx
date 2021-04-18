@@ -34,7 +34,6 @@ const data = [
     assemblyConstituency: 'Nampally',
     education: true,
     pid: 'ABC',
-    active: false,
   },
   {
     cid: 'CID5799101',
@@ -44,7 +43,6 @@ const data = [
     assemblyConstituency: 'Secunderabad',
     education: true,
     pid: 'MIM',
-    active: true,
   },
   {
     cid: 'CID5799102',
@@ -54,7 +52,6 @@ const data = [
     assemblyConstituency: 'Malakpet',
     education: false,
     pid: 'JDP',
-    active: false,
   },
   {
     cid: 'CID5799103',
@@ -64,7 +61,6 @@ const data = [
     assemblyConstituency: 'Kukatpally',
     education: true,
     pid: 'CGG',
-    active: false,
   },
   {
     cid: 'CID5799104',
@@ -74,7 +70,6 @@ const data = [
     assemblyConstituency: 'Medchal',
     education: true,
     pid: 'XYZ',
-    active: true,
   },
   {
     cid: 'CID5799105',
@@ -84,7 +79,6 @@ const data = [
     assemblyConstituency: 'Secunderbad',
     education: false,
     pid: 'STP',
-    active: false,
   },
   {
     cid: 'CID5799106',
@@ -94,7 +88,6 @@ const data = [
     assemblyConstituency: 'Medchal',
     education: true,
     pid: 'TDP',
-    active: false,
   },
   {
     cid: 'CID5799107',
@@ -104,7 +97,6 @@ const data = [
     assemblyConstituency: 'Nampally',
     education: false,
     pid: 'TRS',
-    active: true,
   },
   {
     cid: 'CID5799108',
@@ -114,7 +106,6 @@ const data = [
     assemblyConstituency: 'Nampally',
     education: false,
     pid: 'BJP',
-    active: false,
   },
   {
     cid: 'CID5799109',
@@ -124,7 +115,6 @@ const data = [
     assemblyConstituency: 'Malakpet',
     education: true,
     pid: 'ZTS',
-    active: true,
   },
 ];
 
@@ -156,18 +146,7 @@ const columns = [
     },
   },
   { name: 'Party ID', selector: 'pid', sortable: true },
-  {
-    name: 'Active',
-    sortable: true,
-    cell: row => {
-      if (row.active) {
-        return <Text>Yes</Text>;
-      } else {
-        return <Text>No</Text>;
-      }
-    },
-  },
-
+ 
   {
     name: 'Manage',
     right: true,
@@ -237,7 +216,6 @@ const CreateModal = ({ isOpen, onClose}) => {
     gender: '',
     assemblyConstituency: '',
     education: '0',
-    active: '0',
   });
 
   const submitData = data => {
@@ -400,31 +378,6 @@ const CreateModal = ({ isOpen, onClose}) => {
               width='72%'
               />
             </Stack>
-            <RadioGroup
-              defaultValue="0"
-              alignSelf="flex-start"
-              onChange={value =>
-                setData(data => ({ ...data, active: value }))
-              }
-              name="active"
-              width="100%"
-            >
-              <Stack
-                spacing={5}
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                width="100%"
-              >
-                <Text size="md"> Active </Text>
-                <Radio value="0">
-                  No
-                </Radio>
-                <Radio value="1">
-                  Yes
-                </Radio>
-              </Stack>
-              </RadioGroup>
           </VStack>
         </ModalBody>
 
