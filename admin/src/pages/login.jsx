@@ -8,7 +8,7 @@ import {
   Input,
   useToast,
 } from '@chakra-ui/react';
-import fetch from '../services/fetch-custom.js';
+import fetchApi from '../services/fetch-custom.js';
 
 const Login = ({ history, setCurrentUser, ...props }) => {
   const [loading, setLoading] = useState(false);
@@ -48,7 +48,7 @@ const Login = ({ history, setCurrentUser, ...props }) => {
       setLoading(false);
     } else {
       const body = data;
-      fetch('/admin/auth', {
+      fetchApi('/admin/auth', {
         method: 'post',
         body: JSON.stringify(body),
         headers: {
