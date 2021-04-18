@@ -23,8 +23,7 @@ import {
 import DataTable from 'react-data-table-component';
 import '../assets/scroll.css';
 
-const conditionalRowStyles = [
-];
+const conditionalRowStyles = [];
 
 const data = [
   {
