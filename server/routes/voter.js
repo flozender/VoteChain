@@ -1,11 +1,10 @@
-const autho = require("../middleware/auth");
-const utils = require("../helpers/utils");
+const auth = require('../middleware/auth');
+const utils = require('../helpers/utils');
 
 module.exports = (app) => {
-  const voterController = require("../controllers/voter.js");
-  app.use("/", autho.tokenValidate);
+  const voterController = require('../controllers/voter.js');
 
-  app.post("/auth", async (req, res) => {
+  app.post('/auth', async (req, res) => {
     try {
       let body = Object.assign({}, req.body);
       body.id = body.voterId || null;
@@ -15,7 +14,7 @@ module.exports = (app) => {
       if (data && data.success) {
         res.send({
           success: true,
-          message: "Logged In Successfully",
+          message: 'Logged In Successfully',
           token: data.token,
           voter: {
             voterId: body.voterId,
@@ -35,22 +34,22 @@ module.exports = (app) => {
     }
   });
 
-  app.post("/otp", async (req, res) => {
+  app.post('/otp', async (req, res) => {
     let body = Object.assign({}, req.body);
     body.id = body.voterId || null;
     body.dob = body.dob || null;
 
     const response = await utils.sendEmailWithOTP(
-      "VoteChain User",
-      "votechain.iare@gmail.com",
-      "000000"
+      'VoteChain User',
+      'votechain.iare@gmail.com',
+      '000000',
     );
     res.json({
       ...response,
     });
   });
 
-  app.get("/voter/:voterId", async (req, res) => {
+  app.get('/voter/:voterId', async (req, res) => {
     try {
       let voter = await voterController.getVoter(req.params.voterId);
       res.status(200).send(voter);

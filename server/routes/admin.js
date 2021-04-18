@@ -1,4 +1,4 @@
-let autho = require(`../middleware/auth`);
+let auth = require(`../middleware/auth`);
 module.exports = (app) => {
   const voterController = require(`../controllers/voter.js`);
   const adminController = require(`../controllers/admin.js`);
@@ -33,8 +33,6 @@ module.exports = (app) => {
       });
     }
   });
-
-  app.use(`/`, autho.adminTokenValidate);
 
   app.post(`/admin/createVoter`, async (req, res) => {
     try {
@@ -79,7 +77,7 @@ module.exports = (app) => {
     }
   });
 
-  app.get(`/admin/voters`, async (req, res) => {
+  app.get(`/admin/voters`, auth.adminTokenValidate, async (req, res) => {
     try {
       let voters = await voterController.getAllVoters();
       res.status(200).send(voters);
@@ -139,7 +137,10 @@ module.exports = (app) => {
     try {
       let body = Object.assign({}, req.body);
 
-      let data = await electionController.assignCandidates(body, req.params.electionId);
+      let data = await electionController.assignCandidates(
+        body,
+        req.params.electionId,
+      );
       if (data && data.success) {
         res.status(200).send({
           success: true,
@@ -158,34 +159,43 @@ module.exports = (app) => {
     }
   });
 
-  app.delete(`/admin/deleteSssignedCandidates/:electionId`, async (req, res) => {
-    try {
-      let body = Object.assign({}, req.body);
+  app.delete(
+    `/admin/deleteSssignedCandidates/:electionId`,
+    async (req, res) => {
+      try {
+        let body = Object.assign({}, req.body);
 
-      let data = await electionController.deleteAssignedCandidates(body, req.params.electionId);
-      if (data && data.success) {
-        res.status(200).send({
-          success: true,
-          message: `Created Election Successfully`,
-        });
-      } else {
-        res.status(200).send({
-          success: false,
-          message: data.message,
+        let data = await electionController.deleteAssignedCandidates(
+          body,
+          req.params.electionId,
+        );
+        if (data && data.success) {
+          res.status(200).send({
+            success: true,
+            message: `Created Election Successfully`,
+          });
+        } else {
+          res.status(200).send({
+            success: false,
+            message: data.message,
+          });
+        }
+      } catch (error) {
+        res.status(400).send({
+          error: JSON.stringify(error),
         });
       }
-    } catch (error) {
-      res.status(400).send({
-        error: JSON.stringify(error),
-      });
-    }
-  });
+    },
+  );
 
   app.put(`/admin/updateElection/:electionId`, async (req, res) => {
     try {
       let body = Object.assign({}, req.body);
 
-      let data = await electionController.updateElection(body, req.params.electionId);
+      let data = await electionController.updateElection(
+        body,
+        req.params.electionId,
+      );
       if (data && data.success) {
         res.status(200).send(data);
       } else {
@@ -239,7 +249,10 @@ module.exports = (app) => {
     try {
       let body = Object.assign({}, req.body);
 
-      let data = await candidateController.updateCandidate(body, req.params.candidateId);
+      let data = await candidateController.updateCandidate(
+        body,
+        req.params.candidateId,
+      );
       if (data && data.success) {
         res.status(200).send(data);
       } else {
@@ -257,7 +270,9 @@ module.exports = (app) => {
 
   app.delete(`/admin/deleteCandidate/:candidateId`, async (req, res) => {
     try {
-      let data = await candidateController.deleteCandidate(req.params.candidateId);
+      let data = await candidateController.deleteCandidate(
+        req.params.candidateId,
+      );
       if (data && data.success) {
         res.status(200).send(data);
       } else {
@@ -272,5 +287,4 @@ module.exports = (app) => {
       });
     }
   });
-
 };
