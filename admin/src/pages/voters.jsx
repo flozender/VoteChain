@@ -84,12 +84,10 @@ const columns = [
 
 const Voters = ({ history, currentUser, ...props }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    setLoading(true);
     fetchApi('/admin/voters', {
       method: 'get',
       headers: {
@@ -101,7 +99,6 @@ const Voters = ({ history, currentUser, ...props }) => {
       .then(json => {
         if (!json.success) throw Error(json.message);
         setData(json.voters);
-        setLoading(false);
       })
       .catch(err => {
         console.log(err);
@@ -113,7 +110,6 @@ const Voters = ({ history, currentUser, ...props }) => {
           duration: 1000,
           isClosable: true,
         });
-        setLoading(false);
       });
   }, [currentUser, toast]);
 
