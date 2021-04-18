@@ -24,18 +24,6 @@ import DataTable from 'react-data-table-component';
 import '../assets/scroll.css';
 
 const conditionalRowStyles = [
-  {
-    when: row => row.active,
-    style: {
-      backgroundColor: '#5fdba7',
-      color: 'white',
-
-      '&:hover': {
-        color: 'white',
-        backgroundColor: '#5fdba7',
-      },
-    },
-  },
 ];
 
 const data = [
