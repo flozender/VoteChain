@@ -22,17 +22,11 @@ import Login from './pages/login';
 import Elections from './pages/elections';
 import Voters from './pages/voters';
 import Candidates from './pages/candidates';
+import Logout from './pages/logout';
 
 const App = props => {
-  let user = JSON.parse(localStorage.getItem('app-user'));
-  if (!user)
-    user = {
-      token: 'aeqweqweqwewqe',
-      user: {
-        username: 'flozender',
-        name: 'Tayeeb',
-      },
-    };
+  let user = JSON.parse(localStorage.getItem('app-user')) || null;
+
   const [currentUser, setCurrentUser] = useState(user);
   return (
     <ChakraProvider theme={theme}>
@@ -82,6 +76,11 @@ const App = props => {
           )}
         />
         <Route exact path="/dashboard" component={() => <Dashboard />} />
+        <Route
+          exact
+          path="/logout"
+          component={() => <Logout setCurrentUser={setCurrentUser} />}
+        />
       </Switch>
     </ChakraProvider>
   );
