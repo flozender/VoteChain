@@ -10,7 +10,7 @@ var DB = require("../db/database"),
         type: db_sequelize.INTEGER,
       },
       regionID: {
-        type: db_sequelize.STRING,
+        type: db_sequelize.INTEGER,
       },
     },
     {

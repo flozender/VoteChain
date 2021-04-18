@@ -9,7 +9,7 @@ var DB = require('../db/database'),
       type: db_sequelize.STRING
     },
     dob: {
-      type: db_sequelize.STRING
+      type: db_sequelize.DATE
     },
     gender: {
       type: db_sequelize.STRING

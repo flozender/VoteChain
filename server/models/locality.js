@@ -11,7 +11,7 @@ var DB = require("../db/database"),
         type: db_sequelize.STRING,
       },
       stateID: {
-        type: db_sequelize.STRING,
+        type: db_sequelize.INTEGER,
       },
     },
     {
