@@ -73,10 +73,10 @@ module.exports = {
       })
   },
 
-  getAllEligibleElections: function () {
-    let query = `SELECT E.*, `;
+  getAllEligibleElections: function (voterId) {
+    let query = `SELECT E.* FROM Election E, Voter V WHERE V.id = :voterId AND ((V.assemblyConstituency IN (TRIM(BOTH '"' FROM E.assemblyConstituencies))) OR E.assemblyConstituencies IS NULL)`;
 
-    return db.query(query, { replacements: {}, type: db.QueryTypes.SELECT })
+    return db.query(query, { replacements: { voterId }, type: db.QueryTypes.SELECT })
       .then(data => data)
       .catch(error => {
         throw error;

@@ -72,10 +72,10 @@ exports.getVoter = async (voterId) => {
 
 exports.getEligibleElections = async (voterId) => {
   try {
-    let voter = await voterRepo.get({ exclude: [] }, { id: voterId });
+    let elections = await voterRepo.getAllEligibleElections(voterId)
     return {
       success: true,
-      voter
+      elections
     }
   } catch (err) {
     console.log(err);
