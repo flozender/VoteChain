@@ -23,7 +23,7 @@ const Dashboard = ({ history }) => {
           rounded="md"
           flexDirection="column"
         >
-          <Heading mb={20}>VoteChain Administration</Heading>
+          <Heading mb={18}>VoteChain Administration</Heading>
           <Flex width="100%">
             <Card history={history} name="Voter Management" link="/voters" />
             <Card
@@ -31,6 +31,10 @@ const Dashboard = ({ history }) => {
               name="Election Management"
               link="/elections"
             />
+          </Flex>
+          <Flex width="100%">
+            <Card history={history} name="Candidate Management" link="/candidates" />
+            <Card history={history} name="Declare Results" link="/results" />
           </Flex>
         </Flex>
       </Flex>
@@ -42,6 +46,7 @@ const Card = ({ name, link, history }) => {
   return (
     <Container
       p={10}
+      mb={18}
       width="35%"
       height="30vh"
       alignItems="center"
