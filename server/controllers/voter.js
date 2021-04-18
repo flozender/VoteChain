@@ -26,7 +26,7 @@ exports.createVoter = async (data) => {
     throw err;
   }
 }
-exports.verifyAndAuthorize = async (data) => {
+exports.verifyUserAndSendOTP = async (data) => {
   try {
     let voter = await voterRepo.get({ exclude: [] }, { id: data.voterId, dob: data.dob })
     if (voter && voter.id) {

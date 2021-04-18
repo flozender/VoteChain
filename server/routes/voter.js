@@ -1,4 +1,6 @@
-let autho = require('../middleware/auth');
+const auth = require('../middleware/auth');
+const utils = require('../helpers/utils');
+
 module.exports = (app) => {
   const voterController = require('../controllers/voter.js');
 
@@ -8,7 +10,7 @@ module.exports = (app) => {
       body.id = body.voterId || null;
       body.dob = body.dob || null;
 
-      let data = await voterController.verifyAndAuthorize(body);
+      let data = await voterController.verifyUserAndSendOTP(body);
       if (data && data.success) {
         res.send({
           success: true,
@@ -17,22 +19,35 @@ module.exports = (app) => {
           voter: {
             voterId: body.voterId,
             name: data.name,
-          }
-        })
+          },
+        });
       } else {
         res.send({
           success: false,
-          message: data.message
-        })
+          message: data.message,
+        });
       }
     } catch (error) {
       res.status(400).send({
-        error: JSON.stringify(error)
+        error: JSON.stringify(error),
       });
     }
-  })
+  });
 
-  app.use('/', autho.tokenValidate);
+  app.post('/otp', async (req, res) => {
+    let body = Object.assign({}, req.body);
+    body.id = body.voterId || null;
+    body.dob = body.dob || null;
+
+    const response = await utils.sendEmailWithOTP(
+      'VoteChain User',
+      'votechain.iare@gmail.com',
+      '000000',
+    );
+    res.json({
+      ...response,
+    });
+  });
 
   app.get('/voter/:voterId', async (req, res) => {
     try {
@@ -40,8 +55,8 @@ module.exports = (app) => {
       res.status(200).send(voter);
     } catch (error) {
       res.status(400).send({
-        error: JSON.stringify(error)
+        error: JSON.stringify(error),
       });
     }
-  })
-}
+  });
+};

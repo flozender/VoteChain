@@ -1,6 +1,21 @@
 const fs = require('fs');
 const readfile = require('fs-readfile-promise');
 const jwt = require('jsonwebtoken');
+const path = require("path");
+const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
+const handlebars = require("handlebars");
+const OAuth2 = google.auth.OAuth2;
+
+const oauth2Client = new OAuth2(
+  process.env.OAuthClientID,
+  process.env.OAuthClientSecret,
+  "https://developers.google.com/oauthplayground"
+);
+
+oauth2Client.setCredentials({
+  refresh_token: process.env.OAuthRefreshToken,
+});
 
 exports.addToken = async (user) => {
   try {
@@ -18,4 +33,44 @@ exports.addToken = async (user) => {
   } catch (err) {
     throw err;
   }
+};
+
+exports.sendEmailWithOTP = async (voterName, voterEmail, otp) => {
+  const accessToken = oauth2Client.getAccessToken();
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      type: "OAuth2",
+      user: process.env.EMAIL,
+      clientId: process.env.OAuthClientID,
+      clientSecret: process.env.OAuthClientSecret,
+      refreshToken: process.env.OAuthRefreshToken,
+      accessToken: accessToken,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  const html = fs
+    .readFileSync(path.join(__dirname, "../templates/email.html"))
+    .toString();
+  const template = handlebars.compile(html);
+  const replacements = {
+    voterName,
+    otp,
+  };
+  const htmlToSend = template(replacements);
+
+  const mailOptions = {
+    from: "votechain.iare@gmail.com",
+    to: voterEmail,
+    subject: "VoteChain Platform - OTP",
+    generateTextFromHTML: true,
+    html: htmlToSend,
+  };
+
+  const result = await transporter.sendMail(mailOptions);
+  transporter.close();
+  return result;
 };

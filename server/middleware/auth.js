@@ -1,5 +1,5 @@
 var jwt = require('jsonwebtoken'),
-  readfile = require('fs-readfile-promise')
+  readfile = require('fs-readfile-promise');
 
 let fetchData = function (req, res) {
   let auth_token = req.headers.authorization;
@@ -7,7 +7,7 @@ let fetchData = function (req, res) {
   if (auth_token) {
     return auth_token.split(' ')[1];
   }
-}
+};
 
 module.exports = {
   adminTokenValidate: function (req, res, next) {
@@ -17,12 +17,12 @@ module.exports = {
       let auth = false;
 
       readfile('config/id_rsa', 'base64')
-        .then(key_value => {
+        .then((key_value) => {
           jwt.verify(token, key_value.toString(), function (error, decoded) {
             if (error) {
               return res.send({
                 not_verified: true,
-                message: 'Session expired. Please logout and login once again'
+                message: 'Session expired. Please logout and login once again',
               });
             } else {
               if (decoded.type == 'admin') {
@@ -30,22 +30,27 @@ module.exports = {
                 decoded_data = decoded;
                 req.token_data = {
                   data: decoded_data,
-                  auth: auth
+                  auth: auth,
                 };
                 res.locals.type = decoded_data.type;
                 next();
               } else {
-                return res.send({ not_verified: true, message: 'Not Authorised' });
+                return res.status(403).send({
+                  success: false,
+                  message: 'Not Authorised',
+                });
               }
             }
-          })
+          });
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           next();
-        })
+        });
     } else {
-      return res.send({ not_verified: true });
+      return res
+        .status(403)
+        .send({ success: false, message: 'Not Authorised' });
     }
   },
 
@@ -57,12 +62,12 @@ module.exports = {
       let auth = false;
 
       readfile('config/id_rsa', 'base64')
-        .then(key_value => {
+        .then((key_value) => {
           jwt.verify(token, key_value.toString(), function (error, decoded) {
             if (error) {
               return res.send({
                 not_verified: true,
-                message: 'Session expired. Please logout and login once again'
+                message: 'Session expired. Please logout and login once again',
               });
             } else {
               if (decoded.type == 'voter') {
@@ -70,24 +75,27 @@ module.exports = {
                 decoded_data = decoded;
                 req.token_data = {
                   data: decoded_data,
-                  auth: auth
+                  auth: auth,
                 };
                 res.locals.type = decoded_data.type;
                 next();
-
               } else {
-                return res.send({ not_verified: true, message: 'Not Authorised' });
+                return res.status(403).send({
+                  success: false,
+                  message: 'Not Authorised',
+                });
               }
             }
-
-          })
+          });
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           next();
-        })
+        });
     } else {
-      return res.send({ not_verified: true });
+      return res
+        .status(403)
+        .send({ success: false, message: 'Not Authorised' });
     }
-  }
-}
+  },
+};

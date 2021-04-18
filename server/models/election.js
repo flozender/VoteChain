@@ -9,10 +9,10 @@ var DB = require('../db/database'),
       type: db_sequelize.STRING
     },
     startDate: {
-      type: db_sequelize.DATETIME
+      type: db_sequelize.STRING
     },
     endDate: {
-      type: db_sequelize.DATETIME
+      type: db_sequelize.STRING
     },
     location: {
       type: db_sequelize.STRING

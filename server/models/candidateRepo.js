@@ -1,10 +1,10 @@
-var election = require('./election');
+var candidate = require('./candidate');
 let db = require('../db/database');
 
 
 module.exports = {
   add: function (data) {
-    return election.create(data, {
+    return candidate.create(data, {
       raw: true
     })
       .then(res => res)
@@ -14,7 +14,7 @@ module.exports = {
   },
 
   update: function (update_object, condition) {
-    return election.update(update_object, {
+    return candidate.update(update_object, {
       where: condition
     })
       .then(data => data)
@@ -24,7 +24,7 @@ module.exports = {
   },
 
   delete: function (condition) {
-    return election.destroy({
+    return candidate.destroy({
       where: condition
     })
       .then(data => data)
@@ -34,7 +34,7 @@ module.exports = {
   },
 
   get: function (attributes, condition) {
-    return election.findOne({
+    return candidate.findOne({
       attributes,
       where: condition
     })
@@ -42,6 +42,6 @@ module.exports = {
       .error(error => {
         throw error;
       });
-  },
+  }
 
 }
