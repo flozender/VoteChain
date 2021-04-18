@@ -63,7 +63,7 @@ exports.sendEmailWithOTP = async (voterName, voterEmail, otp) => {
   const htmlToSend = template(replacements);
 
   const mailOptions = {
-    from: "votechain.iare@gmail.com",
+    from: process.env.EMAIL,
     to: voterEmail,
     subject: "VoteChain Platform - OTP",
     generateTextFromHTML: true,

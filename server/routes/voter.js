@@ -5,7 +5,6 @@ const utils = require("../helpers/utils");
 
 module.exports = (app) => {
   const voterController = require("../controllers/voter.js");
-  app.use("/", autho.tokenValidate);
 
   app.post("/auth", async (req, res) => {
     try {
@@ -51,6 +50,8 @@ module.exports = (app) => {
       ...response,
     });
   });
+
+  app.use("/", autho.tokenValidate);
 
   app.get("/voter/:voterId", async (req, res) => {
     try {
