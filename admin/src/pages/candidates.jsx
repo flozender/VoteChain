@@ -156,7 +156,6 @@ const columns = [
     },
   },
   { name: 'Party ID', selector: 'pid', sortable: true },
-
   {
     name: 'Manage',
     right: true,
@@ -201,7 +200,7 @@ const Candidates = ({ history }) => {
           >
             <Heading width="100%">Candidate Management</Heading>
             <Button colorScheme="green" alignSelf="flex-end" onClick={onOpen}>
-              ENROLL CANDIDATE
+              ENROLL
             </Button>
           </Flex>
           <DataTable
