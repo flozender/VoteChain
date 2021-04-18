@@ -19,6 +19,7 @@ import {
   Radio,
   RadioGroup,
   Stack,
+  Select,
 } from '@chakra-ui/react';
 import DataTable from 'react-data-table-component';
 import '../assets/scroll.css';
@@ -38,183 +39,95 @@ const conditionalRowStyles = [
   },
 ];
 
-const data = [
-  {
-    id: 1,
-    name: 'General Municipal',
-    location: 'Hyderabad',
-    selected: true,
-    startDate: '20/02/2021',
-    endDate: '01/03/2021',
-    assemblyConstituency: 'Nampally',
-    minAge: '18',
-    education: true,
-    national: true,
-    winner: {
-      name: 'John Doe',
-    },
-  },
-  {
-    id: 2,
-    name: 'General Municipal',
-    location: 'Hyderabad',
-    startDate: '20/02/2021',
-    endDate: '01/03/2021',
-    assemblyConstituency: 'Nampally',
-    minAge: '18',
-  },
-  {
-    id: 3,
-    name: 'General Municipal',
-    location: 'Hyderabad',
-    startDate: '20/02/2021',
-    endDate: '01/03/2021',
-    assemblyConstituency: 'Nampally',
-    minAge: '18',
-    education: true,
-  },
-  {
-    id: 4,
-    name: 'General Municipal',
-    location: 'Hyderabad',
-    startDate: '20/02/2021',
-    endDate: '01/03/2021',
-    assemblyConstituency: 'Nampally',
-    minAge: '18',
-    national: true,
-  },
-  {
-    id: 5,
-    name: 'General Municipal',
-    location: 'Hyderabad',
-    selected: true,
-    startDate: '20/02/2021',
-    endDate: '01/03/2021',
-    assemblyConstituency: 'Nampally',
-    minAge: '18',
-    national: true,
-  },
-  {
-    id: 6,
-    name: 'General Municipal',
-    location: 'Hyderabad',
-    selected: true,
-    startDate: '20/02/2021',
-    endDate: '01/03/2021',
-    assemblyConstituency: 'Nampally',
-    minAge: '18',
-    national: true,
-  },
-  {
-    id: 7,
-    name: 'General Municipal',
-    location: 'Hyderabad',
-    selected: true,
-    startDate: '20/02/2021',
-    endDate: '01/03/2021',
-    assemblyConstituency: 'Nampally',
-    minAge: '18',
-    national: true,
-  },
-  {
-    id: 8,
-    name: 'General Municipal',
-    location: 'Hyderabad',
-    selected: true,
-    startDate: '20/02/2021',
-    endDate: '01/03/2021',
-    assemblyConstituency: 'Nampally',
-    minAge: '18',
-    national: true,
-  },
-  {
-    id: 9,
-    name: 'General Municipal',
-    location: 'Hyderabad',
-    selected: true,
-    startDate: '20/02/2021',
-    endDate: '01/03/2021',
-    assemblyConstituency: 'Nampally',
-    minAge: '18',
-    national: true,
-  },
-  {
-    id: 10,
-    name: 'General Municipal',
-    location: 'Hyderabad',
-    selected: true,
-    startDate: '20/02/2021',
-    endDate: '01/03/2021',
-    assemblyConstituency: 'Nampally',
-    minAge: '18',
-    national: true,
-  },
-];
-const columns = [
-  { name: 'Election ID', selector: 'id', sortable: true },
-  {
-    name: 'Name',
-    sortable: true,
-    cell: row => (
-      <div style={{ textAlign: 'left' }}>
-        <div style={{ fontWeight: 700 }}>{row.name}</div>
-        {row.location}
-      </div>
-    ),
-  },
-  { name: 'Start Date', selector: 'startDate', sortable: true },
-  { name: 'End Date', selector: 'endDate', sortable: true },
-  {
-    name: 'Assembly Constituency',
-    selector: 'assemblyConstituency',
-    sortable: true,
-  },
-  { name: 'Min Age', selector: 'minAge', sortable: true },
-  {
-    name: 'Education',
-    sortable: true,
-    cell: row => {
-      if (row.education) {
-        return <Text fontWeight="bold">Required</Text>;
-      } else {
-        return <Text>Not Required</Text>;
-      }
-    },
-  },
-  {
-    name: 'National',
-    sortable: true,
-    cell: row => {
-      if (row.national) {
-        return <Text fontWeight="bold">Open</Text>;
-      } else {
-        return <Text>No</Text>;
-      }
-    },
-  },
-  {
-    name: 'Winner',
-    sortable: true,
-    cell: row => <Text fontWeight="bold">{row.winner?.name}</Text>,
-  },
-
-  {
-    name: 'Manage',
-    right: true,
-    cell: row => {
-      if (row.active) {
-        return (
-          <Button size="sm" colorScheme="teal">
-            EDIT
-          </Button>
-        );
-      }
-    },
-  },
-];
-
 const Elections = ({ history }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenCreate,
+    onOpen: onOpenCreate,
+    onClose: onCloseCreate,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenAdd,
+    onOpen: onOpenAdd,
+    onClose: onCloseAdd,
+  } = useDisclosure();
+
+  const columns = [
+    { name: 'Election ID', selector: 'id', sortable: true },
+    {
+      name: 'Name',
+      sortable: true,
+      cell: row => (
+        <div style={{ textAlign: 'left' }}>
+          <div style={{ fontWeight: 700 }}>{row.name}</div>
+          {row.location}
+        </div>
+      ),
+    },
+    { name: 'Start Date', selector: 'startDate', sortable: true },
+    { name: 'End Date', selector: 'endDate', sortable: true },
+    {
+      name: 'Assembly Constituency',
+      selector: 'assemblyConstituency',
+      sortable: true,
+    },
+    { name: 'Min Age', selector: 'minAge', sortable: true },
+    {
+      name: 'Education',
+      sortable: true,
+      cell: row => {
+        if (row.education) {
+          return <Text fontWeight="bold">Required</Text>;
+        } else {
+          return <Text>Not Required</Text>;
+        }
+      },
+    },
+    {
+      name: 'National',
+      sortable: true,
+      cell: row => {
+        if (row.national) {
+          return <Text fontWeight="bold">Open</Text>;
+        } else {
+          return <Text>No</Text>;
+        }
+      },
+    },
+    {
+      name: 'Winner',
+      sortable: true,
+      cell: row => <Text fontWeight="bold">{row.winner?.name}</Text>,
+    },
+    {
+      name: 'Manage',
+      right: true,
+      button: true,
+      ignoreRowClick: true,
+      allowOverflow: true,
+      cell: row => {
+        if (row.active) {
+          return (
+            <Button size="sm" colorScheme="teal" onClick={onOpenAdd}>
+              ADD
+            </Button>
+          );
+        }
+      },
+    },
+  ];
+
+  const data = [
+    {
+      id: 1,
+      name: 'General Municipal',
+      location: 'Hyderabad',
+      startDate: '20/02/2021',
+      endDate: '01/03/2021',
+      assemblyConstituency: 'Nampally',
+      minAge: '18',
+      active: true,
+    },
+  ];
 
   return (
     <Flex justifyContent="center" alignItems="center">
@@ -245,7 +158,11 @@ const Elections = ({ history }) => {
             mb={5}
           >
             <Heading width="100%">Election Management</Heading>
-            <Button colorScheme="green" alignSelf="flex-end" onClick={onOpen}>
+            <Button
+              colorScheme="green"
+              alignSelf="flex-end"
+              onClick={onOpenCreate}
+            >
               CREATE
             </Button>
           </Flex>
@@ -256,7 +173,8 @@ const Elections = ({ history }) => {
             conditionalRowStyles={conditionalRowStyles}
             customStyles={{ table: { style: { marginBottom: '30px' } } }}
           />
-          <CreateModal isOpen={isOpen} onClose={onClose} />
+          <CreateModal isOpen={isOpenCreate} onClose={onCloseCreate} />
+          <AddModal isOpen={isOpenAdd} onClose={onCloseAdd} />
         </Flex>
       </Flex>
     </Flex>
@@ -299,6 +217,7 @@ const CreateModal = ({ isOpen, onClose }) => {
   const handleChange = e => {
     setData(data => ({ ...data, [e.target.name]: e.target.value }));
   };
+  const { id, name } = data;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -396,7 +315,161 @@ const CreateModal = ({ isOpen, onClose }) => {
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={() => submitData(data)}>
+          <Button colorScheme="green" mr={3} onClick={() => submitData(data)}>
+            Save
+          </Button>
+          <Button variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+const AddModal = ({ isOpen, onClose }) => {
+  const toast = useToast();
+  const [data, setData] = useState({
+    state: '',
+    locality: '',
+    region: '',
+    party: '',
+    candidate: '',
+  });
+
+  const submitData = data => {
+    if (Object.values(data).includes('')) {
+      toast({
+        title: 'Data missing.',
+        description: 'Please fill in all the details',
+        status: 'warning',
+        duration: 1000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: 'Candidate Added.',
+        description: 'New candidate has been enrolled',
+        status: 'success',
+        duration: 1000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleChange = e => {
+    setData(data => ({ ...data, [e.target.name]: e.target.value }));
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Add Candidates</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <VStack spacing={4}>
+            <Stack
+              spacing={5}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              width="100%"
+            >
+              <Text size="md">State</Text>
+              <Select
+                name="state"
+                placeholder="Select State"
+                width="75%"
+                onChange={handleChange}
+              >
+                <option value="option1">Andhra Pradesh</option>
+                <option value="option2">Telangana</option>
+                <option value="option3">Madhya Pradesh</option>
+              </Select>
+            </Stack>
+            <Stack
+              spacing={5}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              width="100%"
+            >
+              <Text size="md">Locality</Text>
+              <Select
+                name="locality"
+                placeholder="Select Locality"
+                width="75%"
+                onChange={handleChange}
+              >
+                <option value="option1">Nampally</option>
+                <option value="option2">Secunderabad</option>
+                <option value="option3">Kukatpally</option>
+              </Select>
+            </Stack>
+            <Stack
+              spacing={5}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              width="100%"
+            >
+              <Text size="md">Region</Text>
+              <Select
+                name="region"
+                placeholder="Select Region"
+                width="75%"
+                onChange={handleChange}
+              >
+                <option value="option1">Mehdipatnam</option>
+                <option value="option2">Banjara Hills</option>
+                <option value="option3">Masab Tank</option>
+              </Select>
+            </Stack>
+            <Stack
+              spacing={5}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              width="100%"
+            >
+              <Text size="md">Party</Text>
+              <Select
+                name="party"
+                placeholder="Select Party"
+                width="75%"
+                onChange={handleChange}
+              >
+                <option value="option1">TRS</option>
+                <option value="option2">JDP</option>
+                <option value="option3">BJP</option>
+                <option value="option4">MIM</option>
+              </Select>
+            </Stack>
+            <Stack
+              spacing={5}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              width="100%"
+            >
+              <Text size="md">Candidate</Text>
+              <Select
+                name="state"
+                placeholder="Select Candidate"
+                width="75%"
+                onChange={handleChange}
+              >
+                <option value="option1">Mr. John Doe</option>
+                <option value="option2">Mrs. Jane Doe</option>
+                <option value="option3">Mr. Alex Doe</option>
+              </Select>
+            </Stack>
+          </VStack>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button colorScheme="green" mr={3} onClick={() => submitData(data)}>
             Save
           </Button>
           <Button variant="ghost" onClick={onClose}>
