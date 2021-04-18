@@ -49,7 +49,7 @@ module.exports = (app) => {
     });
   });
 
-  app.get('/voter/:voterId', async (req, res) => {
+  app.get('/voter/:voterId', auth.tokenValidate, async (req, res) => {
     try {
       let voter = await voterController.getVoter(req.params.voterId);
       res.status(200).send(voter);
@@ -59,4 +59,17 @@ module.exports = (app) => {
       });
     }
   });
+
+  app.get('/eligibleElections', auth.tokenValidate, async (req, res) => {
+    try {
+      let voterId = req.token_data.data.voterId;
+      let voter = await voterController.getEligibleElections(voterId);
+      res.status(200).send(voter);
+    } catch (error) {
+      res.status(400).send({
+        error: JSON.stringify(error),
+      });
+    }
+  });
+
 };

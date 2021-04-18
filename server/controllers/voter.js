@@ -1,13 +1,11 @@
-const db = require('../db/database.js');
-const util = require('../helpers/utils.js');
-const voterRepo = require('../models/voterRepo.js');
+const db = require("../db/database.js");
+const util = require("../helpers/utils.js");
+const voterRepo = require("../models/voterRepo.js");
 
 exports.createVoter = async (data) => {
   try {
     data.id = data.voterId;
-    console.log(data)
     let voter = await voterRepo.checkVoterExists(data.email || null, data.mobile, data.voterId);
-    console.log(voter)
     if (voter && voter.id) {
       return {
         success: false,
@@ -32,7 +30,7 @@ exports.verifyUserAndSendOTP = async (data) => {
     if (voter && voter.id) {
       return util.addToken({
         voterId: voter.id, name: voter.name, mobile: voter.mobile,
-        email: data.email, type: 'voter'
+        email: data.email, type: "voter"
       });
     } else {
       return {
@@ -65,6 +63,19 @@ exports.getVoter = async (voterId) => {
     return {
       success: true,
       voter
+    }
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+exports.getEligibleElections = async (voterId) => {
+  try {
+    let elections = await voterRepo.getAllEligibleElections(voterId)
+    return {
+      success: true,
+      elections
     }
   } catch (err) {
     console.log(err);
