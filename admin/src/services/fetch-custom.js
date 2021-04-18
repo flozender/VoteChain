@@ -6,7 +6,7 @@ let url;
 if (process.env.NODE_ENV === 'production') {
   url = 'https://app.herokuapp.com';
 } else {
-  url = 'http://localhost:5000';
+  url = 'http://localhost:2002';
 }
 
 const fetchApi = fetchAbsolute(fetch)(url);
