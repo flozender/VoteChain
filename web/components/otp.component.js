@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Divider,
   Icon,
@@ -8,28 +8,72 @@ import {
   TopNavigationAction,
   Input,
   Button,
-} from "@ui-kitten/components";
+} from '@ui-kitten/components';
+import { ActivityIndicator } from 'react-native';
+import { url } from '../services/constants';
+import Popup from './popup.component';
 
-import { styles } from "./styles";
+import { styles } from './styles';
 
-const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
+const BackIcon = props => <Icon {...props} name="arrow-back" />;
 
-export const OTPScreen = ({ navigation }) => {
+export const OTPScreen = ({ navigation, route }) => {
   const [state, setState] = useState({
-    OTP: "",
+    OTP: '',
   });
+  const [loading, setLoading] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [message, setMessage] = useState('Error!');
 
   const navigateBack = () => {
     navigation.goBack();
   };
 
-  const navigateElections = () => {
-    navigation.navigate("Elections");
-  };
-
   const BackAction = () => (
     <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
   );
+  const { voterId, dob } = route.params;
+  const handleSubmit = async () => {
+    setLoading(true);
+
+    const success = json => {
+      GLOBAL.voter = json.voter;
+      GLOBAL.token = json.token;
+      setLoading(false);
+      navigation.navigate('Elections');
+    };
+
+    if (!state.OTP) {
+      setMessage('Missing Fields!');
+      setVisible(true);
+      setLoading(false);
+    } else {
+      const body = {
+        otp: state.OTP,
+        voterId,
+        dob,
+      };
+      console.log(body);
+      fetch(`${url}/otp`, {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (!json.success) throw Error(json.message);
+          success(json);
+        })
+        .catch(err => {
+          console.log(err);
+          setMessage('Sign in failed!');
+          setVisible(true);
+          setLoading(false);
+        });
+    }
+  };
 
   return (
     <>
@@ -41,17 +85,21 @@ export const OTPScreen = ({ navigation }) => {
       <Divider />
       <Layout
         style={{
-          flex: 1,
-          alignItems: "center",
+          display: 'flex',
+          alignItems: 'center',
+          height: '100%',
         }}
       >
+        <Text category="h1" style={styles.header}>
+          Enter OTP
+        </Text>
         <Text
           style={{
-            fontSize: 25,
-            width: "70%",
-            marginTop: 150,
+            fontSize: 15,
+            width: '70%',
             marginBottom: 40,
-            textAlign: "center",
+            textAlign: 'center',
+            color: 'gray',
           }}
         >
           Enter OTP sent to your registered mobile number and email.
@@ -60,9 +108,19 @@ export const OTPScreen = ({ navigation }) => {
           placeholder="One Time Password (OTP)"
           value={state.OTP}
           style={styles.input}
-          onChangeText={(text) => setState({ ...state, OTP: text })}
+          onChangeText={text => setState({ ...state, OTP: text })}
         />
-        <Button onPress={navigateElections}>Submit</Button>
+        <Button
+          onPress={handleSubmit}
+          accessoryLeft={
+            loading
+              ? () => <ActivityIndicator color="white" size="small" />
+              : null
+          }
+        >
+          Submit
+        </Button>
+        <Popup message={message} visible={visible} setVisible={setVisible} />
       </Layout>
     </>
   );
