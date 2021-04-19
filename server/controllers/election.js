@@ -6,7 +6,7 @@ const candidateElectionRepo = require('../models/candidateElectionRepo.js');
 
 exports.getAllElections = async () => {
   try {
-    let elections = await electionRepo.getAll({ exclude: [] });
+    let elections = await electionRepo.getAllElections();
     return {
       success: true,
       elections
@@ -33,7 +33,7 @@ exports.createElection = async (data) => {
 
 exports.getElection = async (electionId) => {
   try {
-    let election = await electionRepo.get({ exclude: [] }, { id: electionId });
+    let election = await electionRepo.getElection(electionId);
     return {
       success: true,
       election

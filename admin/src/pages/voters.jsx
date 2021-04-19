@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import {
   Heading,
@@ -19,8 +19,10 @@ import {
   Radio,
   RadioGroup,
   Stack,
+  Spinner,
 } from '@chakra-ui/react';
 import DataTable from 'react-data-table-component';
+import fetchApi from '../services/fetch-custom.js';
 import '../assets/scroll.css';
 
 const conditionalRowStyles = [
@@ -38,99 +40,21 @@ const conditionalRowStyles = [
   },
 ];
 
-const data = [
-  {
-    id: 'WRH2209786',
-    name: 'Ali Affan',
-    dob: '12/07/1999',
-    gender: 'Male',
-    assemblyConstituency: 'Nampally',
-    education: true,
-  },
-  {
-    id: 'WRH2209787',
-    name: 'Mohammed Tayeeb Hasan',
-    dob: '19/05/1999',
-    gender: 'Male',
-    assemblyConstituency: 'Secunderabad',
-    education: true,
-  },
-  {
-    id: 'WRH2209788',
-    name: 'Catherine Teresa',
-    dob: '10/09/1989',
-    gender: 'Female',
-    assemblyConstituency: 'Malakpet',
-    education: false,
-  },
-  {
-    id: 'WRH2209789',
-    name: 'Boyapati Krishna Chandra',
-    dob: '12/12/1999',
-    gender: 'Male',
-    assemblyConstituency: 'Kukatpally',
-    education: true,
-  },
-  {
-    id: 'WRH2209790',
-    name: 'Anna Kendrick',
-    dob: '09/08/1985',
-    gender: 'Female',
-    assemblyConstituency: 'Medchal',
-    education: true,
-  },
-  {
-    id: 'WRH2209791',
-    name: 'V. Srinivas',
-    dob: '24/10/1990',
-    gender: 'Male',
-    assemblyConstituency: 'Secunderbad',
-    education: false,
-  },
-  {
-    id: 'WRH2209792',
-    name: 'S. Preethi',
-    dob: '13/11/1995',
-    gender: 'Female',
-    assemblyConstituency: 'Medchal',
-    education: true,
-  },
-  {
-    id: 'WRH2209793',
-    name: 'Sunny Rajesh',
-    dob: '09/08/1985',
-    gender: 'Male',
-    assemblyConstituency: 'Nampally',
-    education: false,
-  },
-  {
-    id: 'WRH2209794',
-    name: 'Ganga Sagar',
-    dob: '01/01/2007',
-    gender: 'Male',
-    assemblyConstituency: 'Kukatpally',
-    education: false,
-  },
-  {
-    id: 'WRH2209795',
-    name: 'Syed Ismail',
-    dob: '15/06/1998',
-    gender: 'Male',
-    assemblyConstituency: 'Malakpet',
-    education: true,
-  },
-];
-
 const columns = [
   { name: 'Voter ID', selector: 'id', sortable: true },
   {
     name: 'Name',
     sortable: true,
-    cell: row => (
-      <div style={{ textAlign: 'left'}}>{row.name}</div>
-    ),
+    cell: row => <div style={{ textAlign: 'left' }}>{row.name}</div>,
   },
-  { name: 'DOB', selector: 'dob', sortable: true },
+  {
+    name: 'DOB',
+    selector: 'dob',
+    sortable: true,
+    cell: row => new Date(row.dob).toLocaleDateString(),
+  },
+  { name: 'Email', selector: 'email', sortable: true },
+  { name: 'Mobile', selector: 'mobile', sortable: true },
   { name: 'Gender', selector: 'gender', sortable: true },
   {
     name: 'Assembly Constituency',
@@ -160,8 +84,36 @@ const columns = [
   },
 ];
 
-const Voters = ({ history }) => {
+const Voters = ({ history, currentUser, ...props }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    fetchApi('/admin/voters', {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${currentUser.token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        setData(json.voters);
+      })
+      .catch(err => {
+        console.log(err);
+        toast({
+          position: 'bottom-left',
+          title: 'Could not load data',
+          description: err.message,
+          status: 'error',
+          duration: 1000,
+          isClosable: true,
+        });
+      });
+  }, [currentUser, toast]);
 
   return (
     <Flex justifyContent="center" alignItems="center">
@@ -193,7 +145,7 @@ const Voters = ({ history }) => {
           >
             <Heading width="100%">Voter Management</Heading>
             <Button colorScheme="green" alignSelf="flex-end" onClick={onOpen}>
-              ENROLL VOTER
+              ENROLL
             </Button>
           </Flex>
           <DataTable
@@ -202,26 +154,38 @@ const Voters = ({ history }) => {
             data={data}
             conditionalRowStyles={conditionalRowStyles}
             customStyles={{ table: { style: { marginBottom: '30px' } } }}
+            noDataComponent={<Spinner size="lg" colorScheme="teal" />}
           />
-          <CreateModal isOpen={isOpen} onClose={onClose} />
+          <CreateModal
+            isOpen={isOpen}
+            onClose={onClose}
+            currentUser={currentUser}
+          />
         </Flex>
       </Flex>
     </Flex>
   );
 };
 
-const CreateModal = ({ isOpen, onClose}) => {
+const CreateModal = ({ isOpen, onClose, currentUser }) => {
   const toast = useToast();
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     name: '',
     dob: '',
     gender: '',
     assemblyConstituency: '',
     education: '0',
+    email: '',
+    mobile: '',
   });
 
-  const submitData = data => {
-    if(Object.values(data).includes('')){
+  const handleChange = e => {
+    setData(data => ({ ...data, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = () => {
+    if (Object.values(data).includes('')) {
       toast({
         title: 'Data missing.',
         description: 'Please fill in all details',
@@ -230,18 +194,41 @@ const CreateModal = ({ isOpen, onClose}) => {
         isClosable: true,
       });
     } else {
-      toast({
-        title: 'Voter Enrolled.',
-        description: 'New Voter has been enrolled',
-        status: 'success',
-        duration: 1000,
-        isClosable: true,
-      });
+      fetchApi('/admin/createVoter', {
+        method: 'post',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (!json.success) throw Error(json.message);
+          toast({
+            position: 'bottom-left',
+            title: 'Success',
+            description: 'Voter added.',
+            status: 'success',
+            duration: 1000,
+            isClosable: true,
+          });
+          setLoading(false);
+          onClose();
+        })
+        .catch(err => {
+          console.log(err);
+          toast({
+            position: 'bottom-left',
+            title: 'Could not load data',
+            description: err.message,
+            status: 'error',
+            duration: 1000,
+            isClosable: true,
+          });
+          setLoading(false);
+        });
     }
-  };
-
-  const handleChange = e => {
-    setData(data => ({ ...data, [e.target.name]: e.target.value }));
   };
 
   return (
@@ -252,58 +239,88 @@ const CreateModal = ({ isOpen, onClose}) => {
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={4}>
-          <Stack 
+            <Stack
               spacing={5}
               direction="row"
               alignItems="center"
               justifyContent="space-between"
               width="100%"
             >
-              <Text size='md'>VoterID</Text>
-              <Input 
-              name='voterId' 
-              placeholder='Enter Voter ID'
-              onChange = {handleChange}
-              width='80%'
+              <Text size="md">VoterID</Text>
+              <Input
+                name="voterId"
+                placeholder="Enter Voter ID"
+                onChange={handleChange}
+                width="80%"
               />
             </Stack>
-            <Stack 
+            <Stack
               spacing={5}
               direction="row"
               alignItems="center"
               justifyContent="space-between"
               width="100%"
             >
-              <Text size='md'>Name</Text> 
-              <Input 
-              name='name' 
-              placeholder='Enter Name'
-              onChange = {handleChange}
-              width='80%'
+              <Text size="md">Name</Text>
+              <Input
+                name="name"
+                placeholder="Enter Name"
+                onChange={handleChange}
+                width="80%"
               />
             </Stack>
-             <Stack 
+            <Stack
               spacing={5}
               direction="row"
               alignItems="center"
               justifyContent="space-between"
               width="100%"
             >
-              <Text size='md'>DOB</Text>
-              <Input 
-              name='dob' 
-              placeholder='Date of Birth'
-              type='date'
-              onChange = {handleChange}
-              width='80%'
+              <Text size="md">DOB</Text>
+              <Input
+                name="dob"
+                placeholder="Date of Birth"
+                type="date"
+                onChange={handleChange}
+                width="80%"
+              />
+            </Stack>
+            <Stack
+              spacing={5}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              width="100%"
+            >
+              <Text size="md">Email</Text>
+              <Input
+                name="email"
+                placeholder="Email"
+                type="email"
+                onChange={handleChange}
+                width="80%"
+              />
+            </Stack>
+            <Stack
+              spacing={5}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              width="100%"
+            >
+              <Text size="md">Mobile</Text>
+              <Input
+                name="mobile"
+                placeholder="Mobile"
+                type="number"
+                onChange={handleChange}
+                width="80%"
               />
             </Stack>
             <RadioGroup
               defaultValue="0"
               alignSelf="flex-start"
-              onChange={value =>
-                setData(data => ({ ...data, gender: value }))
-              }
+              onChange={value => setData(data => ({ ...data, gender: value }))}
               name="gender"
               width="100%"
             >
@@ -315,31 +332,26 @@ const CreateModal = ({ isOpen, onClose}) => {
                 width="100%"
               >
                 <Text size="md"> Gender </Text>
-                <Radio value="0">
-                  Male
-                </Radio>
-                <Radio value="1">
-                  Female
-                </Radio>
-                <Radio value="2">
-                  Others
-                </Radio>
+                <Radio value="Male">Male</Radio>
+                <Radio value="Female">Female</Radio>
+                <Radio value="Other">Other</Radio>
               </Stack>
             </RadioGroup>
-            <Stack 
+            <Stack
               spacing={5}
               direction="row"
               alignItems="center"
               justifyContent="space-between"
               width="100%"
             >
-              <Text size='md'>AC</Text>
+              <Text size="md">AC</Text>
+              {/* TODO: change this to dynamic dropdown */}
               <Input
-              name="assemblyConstituency"
-              placeholder="Assembly Constituency"
-              onChange={handleChange}
-              width='80%'
-            />
+                name="assemblyConstituency"
+                placeholder="Assembly Constituency"
+                onChange={handleChange}
+                width="80%"
+              />
             </Stack>
             <RadioGroup
               defaultValue="0"
@@ -358,20 +370,20 @@ const CreateModal = ({ isOpen, onClose}) => {
                 width="100%"
               >
                 <Text size="md"> Educated </Text>
-                <Radio value="0">
-                  No
-                </Radio>
-                <Radio value="1">
-                  Yes
-                </Radio>
+                <Radio value="0">No</Radio>
+                <Radio value="1">Yes</Radio>
               </Stack>
             </RadioGroup>
           </VStack>
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme='teal' width='50%'
-          onClick={() => submitData(data)}>
+          <Button
+            colorScheme="teal"
+            width="50%"
+            isLoading={loading}
+            onClick={handleSubmit}
+          >
             SAVE
           </Button>
         </ModalFooter>

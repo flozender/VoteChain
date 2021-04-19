@@ -43,6 +43,26 @@ module.exports = {
       });
   },
 
+  getVoter: function (voterId) {
+    let query = `SELECT V.*,
+    CONCAT(R.name, ', ', L.name, ', ', S.name) AS assemblyConstituency,
+    R.pincode
+    FROM Voter V
+    LEFT JOIN Region R
+    ON R.id = V.assemblyConstituency
+    LEFT JOIN Locality L
+    ON L.id = R.id
+    LEFT JOIN State S
+    ON S.id = L.id
+    WHERE V.id = :voterId`;
+
+    return db.query(query, { replacements: { voterId }, type: db.QueryTypes.SELECT })
+      .then(data => data[0])
+      .catch(error => {
+        throw error;
+      })
+  },
+
   getAll: function (attributes, condition) {
     return voter.findAll({
       attributes
@@ -51,6 +71,25 @@ module.exports = {
       .error(error => {
         throw error;
       });
+  },
+
+  getAllVoters: function () {
+    let query = `SELECT V.*,
+    CONCAT(R.name, ', ', L.name, ', ', S.name) AS assemblyConstituency,
+    R.pincode
+    FROM Voter V
+    LEFT JOIN Region R
+    ON R.id = V.assemblyConstituency
+    LEFT JOIN Locality L
+    ON L.id = R.id
+    LEFT JOIN State S
+    ON S.id = L.id`;
+
+    return db.query(query, { replacements: {}, type: db.QueryTypes.SELECT })
+      .then(data => data)
+      .catch(error => {
+        throw error;
+      })
   },
 
   checkVoterExists: function (email, mobile, voterId) {
@@ -73,22 +112,13 @@ module.exports = {
       })
   },
 
-  // getAll: function (manager_id, is_admin, space_ids) {
-  //   let condition = (!is_admin) ? `WHERE T.space_id in (:space_ids)` : ``;
-  //   let query = `SELECT T.id, T.name, T.price, T.is_active,
-  //    T.capacity, T.space_id,
-  //    CONCAT(T.capacity, ' ', 'Seater Cabin') as name,
-  //    CONCAT(REPLACE(S.location_name, ' ', '-'), '-', S.id) as link_name
-  //    FROM voter T
-  //    LEFT JOIN
-  //    spaces S
-  //    ON S.id = T.space_id
-  //    ${condition}`;
+  getAllEligibleElections: function (voterId) {
+    let query = `SELECT E.* FROM Election E, Voter V WHERE V.id = :voterId AND ((V.assemblyConstituency IN (TRIM(BOTH '"' FROM E.assemblyConstituencies))) OR E.assemblyConstituencies IS NULL)`;
 
-  //   return db.query(query, { replacements: { space_ids }, type: db.QueryTypes.SELECT })
-  //     .then(data => data)
-  //     .catch(error => {
-  //       throw error;
-  //     })
-  // }
+    return db.query(query, { replacements: { voterId }, type: db.QueryTypes.SELECT })
+      .then(data => data)
+      .catch(error => {
+        throw error;
+      })
+  }
 }

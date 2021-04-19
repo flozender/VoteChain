@@ -18,13 +18,16 @@ var DB = require('../db/database'),
       type: db_sequelize.INTEGER
     },
     assemblyConstituency: {
-      type: db_sequelize.STRING
+      type: db_sequelize.INTEGER
     },
     mobile: {
       type: db_sequelize.STRING
     },
     email: {
       type: db_sequelize.STRING
+    },
+    otp: {
+      type: db_sequelize.INTEGER
     }
   },
     {
