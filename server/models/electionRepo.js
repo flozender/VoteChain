@@ -47,6 +47,19 @@ module.exports = {
       });
   },
 
+  getElection: function (electionId) {
+    let query = `SELECT E.*,
+    (SELECT JSON_ARRAYAGG(R.name) FROM Region R WHERE R.id IN (TRIM(BOTH '"' FROM E.assemblyConstituencies))) AS assemblyConstituencies
+    FROM Election E
+    WHERE E.id = :electionId`;
+
+    return db.query(query, { replacements: { electionId }, type: db.QueryTypes.SELECT })
+      .then(data => data[0])
+      .catch(error => {
+        throw error;
+      })
+  },
+
   getAll: function (attributes, condition) {
     return election
       .findAll({
@@ -57,4 +70,16 @@ module.exports = {
         throw error;
       });
   },
+
+  getAllElections: function () {
+    let query = `SELECT E.*,
+    (SELECT JSON_ARRAYAGG(R.name) FROM Region R WHERE R.id IN (TRIM(BOTH '"' FROM E.assemblyConstituencies))) AS assemblyConstituencies
+    FROM Election E`;
+
+    return db.query(query, { replacements: {}, type: db.QueryTypes.SELECT })
+      .then(data => data)
+      .catch(error => {
+        throw error;
+      })
+  }
 };
