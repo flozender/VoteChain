@@ -240,7 +240,6 @@ const CreateModal = ({ isOpen, onClose }) => {
   const handleChange = e => {
     setData(data => ({ ...data, [e.target.name]: e.target.value }));
   };
-  const { id, name } = data;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
