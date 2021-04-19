@@ -36,7 +36,6 @@ const data = [
     assemblyConstituency: 'Nampally',
     education: true,
     pid: 'ABC',
-    active: false,
   },
   {
     cid: 'CID5799101',
@@ -46,7 +45,6 @@ const data = [
     assemblyConstituency: 'Secunderabad',
     education: true,
     pid: 'MIM',
-    active: true,
   },
   {
     cid: 'CID5799102',
@@ -56,7 +54,6 @@ const data = [
     assemblyConstituency: 'Malakpet',
     education: false,
     pid: 'JDP',
-    active: false,
   },
   {
     cid: 'CID5799103',
@@ -66,7 +63,6 @@ const data = [
     assemblyConstituency: 'Kukatpally',
     education: true,
     pid: 'CGG',
-    active: false,
   },
   {
     cid: 'CID5799104',
@@ -76,7 +72,6 @@ const data = [
     assemblyConstituency: 'Medchal',
     education: true,
     pid: 'XYZ',
-    active: true,
   },
   {
     cid: 'CID5799105',
@@ -86,7 +81,6 @@ const data = [
     assemblyConstituency: 'Secunderbad',
     education: false,
     pid: 'STP',
-    active: false,
   },
   {
     cid: 'CID5799106',
@@ -96,7 +90,6 @@ const data = [
     assemblyConstituency: 'Medchal',
     education: true,
     pid: 'TDP',
-    active: false,
   },
   {
     cid: 'CID5799107',
@@ -106,7 +99,6 @@ const data = [
     assemblyConstituency: 'Nampally',
     education: false,
     pid: 'TRS',
-    active: true,
   },
   {
     cid: 'CID5799108',
@@ -116,7 +108,6 @@ const data = [
     assemblyConstituency: 'Nampally',
     education: false,
     pid: 'BJP',
-    active: false,
   },
   {
     cid: 'CID5799109',
@@ -126,7 +117,6 @@ const data = [
     assemblyConstituency: 'Malakpet',
     education: true,
     pid: 'ZTS',
-    active: true,
   },
 ];
 
