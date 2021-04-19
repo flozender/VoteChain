@@ -354,8 +354,7 @@ const AddModal = ({ isOpen, onClose }) => {
   const toast = useToast();
   const [data, setData] = useState({
     state: '',
-    locality: '',
-    region: '',
+    assemblyConstituency: '',
     party: '',
     candidate: '',
   });
@@ -381,7 +380,7 @@ const AddModal = ({ isOpen, onClose }) => {
   };
 
   const handleChange = e => {
-    setData(data => ({ ...data, [e.target.name]: e.target.value }));
+    setData(data => ({ ...data, [e.field]: e.value }));
   };
 
   return (
