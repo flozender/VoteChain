@@ -12,7 +12,7 @@ const options = [
 
 const Results = ({ history }) => {
   const [data, setData] = useState({
-    elections: '',
+    election: '',
   });
   const { elections } = data;
 
@@ -77,7 +77,7 @@ const Results = ({ history }) => {
             >
               <Dropdown
                 text="Elections"
-                id="elections"
+                id="election"
                 placeholder="Select Elections"
                 data={options}
                 handleCustomChange={handleChange}
