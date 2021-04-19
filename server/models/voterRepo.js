@@ -43,6 +43,26 @@ module.exports = {
       });
   },
 
+  getVoter: function (voterId) {
+    let query = `SELECT V.*,
+    CONCAT(R.name, ', ', L.name, ', ', S.name) AS assemblyConstituency,
+    R.pincode
+    FROM Voter V
+    LEFT JOIN Region R
+    ON R.id = V.assemblyConstituency
+    LEFT JOIN Locality L
+    ON L.id = R.id
+    LEFT JOIN State S
+    ON S.id = L.id
+    WHERE V.id = :voterId`;
+
+    return db.query(query, { replacements: { voterId }, type: db.QueryTypes.SELECT })
+      .then(data => data[0])
+      .catch(error => {
+        throw error;
+      })
+  },
+
   getAll: function (attributes, condition) {
     return voter.findAll({
       attributes
@@ -51,6 +71,25 @@ module.exports = {
       .error(error => {
         throw error;
       });
+  },
+
+  getAllVoters: function () {
+    let query = `SELECT V.*,
+    CONCAT(R.name, ', ', L.name, ', ', S.name) AS assemblyConstituency,
+    R.pincode
+    FROM Voter V
+    LEFT JOIN Region R
+    ON R.id = V.assemblyConstituency
+    LEFT JOIN Locality L
+    ON L.id = R.id
+    LEFT JOIN State S
+    ON S.id = L.id`;
+
+    return db.query(query, { replacements: {}, type: db.QueryTypes.SELECT })
+      .then(data => data)
+      .catch(error => {
+        throw error;
+      })
   },
 
   checkVoterExists: function (email, mobile, voterId) {

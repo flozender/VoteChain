@@ -76,7 +76,7 @@ exports.verifyOTP = async (data) => {
 
 exports.getAllVoters = async () => {
   try {
-    let voters = await voterRepo.getAll({ exclude: [] });
+    let voters = await voterRepo.getAllVoters();
     return {
       success: true,
       voters
@@ -89,7 +89,7 @@ exports.getAllVoters = async () => {
 
 exports.getVoter = async (voterId) => {
   try {
-    let voter = await voterRepo.get({ exclude: [] }, { id: voterId });
+    let voter = await voterRepo.getVoter(voterId);
     return {
       success: true,
       voter
