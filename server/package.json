@@ -13,10 +13,13 @@
     "express": "^4.17.1",
     "fs": "^0.0.1-security",
     "fs-readfile-promise": "^3.0.1",
+    "googleapis": "^71.0.0",
+    "handlebars": "^4.7.7",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.2.5",
+    "nodemailer": "^6.5.0",
     "nodemon": "^2.0.7",
     "pg": "^8.5.1",
     "sequelize": "^3.28.0"

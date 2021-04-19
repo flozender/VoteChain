@@ -1,9 +1,9 @@
-var election = require('./election');
+var candidate = require('./candidate');
 let db = require('../db/database');
 
 module.exports = {
   add: function (data) {
-    return election
+    return candidate
       .create(data, {
         raw: true,
       })
@@ -14,7 +14,7 @@ module.exports = {
   },
 
   update: function (update_object, condition) {
-    return election
+    return candidate
       .update(update_object, {
         where: condition,
       })
@@ -25,7 +25,7 @@ module.exports = {
   },
 
   delete: function (condition) {
-    return election
+    return candidate
       .destroy({
         where: condition,
       })
@@ -36,7 +36,7 @@ module.exports = {
   },
 
   get: function (attributes, condition) {
-    return election
+    return candidate
       .findOne({
         attributes,
         where: condition,
@@ -47,21 +47,8 @@ module.exports = {
       });
   },
 
-  getElection: function (electionId) {
-    let query = `SELECT E.*,
-    (SELECT JSON_ARRAYAGG(R.name) FROM Region R WHERE R.id IN (TRIM(BOTH '"' FROM E.assemblyConstituencies))) AS assemblyConstituencies
-    FROM Election E
-    WHERE E.id = :electionId`;
-
-    return db.query(query, { replacements: { electionId }, type: db.QueryTypes.SELECT })
-      .then(data => data[0])
-      .catch(error => {
-        throw error;
-      })
-  },
-
   getAll: function (attributes, condition) {
-    return election
+    return candidate
       .findAll({
         attributes,
       })
@@ -70,16 +57,4 @@ module.exports = {
         throw error;
       });
   },
-
-  getAllElections: function () {
-    let query = `SELECT E.*,
-    (SELECT JSON_ARRAYAGG(R.name) FROM Region R WHERE R.id IN (TRIM(BOTH '"' FROM E.assemblyConstituencies))) AS assemblyConstituencies
-    FROM Election E`;
-
-    return db.query(query, { replacements: {}, type: db.QueryTypes.SELECT })
-      .then(data => data)
-      .catch(error => {
-        throw error;
-      })
-  }
 };

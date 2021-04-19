@@ -1,35 +1,38 @@
-var DB = require('../db/database'),
+var DB = require("../db/database"),
   db_sequelize = DB.Sequelize,
-  candidate = DB.define('Candidate', {
-    id: {
-      type: db_sequelize.STRING,
-      primaryKey: true
+  candidate = DB.define(
+    "Candidate",
+    {
+      id: {
+        type: db_sequelize.STRING,
+        primaryKey: true,
+      },
+      name: {
+        type: db_sequelize.STRING,
+      },
+      age: {
+        type: db_sequelize.INTEGER,
+      },
+      gender: {
+        type: db_sequelize.STRING,
+      },
+      assemblyConstituency: {
+        type: db_sequelize.STRING,
+      },
+      education: {
+        type: db_sequelize.INTEGER,
+      },
+      partyID: {
+        type: db_sequelize.INTEGER,
+      },
+      active: {
+        type: db_sequelize.INTEGER,
+      },
     },
-    name: {
-      type: db_sequelize.STRING
-    },
-    dob: {
-      type: db_sequelize.STRING
-    },
-    gender: {
-      type: db_sequelize.STRING
-    },
-    education: {
-      type: db_sequelize.INTEGER
-    },
-    assemblyConstituency: {
-      type: db_sequelize.STRING
-    },
-    mobile: {
-      type: db_sequelize.STRING
-    },
-    email: {
-      type: db_sequelize.STRING
-    }
-  },
     {
       freezeTableName: true,
-      timestamps: false
-    });
+      timestamps: false,
+    }
+  );
 
 module.exports = candidate;
