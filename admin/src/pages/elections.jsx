@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
+import Select from 'react-select';
 import {
   Heading,
   Flex,
@@ -19,10 +20,32 @@ import {
   Radio,
   RadioGroup,
   Stack,
-  Select,
 } from '@chakra-ui/react';
 import DataTable from 'react-data-table-component';
 import '../assets/scroll.css';
+
+const groupedOptions = [
+  {
+    label: 'Locality 1',
+    options: [
+      { value: 'Region 1', label: 'Ocean', color: '#00B8D9' },
+      { value: 'Region 2', label: 'Blue', color: '#0052CC' },
+    ],
+  },
+  {
+    label: 'Locality 2',
+    options: [
+      { value: 'Region 1', label: 'Ocean', color: '#00B8D9' },
+      { value: 'Region 2', label: 'Blue', color: '#0052CC' },
+    ],
+  },
+];
+
+const options = [
+  { value: 'chocolate', label: 'Chocolate' },
+  { value: 'strawberry', label: 'Strawberry' },
+  { value: 'vanilla', label: 'Vanilla' },
+];
 
 const conditionalRowStyles = [
   {
@@ -369,107 +392,95 @@ const AddModal = ({ isOpen, onClose }) => {
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={4}>
-            <Stack
-              spacing={5}
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
+            <VStack
+              spacing={4}
+              border="1px"
+              borderColor="gray.200"
+              p={5}
               width="100%"
             >
-              <Text size="md">State</Text>
-              <Select
-                name="state"
-                placeholder="Select State"
-                width="75%"
-                onChange={handleChange}
+              <Stack
+                spacing={5}
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                width="100%"
               >
-                <option value="option1">Andhra Pradesh</option>
-                <option value="option2">Telangana</option>
-                <option value="option3">Madhya Pradesh</option>
-              </Select>
-            </Stack>
-            <Stack
-              spacing={5}
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
+                <Text size="md">State</Text>
+                <Dropdown
+                  text="State"
+                  id="state"
+                  placeholder="Select State"
+                  data={options}
+                  handleCustomChange={handleChange}
+                  width="19vw"
+                />
+              </Stack>
+              <Stack
+                spacing={5}
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                width="100%"
+              >
+                <Text size="md">AC</Text>
+                <Dropdown
+                  text="Assembly Constituency"
+                  id="assemblyConstituency"
+                  placeholder="Select Assembly Constituency"
+                  data={groupedOptions}
+                  handleCustomChange={handleChange}
+                  width="19vw"
+                />
+              </Stack>
+            </VStack>
+            <VStack
+              spacing={4}
+              border="1px"
+              borderColor="gray.200"
+              p={5}
               width="100%"
             >
-              <Text size="md">Locality</Text>
-              <Select
-                name="locality"
-                placeholder="Select Locality"
-                width="75%"
-                onChange={handleChange}
+              <Stack
+                spacing={5}
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                width="100%"
               >
-                <option value="option1">Nampally</option>
-                <option value="option2">Secunderabad</option>
-                <option value="option3">Kukatpally</option>
-              </Select>
-            </Stack>
-            <Stack
-              spacing={5}
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              width="100%"
-            >
-              <Text size="md">Region</Text>
-              <Select
-                name="region"
-                placeholder="Select Region"
-                width="75%"
-                onChange={handleChange}
+                <Text size="md">Party</Text>
+                <Dropdown
+                  text="Party"
+                  id="party"
+                  placeholder="Select Party"
+                  data={options}
+                  handleCustomChange={handleChange}
+                  width="19vw"
+                />
+              </Stack>
+              <Stack
+                spacing={5}
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                width="100%"
               >
-                <option value="option1">Mehdipatnam</option>
-                <option value="option2">Banjara Hills</option>
-                <option value="option3">Masab Tank</option>
-              </Select>
-            </Stack>
-            <Stack
-              spacing={5}
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              width="100%"
-            >
-              <Text size="md">Party</Text>
-              <Select
-                name="party"
-                placeholder="Select Party"
-                width="75%"
-                onChange={handleChange}
-              >
-                <option value="option1">TRS</option>
-                <option value="option2">JDP</option>
-                <option value="option3">BJP</option>
-                <option value="option4">MIM</option>
-              </Select>
-            </Stack>
-            <Stack
-              spacing={5}
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              width="100%"
-            >
-              <Text size="md">Candidate</Text>
-              <Select
-                name="state"
-                placeholder="Select Candidate"
-                width="75%"
-                onChange={handleChange}
-              >
-                <option value="option1">Mr. John Doe</option>
-                <option value="option2">Mrs. Jane Doe</option>
-                <option value="option3">Mr. Alex Doe</option>
-              </Select>
-            </Stack>
+                <Text size="md">Candidate</Text>
+                <Dropdown
+                  text="Candidate"
+                  id="candidate"
+                  placeholder="Select Candidate"
+                  data={options}
+                  handleCustomChange={handleChange}
+                  width="19vw"
+                />
+              </Stack>
+            </VStack>
           </VStack>
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="green" mr={3} onClick={() => submitData(data)}>
+          <Button colorScheme="teal" mr={3} onClick={() => submitData(data)}>
             Save
           </Button>
           <Button variant="ghost" onClick={onClose}>
@@ -478,6 +489,35 @@ const AddModal = ({ isOpen, onClose }) => {
         </ModalFooter>
       </ModalContent>
     </Modal>
+  );
+};
+
+const Dropdown = ({
+  handleCustomChange,
+  data,
+  id,
+  setFieldValue,
+  width = '25vw',
+}) => {
+  const customStyles = {
+    container: provided => ({
+      ...provided,
+      width: width,
+      marginBottom: '10px',
+    }),
+  };
+  return (
+    <Select
+      id={id}
+      placeholder="Select Option"
+      isRequired
+      onChange={obj => {
+        obj.field = id;
+        handleCustomChange(obj, setFieldValue);
+      }}
+      styles={customStyles}
+      options={data}
+    />
   );
 };
 
