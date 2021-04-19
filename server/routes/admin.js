@@ -117,9 +117,20 @@ module.exports = app => {
     }
   });
 
+  app.get(`/admin/election/:electionId`, auth.adminTokenValidate, async (req, res) => {
+    try {
+      let voter = await electionController.getElection(req.params.electionId);
+      res.status(200).send(voter);
+    } catch (error) {
+      res.status(400).send({
+        error: JSON.stringify(error),
+      });
+    }
+  });
+
   app.get(`/admin/elections`, auth.adminTokenValidate, async (req, res) => {
     try {
-      let voter = await electionController.getAll();
+      let voter = await electionController.getAllElections();
       res.status(200).send(voter);
     } catch (error) {
       res.status(400).send({
