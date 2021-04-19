@@ -130,6 +130,7 @@ const Login = ({ history, setCurrentUser, ...props }) => {
               marginBottom="40px"
               onChange={handleChange}
               value={password}
+              type="password"
             />
             <Button
               colorScheme="teal"

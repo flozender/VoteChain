@@ -53,6 +53,8 @@ const columns = [
     sortable: true,
     cell: row => new Date(row.dob).toLocaleDateString(),
   },
+  { name: 'Email', selector: 'email', sortable: true },
+  { name: 'Mobile', selector: 'mobile', sortable: true },
   { name: 'Gender', selector: 'gender', sortable: true },
   {
     name: 'Assembly Constituency',
@@ -174,6 +176,8 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
     gender: '',
     assemblyConstituency: '',
     education: '0',
+    email: '',
+    mobile: '',
   });
 
   const handleChange = e => {
@@ -281,6 +285,38 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
                 width="80%"
               />
             </Stack>
+            <Stack
+              spacing={5}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              width="100%"
+            >
+              <Text size="md">Email</Text>
+              <Input
+                name="email"
+                placeholder="Email"
+                type="email"
+                onChange={handleChange}
+                width="80%"
+              />
+            </Stack>
+            <Stack
+              spacing={5}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              width="100%"
+            >
+              <Text size="md">Mobile</Text>
+              <Input
+                name="mobile"
+                placeholder="Mobile"
+                type="number"
+                onChange={handleChange}
+                width="80%"
+              />
+            </Stack>
             <RadioGroup
               defaultValue="0"
               alignSelf="flex-start"
@@ -309,6 +345,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
               width="100%"
             >
               <Text size="md">AC</Text>
+              {/* TODO: change this to dynamic dropdown */}
               <Input
                 name="assemblyConstituency"
                 placeholder="Assembly Constituency"
