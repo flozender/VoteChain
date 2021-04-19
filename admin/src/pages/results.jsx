@@ -94,7 +94,6 @@ const Results = ({ history }) => {
             >
               <Button
                 colorScheme="teal"
-                // onClick={() => submitData(data)}
               >
                 Count and Publish
               </Button>
