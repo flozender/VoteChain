@@ -1,5 +1,5 @@
 const db = require("../db/database.js");
-const util = require("../helpers/utils.js");
+const utils = require('../helpers/utils');
 const voterRepo = require("../models/voterRepo.js");
 
 exports.createVoter = async (data) => {
@@ -14,24 +14,35 @@ exports.createVoter = async (data) => {
     } else {
       data.id = data.voterId;
       let createVoter = await voterRepo.add(data);
-      return util.addToken({
-        voterId: createVoter.voterId, name: data.name, mobile: data.mobile,
-        email: data.email
-      });
+      return {
+        success: true,
+        message: 'Created Voter Successsfully',
+        voter: createVoter
+      }
     }
   } catch (err) {
     console.log(err);
     throw err;
   }
 }
-exports.verifyUserAndSendOTP = async (data) => {
+exports.verifyVoterAndSendOTP = async (data) => {
   try {
     let voter = await voterRepo.get({ exclude: [] }, { id: data.voterId, dob: data.dob })
     if (voter && voter.id) {
-      return util.addToken({
-        voterId: voter.id, name: voter.name, mobile: voter.mobile,
-        email: data.email, type: "voter"
-      });
+      let otp = Math.floor(100000 + Math.random() * 900000);
+      await voterRepo.update({ otp }, { id: data.voterId, dob: data.dob });
+      let mail = await utils.sendEmailWithOTP(
+        voter.name,
+        voter.email,
+        otp
+      );
+      if (mail.accepted[0] == voter.email) {
+        return {
+          success: true,
+          message: 'OTP sent Successsfully'
+        }
+      }
+
     } else {
       return {
         success: false,
@@ -41,6 +52,25 @@ exports.verifyUserAndSendOTP = async (data) => {
   } catch (err) {
     console.log(err);
     throw err;
+  }
+}
+
+exports.verifyOTP = async (data) => {
+  let voter = await voterRepo.get({ exclude: [] }, {
+    id: data.voterId, dob: data.dob,
+    otp: data.otp
+  });
+  await voterRepo.update({ otp: null }, { id: data.voterId, dob: data.dob });
+  if (voter && voter.id) {
+    return utils.addToken({
+      voterId: voter.id, name: voter.name, mobile: voter.mobile,
+      email: data.email, type: "voter"
+    });
+  } else {
+    return {
+      success: false,
+      message: `OTP Not Verified, Resend OTP and Try Again`
+    }
   }
 }
 

@@ -11,6 +11,26 @@ module.exports = app => {
 
       let data = await adminController.verifyAndAuthorize(body);
       if (data && data.success) {
+        res.status(200).send(data);
+      } else {
+        res.status(200).send({
+          success: false,
+          message: data.message,
+        });
+      }
+    } catch (error) {
+      res.status(400).send({
+        error: JSON.stringify(error),
+      });
+    }
+  });
+
+  app.post(`/admin/otp`, async (req, res) => {
+    try {
+      let body = Object.assign({}, req.body);
+
+      let data = await adminController.verifyOTP(body);
+      if (data && data.success) {
         res.status(200).send({
           success: true,
           message: `Logged In Successfully`,
@@ -28,11 +48,9 @@ module.exports = app => {
         });
       }
     } catch (error) {
-      res.status(400).send({
-        error: JSON.stringify(error),
-      });
+
     }
-  });
+  })
 
   app.post(`/admin/createVoter`, auth.adminTokenValidate, async (req, res) => {
     try {

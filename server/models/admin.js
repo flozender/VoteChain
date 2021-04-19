@@ -19,6 +19,9 @@ var DB = require('../db/database'),
     },
     email: {
       type: db_sequelize.STRING
+    },
+    otp: {
+      type: db_sequelize.INTEGER
     }
   },
     {
