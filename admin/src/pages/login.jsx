@@ -2,16 +2,29 @@ import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import {
   Heading,
+  Text,
   Flex,
   Button,
   Container,
   Input,
   useToast,
+  Modal,
+  ModalContent,
+  ModalOverlay,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+  useDisclosure,
+  PinInput,
+  PinInputField,
+  HStack,
 } from '@chakra-ui/react';
 import fetchApi from '../services/fetch-custom.js';
 
-const Login = ({ history, setCurrentUser, ...props }) => {
+const Login = props => {
   const [loading, setLoading] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const [data, setData] = useState({
     username: '',
@@ -27,13 +40,12 @@ const Login = ({ history, setCurrentUser, ...props }) => {
       setLoading(false);
       toast({
         position: 'bottom-left',
-        title: 'Success',
-        description: 'Welcome back.',
+        title: 'OTP Sent',
         status: 'success',
-        duration: 1000,
+        duration: 1500,
         isClosable: true,
       });
-      history.push('/');
+      onOpen();
     };
 
     if (!username || !password) {
@@ -58,10 +70,6 @@ const Login = ({ history, setCurrentUser, ...props }) => {
         .then(res => res.json())
         .then(json => {
           if (!json.success) throw Error(json.message);
-          setCurrentUser({
-            ...json,
-          });
-          localStorage.setItem('app-user', JSON.stringify(json));
           success();
         })
         .catch(err => {
@@ -144,7 +152,121 @@ const Login = ({ history, setCurrentUser, ...props }) => {
           </Flex>
         </Container>
       </Flex>
+      <OTPModal
+        isOpen={isOpen}
+        onClose={onClose}
+        data={data}
+        setData={setData}
+        {...props}
+      />
     </Flex>
+  );
+};
+
+const OTPModal = ({
+  isOpen,
+  onClose,
+  setCurrentUser,
+  history,
+  data,
+  setData,
+}) => {
+  const toast = useToast();
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = e => {
+    setData(data => ({ ...data, otp: e }));
+  };
+
+  const handleSubmit = () => {
+    setLoading(true);
+    if (Object.values(data).includes('')) {
+      toast({
+        title: 'Data missing.',
+        description: 'Please fill in all details',
+        status: 'warning',
+        duration: 1000,
+        isClosable: true,
+      });
+    } else {
+      fetchApi('/admin/otp', {
+        method: 'post',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (!json.success) throw Error(json.message);
+          setCurrentUser({
+            ...json,
+          });
+          localStorage.setItem('app-user', JSON.stringify(json));
+          toast({
+            position: 'bottom-left',
+            title: 'Success',
+            description: 'Welcome back.',
+            status: 'success',
+            duration: 1500,
+            isClosable: true,
+          });
+          setLoading(false);
+          onClose();
+          history.push('/');
+        })
+        .catch(err => {
+          console.log(err);
+          toast({
+            position: 'bottom-left',
+            title: 'OTP is incorrect',
+            status: 'error',
+            duration: 1000,
+            isClosable: true,
+          });
+          setLoading(false);
+          onClose();
+        });
+    }
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Enter OTP</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody textAlign="center">
+          <Flex flexDir="column" alignItems="center">
+            <Text size="sm" color="gray.500" mb={5}>
+              An OTP has been sent to your registered email and mobile number
+            </Text>
+            <HStack width="70%" alignSelf="center">
+              <PinInput otp onChange={handleChange}>
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+                <PinInputField />
+              </PinInput>
+            </HStack>
+          </Flex>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button
+            colorScheme="teal"
+            width="30%"
+            isLoading={loading}
+            onClick={handleSubmit}
+            alignSelf="center"
+          >
+            Submit
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 
