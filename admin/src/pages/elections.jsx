@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import Select from 'react-select';
 import {
@@ -20,8 +20,10 @@ import {
   Radio,
   RadioGroup,
   Stack,
+  Spinner,
 } from '@chakra-ui/react';
 import DataTable from 'react-data-table-component';
+import fetchApi from '../services/fetch-custom.js';
 import '../assets/scroll.css';
 
 const groupedOptions = [
@@ -62,7 +64,7 @@ const conditionalRowStyles = [
   },
 ];
 
-const Elections = ({ history }) => {
+const Elections = ({ history, currentUser, ...props }) => {
   const {
     isOpen: isOpenCreate,
     onOpen: onOpenCreate,
@@ -73,6 +75,34 @@ const Elections = ({ history }) => {
     onOpen: onOpenAdd,
     onClose: onCloseAdd,
   } = useDisclosure();
+  const toast = useToast();
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    fetchApi('/admin/elections', {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${currentUser.token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        setData(json.elections);
+      })
+      .catch(err => {
+        console.log(err);
+        toast({
+          position: 'bottom-left',
+          title: 'Could not load data',
+          description: err.message,
+          status: 'error',
+          duration: 1000,
+          isClosable: true,
+        });
+      });
+  }, [currentUser, toast]);
 
   const columns = [
     { name: 'Election ID', selector: 'id', sortable: true },
@@ -93,7 +123,6 @@ const Elections = ({ history }) => {
       selector: 'assemblyConstituency',
       sortable: true,
     },
-    { name: 'Min Age', selector: 'minAge', sortable: true },
     {
       name: 'Education',
       sortable: true,
@@ -106,13 +135,15 @@ const Elections = ({ history }) => {
       },
     },
     {
-      name: 'National',
+      name: 'Type',
       sortable: true,
       cell: row => {
-        if (row.national) {
-          return <Text fontWeight="bold">Open</Text>;
+        if (row.type === 1) {
+          return <Text fontWeight="bold">National</Text>;
+        } else if (row.type === 2) {
+          return <Text>State</Text>;
         } else {
-          return <Text>No</Text>;
+          return <Text>MLC</Text>;
         }
       },
     },
@@ -136,19 +167,6 @@ const Elections = ({ history }) => {
           );
         }
       },
-    },
-  ];
-
-  const data = [
-    {
-      id: 1,
-      name: 'General Municipal',
-      location: 'Hyderabad',
-      startDate: '20/02/2021',
-      endDate: '01/03/2021',
-      assemblyConstituency: 'Nampally',
-      minAge: '18',
-      active: true,
     },
   ];
 
@@ -195,8 +213,13 @@ const Elections = ({ history }) => {
             data={data}
             conditionalRowStyles={conditionalRowStyles}
             customStyles={{ table: { style: { marginBottom: '30px' } } }}
+            noDataComponent={<Spinner size="lg" colorScheme="teal" />}
           />
-          <CreateModal isOpen={isOpenCreate} onClose={onCloseCreate} />
+          <CreateModal
+            isOpen={isOpenCreate}
+            onClose={onCloseCreate}
+            currentUser={currentUser}
+          />
           <AddModal isOpen={isOpenAdd} onClose={onCloseAdd} />
         </Flex>
       </Flex>
@@ -204,17 +227,17 @@ const Elections = ({ history }) => {
   );
 };
 
-const CreateModal = ({ isOpen, onClose }) => {
+const CreateModal = ({ isOpen, onClose, currentUser }) => {
   const toast = useToast();
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     name: '',
     startDate: '',
     endDate: '',
     location: '',
-    minAge: '',
     assemblyConstituency: '',
     education: '0',
-    national: '0',
+    type: '',
   });
 
   const submitData = data => {
@@ -227,13 +250,40 @@ const CreateModal = ({ isOpen, onClose }) => {
         isClosable: true,
       });
     } else {
-      toast({
-        title: 'Election created.',
-        description: 'New election has been created',
-        status: 'success',
-        duration: 1000,
-        isClosable: true,
-      });
+      fetchApi('/admin/createElection', {
+        method: 'post',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (!json.success) throw Error(json.message);
+          toast({
+            position: 'bottom-left',
+            title: 'Success',
+            description: 'Election added.',
+            status: 'success',
+            duration: 1000,
+            isClosable: true,
+          });
+          setLoading(false);
+          onClose();
+        })
+        .catch(err => {
+          console.log(err);
+          toast({
+            position: 'bottom-left',
+            title: 'Could not create election',
+            description: err.message,
+            status: 'error',
+            duration: 1000,
+            isClosable: true,
+          });
+          setLoading(false);
+        });
     }
   };
 
@@ -272,13 +322,6 @@ const CreateModal = ({ isOpen, onClose }) => {
               onChange={handleChange}
             />
             <Input
-              name="minAge"
-              placeholder="Minimum Age"
-              value={data.minAge}
-              type="number"
-              onChange={handleChange}
-            />
-            <Input
               name="assemblyConstituency"
               placeholder="Assembly Constituency"
               onChange={handleChange}
@@ -311,10 +354,8 @@ const CreateModal = ({ isOpen, onClose }) => {
             <RadioGroup
               defaultValue="0"
               alignSelf="flex-start"
-              onChange={value =>
-                setData(data => ({ ...data, national: value }))
-              }
-              name="national"
+              onChange={value => setData(data => ({ ...data, type: value }))}
+              name="type"
               width="100%"
             >
               <Stack
@@ -324,12 +365,15 @@ const CreateModal = ({ isOpen, onClose }) => {
                 justifyContent="space-between"
                 width="100%"
               >
-                <Heading size="md">National</Heading>
-                <Radio colorScheme="red" value="0">
-                  Closed
+                <Heading size="md">Type</Heading>
+                <Radio colorScheme="teal" value="1">
+                  National
                 </Radio>
-                <Radio colorScheme="green" value="1">
-                  Open
+                <Radio colorScheme="teal" value="2">
+                  State
+                </Radio>
+                <Radio colorScheme="teal" value="3">
+                  MLC
                 </Radio>
               </Stack>
             </RadioGroup>
@@ -337,7 +381,12 @@ const CreateModal = ({ isOpen, onClose }) => {
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="green" mr={3} onClick={() => submitData(data)}>
+          <Button
+            colorScheme="green"
+            mr={3}
+            isLoading={loading}
+            onClick={() => submitData(data)}
+          >
             Save
           </Button>
           <Button variant="ghost" onClick={onClose}>
@@ -357,7 +406,6 @@ const AddModal = ({ isOpen, onClose }) => {
     party: '',
     candidate: '',
   });
-
   const submitData = data => {
     if (Object.values(data).includes('')) {
       toast({
