@@ -4,6 +4,9 @@ module.exports = app => {
   const adminController = require(`../controllers/admin.js`);
   const electionController = require(`../controllers/election.js`);
   const candidateController = require(`../controllers/candidate.js`);
+  const partyController = require(`../controllers/party.js`);
+  const stateController = require(`../controllers/state.js`);
+  const regionController = require(`../controllers/region.js`);
 
   app.post(`/admin/auth`, async (req, res) => {
     try {
@@ -99,6 +102,39 @@ module.exports = app => {
     try {
       let voters = await voterController.getAllVoters();
       res.status(200).send(voters);
+    } catch (error) {
+      res.status(400).send({
+        error: JSON.stringify(error),
+      });
+    }
+  });
+
+  app.get(`/admin/parties`, auth.adminTokenValidate, async (req, res) => {
+    try {
+      let parties = await partyController.getAllParties();
+      res.status(200).send(parties);
+    } catch (error) {
+      res.status(400).send({
+        error: JSON.stringify(error),
+      });
+    }
+  });
+
+  app.get(`/admin/states`, auth.adminTokenValidate, async (req, res) => {
+    try {
+      let states = await stateController.getAllStates();
+      res.status(200).send(states);
+    } catch (error) {
+      res.status(400).send({
+        error: JSON.stringify(error),
+      });
+    }
+  });
+
+  app.get(`/admin/regions/:stateId`, auth.adminTokenValidate, async (req, res) => {
+    try {
+      let regions = await regionController.getAllRegionsFromState(req.params.stateId);
+      res.status(200).send(regions);
     } catch (error) {
       res.status(400).send({
         error: JSON.stringify(error),
@@ -242,6 +278,17 @@ module.exports = app => {
   app.get(`/admin/candidates`, auth.adminTokenValidate, async (req, res) => {
     try {
       let candidates = await candidateController.getAllCandidates();
+      res.status(200).send(candidates);
+    } catch (error) {
+      res.status(400).send({
+        error: JSON.stringify(error),
+      });
+    }
+  });
+
+  app.get(`/admin/candidates/:partyId`, auth.adminTokenValidate, async (req, res) => {
+    try {
+      let candidates = await candidateController.getAllCandidatesOfParty(req.params.partyId);
       res.status(200).send(candidates);
     } catch (error) {
       res.status(400).send({

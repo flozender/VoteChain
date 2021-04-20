@@ -1,10 +1,11 @@
 const db = require('../db/database.js');
 const util = require('../helpers/utils.js');
+const candidate = require('../models/candidate.js');
 const candidateRepo = require('../models/candidateRepo.js');
 
 exports.getAllCandidates = async () => {
   try {
-    let candidates = await candidateRepo.getAll({ exclude: [] });
+    let candidates = await candidateRepo.getAll({ exclude: [] }, {});
     return {
       success: true,
       candidates,
@@ -28,6 +29,18 @@ exports.createCandidate = async data => {
     throw err;
   }
 };
+
+exports.getAllCandidatesOfParty = async (partyId) => {
+  try {
+    let candidates = await candidateRepo.getAll({ exclude: [] }, { partyId });
+    return {
+      success: true,
+      candidates,
+    };
+  } catch (error) {
+
+  }
+}
 
 exports.getCandidate = async candidateId => {
   try {

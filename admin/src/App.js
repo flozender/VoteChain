@@ -22,6 +22,7 @@ import Login from './pages/login';
 import Elections from './pages/elections';
 import Voters from './pages/voters';
 import Candidates from './pages/candidates';
+import Results from './pages/results';
 import Logout from './pages/logout';
 
 const App = props => {
@@ -70,6 +71,16 @@ const App = props => {
           path="/candidates"
           component={() => (
             <Candidates
+              currentUser={currentUser}
+              setCurrentUser={setCurrentUser}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/results"
+          component={() => (
+            <Results
               currentUser={currentUser}
               setCurrentUser={setCurrentUser}
             />

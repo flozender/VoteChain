@@ -51,6 +51,7 @@ module.exports = {
     return candidate
       .findAll({
         attributes,
+        where: condition
       })
       .then(data => data)
       .error(error => {
