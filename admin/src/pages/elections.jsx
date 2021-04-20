@@ -75,6 +75,7 @@ const Elections = ({ history, currentUser, ...props }) => {
     onOpen: onOpenAdd,
     onClose: onCloseAdd,
   } = useDisclosure();
+  const [electionID, setElectionID] = useState(null);
   const toast = useToast();
   const [data, setData] = useState([]);
 
@@ -161,7 +162,14 @@ const Elections = ({ history, currentUser, ...props }) => {
       cell: row => {
         if (row.active) {
           return (
-            <Button size="sm" colorScheme="teal" onClick={onOpenAdd}>
+            <Button
+              size="sm"
+              colorScheme="teal"
+              onClick={() => {
+                setElectionID(row.id);
+                onOpenAdd();
+              }}
+            >
               ADD
             </Button>
           );
@@ -169,6 +177,31 @@ const Elections = ({ history, currentUser, ...props }) => {
       },
     },
   ];
+
+  const childData = [
+    {
+      candidate: {
+        id: '',
+        name: '',
+        partyID: '',
+      },
+      region: {
+        id: '',
+      },
+    },
+    {
+      candidate: {
+        id: '',
+        name: '',
+        partyID: '',
+      },
+      region: {
+        id: '',
+      },
+    },
+  ];
+
+  const childColumns = [];
 
   return (
     <Flex justifyContent="center" alignItems="center">
@@ -214,13 +247,27 @@ const Elections = ({ history, currentUser, ...props }) => {
             conditionalRowStyles={conditionalRowStyles}
             customStyles={{ table: { style: { marginBottom: '30px' } } }}
             noDataComponent={<Spinner size="lg" colorScheme="teal" />}
+            expandableRows={true}
+            expandOnRowClicked={true}
+            expandableRowsComponent={
+              <DataTable
+                noHeader={true}
+                columns={childColumns}
+                data={childData}
+              />
+            }
           />
           <CreateModal
             isOpen={isOpenCreate}
             onClose={onCloseCreate}
             currentUser={currentUser}
           />
-          <AddModal isOpen={isOpenAdd} onClose={onCloseAdd} />
+          <AddModal
+            isOpen={isOpenAdd}
+            onClose={onCloseAdd}
+            currentUser={currentUser}
+            electionID={electionID}
+          />
         </Flex>
       </Flex>
     </Flex>
@@ -398,7 +445,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
   );
 };
 
-const AddModal = ({ isOpen, onClose }) => {
+const AddModal = ({ isOpen, onClose, currentUser, electionID }) => {
   const toast = useToast();
   const [data, setData] = useState({
     state: '',
@@ -406,7 +453,145 @@ const AddModal = ({ isOpen, onClose }) => {
     party: '',
     candidate: '',
   });
+
+  const [values, setValues] = useState({
+    states: [],
+    assemblyConstituencies: [],
+    parties: [],
+    candidates: [],
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchApi('/admin/states', {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${currentUser.token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        const stateMap = json.states.map((e, i) => ({
+          value: e.id,
+          label: e.name,
+        }));
+        setValues(values => ({ ...values, states: stateMap }));
+      })
+      .catch(err => {
+        console.log(err);
+        toast({
+          position: 'bottom-left',
+          title: 'Could not load states',
+          description: err.message,
+          status: 'error',
+          duration: 1000,
+          isClosable: true,
+        });
+      });
+
+    fetchApi(`/admin/parties`, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${currentUser.token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        const partiesMap = json.parties.map((e, i) => ({
+          value: e.id,
+          label: `${e.name} - ${e.location}`,
+        }));
+        setValues(values => ({
+          ...values,
+          parties: partiesMap,
+        }));
+      })
+      .catch(err => {
+        console.log(err);
+        toast({
+          position: 'bottom-left',
+          title: 'Could not load parties',
+          description: err.message,
+          status: 'error',
+          duration: 1000,
+          isClosable: true,
+        });
+      });
+
+    if (data.state) {
+      fetchApi(`/admin/regions/${data.state}`, {
+        method: 'get',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (!json.success) throw Error(json.message);
+          const regionMap = json.regions.map((e, i) => ({
+            value: e.id,
+            label: `${e.name} - ${e.pincode}`,
+          }));
+          setValues(values => ({
+            ...values,
+            assemblyConstituencies: regionMap,
+          }));
+        })
+        .catch(err => {
+          console.log(err);
+          toast({
+            position: 'bottom-left',
+            title: 'Could not load ACs',
+            description: err.message,
+            status: 'error',
+            duration: 1000,
+            isClosable: true,
+          });
+        });
+    }
+
+    if (data.party) {
+      fetchApi(`/admin/candidates/${data.party}`, {
+        method: 'get',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (!json.success) throw Error(json.message);
+          const candidatesMap = json.candidates.map((e, i) => ({
+            value: e.id,
+            label: e.name,
+          }));
+          setValues(values => ({
+            ...values,
+            candidates: candidatesMap,
+          }));
+        })
+        .catch(err => {
+          console.log(err);
+          toast({
+            position: 'bottom-left',
+            title: 'Could not load candidates',
+            description: err.message,
+            status: 'error',
+            duration: 1000,
+            isClosable: true,
+          });
+        });
+    }
+  }, [currentUser, toast, data]);
+
   const submitData = data => {
+    setLoading(true);
     if (Object.values(data).includes('')) {
       toast({
         title: 'Data missing.',
@@ -416,19 +601,56 @@ const AddModal = ({ isOpen, onClose }) => {
         isClosable: true,
       });
     } else {
-      toast({
-        title: 'Candidate Added.',
-        description: 'New candidate has been enrolled',
-        status: 'success',
-        duration: 1000,
-        isClosable: true,
-      });
+      const body = {
+        candidates: [
+          {
+            candidateID: data.candidate,
+            regionID: data.assemblyConstituency,
+          },
+        ],
+      };
+      fetchApi(`/admin/assignCandidates/${electionID}`, {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (!json.success) throw Error(json.message);
+          toast({
+            position: 'bottom-left',
+            title: 'Success',
+            description: 'Candidates added.',
+            status: 'success',
+            duration: 1000,
+            isClosable: true,
+          });
+          setLoading(false);
+          onClose();
+        })
+        .catch(err => {
+          console.log(err);
+          toast({
+            position: 'bottom-left',
+            title: 'Could not add candidates.',
+            description: err.message,
+            status: 'error',
+            duration: 1000,
+            isClosable: true,
+          });
+          setLoading(false);
+        });
     }
   };
 
   const handleChange = e => {
     setData(data => ({ ...data, [e.field]: e.value }));
   };
+
+  const { states, assemblyConstituencies, parties, candidates } = values;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -457,9 +679,9 @@ const AddModal = ({ isOpen, onClose }) => {
                   text="State"
                   id="state"
                   placeholder="Select State"
-                  data={options}
+                  data={states}
                   handleCustomChange={handleChange}
-                  width="19vw"
+                  width="75%"
                 />
               </Stack>
               <Stack
@@ -474,9 +696,9 @@ const AddModal = ({ isOpen, onClose }) => {
                   text="Assembly Constituency"
                   id="assemblyConstituency"
                   placeholder="Select Assembly Constituency"
-                  data={groupedOptions}
+                  data={assemblyConstituencies}
                   handleCustomChange={handleChange}
-                  width="19vw"
+                  width="75%"
                 />
               </Stack>
             </VStack>
@@ -499,9 +721,9 @@ const AddModal = ({ isOpen, onClose }) => {
                   text="Party"
                   id="party"
                   placeholder="Select Party"
-                  data={options}
+                  data={parties}
                   handleCustomChange={handleChange}
-                  width="19vw"
+                  width="75%"
                 />
               </Stack>
               <Stack
@@ -516,9 +738,9 @@ const AddModal = ({ isOpen, onClose }) => {
                   text="Candidate"
                   id="candidate"
                   placeholder="Select Candidate"
-                  data={options}
+                  data={candidates}
                   handleCustomChange={handleChange}
-                  width="19vw"
+                  width="75%"
                 />
               </Stack>
             </VStack>
@@ -526,7 +748,12 @@ const AddModal = ({ isOpen, onClose }) => {
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="teal" mr={3} onClick={() => submitData(data)}>
+          <Button
+            colorScheme="teal"
+            mr={3}
+            onClick={() => submitData(data)}
+            isLoading={loading}
+          >
             Save
           </Button>
           <Button variant="ghost" onClick={onClose}>
