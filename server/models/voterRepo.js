@@ -130,7 +130,7 @@ module.exports = {
     WHERE V.id = :voterId`;
 
     return db.query(query, { replacements: { voterId }, type: db.QueryTypes.SELECT })
-      .then(data => data)
+      .then(data => data[0])
       .catch(error => {
         throw error;
       })
