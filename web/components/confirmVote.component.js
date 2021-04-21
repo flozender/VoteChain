@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Button,
   Divider,
@@ -10,14 +10,19 @@ import {
   useTheme,
   Avatar,
   List,
-} from "@ui-kitten/components";
-import { CandidateCard } from "./castVote.component";
-import { styles } from "./styles";
+} from '@ui-kitten/components';
+import { CandidateCard } from './castVote.component';
+import { styles } from './styles';
+import { url } from '../services/constants';
+import Popup from './popup.component';
 
 export const ConfirmVoteScreen = ({ navigation, route }) => {
-  const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
+  const [visible, setVisible] = useState(false);
+  const [message, setMessage] = useState('Error!');
 
-  const CheckIcon = (props) => <Icon {...props} name="checkmark-outline" />;
+  const BackIcon = props => <Icon {...props} name="arrow-back" />;
+
+  const CheckIcon = props => <Icon {...props} name="checkmark-outline" />;
   const BackAction = () => (
     <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
   );
@@ -27,8 +32,8 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
 
   const { electionId, candidateId } = route.params;
 
-  const navigateConfirmation = (id) => {
-    navigation.navigate("Confirmation", { electionId });
+  const navigateConfirmation = id => {
+    navigation.navigate('Confirmation', { electionId });
   };
 
   return (
@@ -40,24 +45,24 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
       />
       <Divider />
       <Layout
-        style={{ ...styles.container, display: "flex", alignItems: "center" }}
+        style={{ ...styles.container, display: 'flex', alignItems: 'center' }}
       >
         <Layout
           style={{
-            display: "flex",
+            display: 'flex',
             flex: 1,
-            flexDirection: "column",
-            width: "100%",
+            flexDirection: 'column',
+            width: '100%',
             marginTop: 30,
-            alignItems: "center",
+            alignItems: 'center',
             marginBottom: 10,
           }}
         >
           <Text
             style={{
               fontSize: 30,
-              alignSelf: "center",
-              textAlign: "center",
+              alignSelf: 'center',
+              textAlign: 'center',
               marginBottom: 20,
             }}
           >
@@ -69,7 +74,7 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
             party={candidateId}
           />
           <Button
-            style={{ width: "40%", marginTop: 20 }}
+            style={{ width: '40%', marginTop: 20 }}
             accessoryLeft={CheckIcon}
             onPress={navigateConfirmation}
           >
@@ -78,9 +83,9 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
           <Text
             style={{
               marginTop: 10,
-              textAlign: "center",
-              color: "gray",
-              fontStyle: "italic",
+              textAlign: 'center',
+              color: 'gray',
+              fontStyle: 'italic',
               marginBottom: 10,
             }}
           >
@@ -91,6 +96,7 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
           </Button>
         </Layout>
       </Layout>
+      <Popup message={message} visible={visible} setVisible={setVisible} />
     </>
   );
 };

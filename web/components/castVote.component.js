@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Button,
   Divider,
@@ -10,13 +10,18 @@ import {
   useTheme,
   Avatar,
   List,
-} from "@ui-kitten/components";
+} from '@ui-kitten/components';
 
-import { styles } from "./styles";
+import { styles } from './styles';
+import { url } from '../services/constants';
+import Popup from './popup.component';
 
 export const CastVoteScreen = ({ navigation, route }) => {
   const [selection, setSelection] = useState({});
-  const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
+  const [visible, setVisible] = useState(false);
+  const [message, setMessage] = useState('Error!');
+
+  const BackIcon = props => <Icon {...props} name="arrow-back" />;
   const BackAction = () => (
     <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
   );
@@ -24,14 +29,14 @@ export const CastVoteScreen = ({ navigation, route }) => {
     navigation.goBack();
   };
 
-  const navigateConfirmVote = (id) => {
-    navigation.navigate("Confirm Vote", {
+  const navigateConfirmVote = id => {
+    navigation.navigate('Confirm Vote', {
       candidateId: id,
       electionId,
     });
   };
 
-  const { electionId } = route.params;
+  const { electionId, electionName } = route.params;
 
   const renderItem = ({ item, index }) => {
     console.log(item);
@@ -54,61 +59,61 @@ export const CastVoteScreen = ({ navigation, route }) => {
       />
       <Divider />
       <Layout
-        style={{ ...styles.container, display: "flex", alignItems: "center" }}
+        style={{ ...styles.container, display: 'flex', alignItems: 'center' }}
       >
         <Layout
           style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "center",
-            alignItems: "center",
+            display: 'flex',
+            flexDirection: 'row',
+            width: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
             marginTop: 20,
             marginBottom: 10,
           }}
         >
           <Text
-            style={{ fontSize: 30, alignSelf: "center", textAlign: "center" }}
+            style={{ fontSize: 30, alignSelf: 'center', textAlign: 'center' }}
           >
-            {electionId}
+            {electionName}
           </Text>
         </Layout>
         <Layout
           style={{
-            width: "100%",
+            width: '100%',
             marginTop: 10,
             marginBottom: 30,
-            height: "70%",
+            height: '70%',
           }}
         >
           <List
             data={[
               {
-                id: "JD-32",
-                name: "Mr. John Doe",
-                party: "ABC",
+                id: 'JD-32',
+                name: 'Mr. John Doe',
+                party: 'ABC',
               },
               {
-                id: "JD-84",
-                name: "Mrs. Jane Doe",
-                party: "CDE",
+                id: 'JD-84',
+                name: 'Mrs. Jane Doe',
+                party: 'CDE',
               },
               {
-                id: "AD-44",
-                name: "Mr. Alex Doe",
-                party: "XYZ",
+                id: 'AD-44',
+                name: 'Mr. Alex Doe',
+                party: 'XYZ',
               },
             ]}
             renderItem={renderItem}
             style={{
-              backgroundColor: "white",
+              backgroundColor: 'white',
             }}
           />
         </Layout>
 
         <Button
-          style={{ width: "60%" }}
-          accessoryRight={(props) => (
+          style={{ width: '60%' }}
+          accessoryRight={props => (
             <Icon {...props} name="arrow-forward-outline" />
           )}
           disabled={selection.id ? false : true}
@@ -117,6 +122,7 @@ export const CastVoteScreen = ({ navigation, route }) => {
           Select Candidate
         </Button>
       </Layout>
+      <Popup message={message} visible={visible} setVisible={setVisible} />
     </>
   );
 };
@@ -127,9 +133,9 @@ export const CandidateCard = ({ id, name, party, selection, onPress }) => {
   let activeStyles = {};
   if (selected) {
     activeStyles = {
-      backgroundColor: "#8ed7ce",
-      borderColor: "green",
-      borderStyle: "solid",
+      backgroundColor: '#8ed7ce',
+      borderColor: 'green',
+      borderStyle: 'solid',
       borderWidth: 2,
     };
   }
@@ -138,10 +144,10 @@ export const CandidateCard = ({ id, name, party, selection, onPress }) => {
       style={{
         ...styles.card,
         height: 120,
-        flexDirection: "row",
-        alignItems: "center",
-        borderStyle: "dashed",
-        borderColor: "gray",
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderStyle: 'dashed',
+        borderColor: 'gray',
         borderWidth: 1,
         ...activeStyles,
       }}
@@ -149,10 +155,10 @@ export const CandidateCard = ({ id, name, party, selection, onPress }) => {
     >
       <Avatar
         style={{ height: 90, width: 90 }}
-        source={require("../assets/avatar.png")}
+        source={require('../assets/avatar.png')}
       />
       <Layout
-        style={{ backgroundColor: "#f4f4f4", ...activeStyles, borderWidth: 0 }}
+        style={{ backgroundColor: '#f4f4f4', ...activeStyles, borderWidth: 0 }}
       >
         <Text style={{ ...styles.cardText }}>{`${name}`}</Text>
         <Text style={{ ...styles.cardText }}>{`Party: ${party}`}</Text>

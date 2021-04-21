@@ -38,7 +38,7 @@ export const OTPScreen = ({ navigation, route }) => {
 
     const success = json => {
       GLOBAL.voter = json.voter;
-      GLOBAL.token = json.token;
+      GLOBAL.token = `Bearer ${json.token}`;
       setLoading(false);
       navigation.navigate('Elections');
     };
@@ -71,6 +71,7 @@ export const OTPScreen = ({ navigation, route }) => {
           setMessage('Sign in failed!');
           setVisible(true);
           setLoading(false);
+          navigation.goBack();
         });
     }
   };

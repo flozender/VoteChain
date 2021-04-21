@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Divider,
@@ -11,12 +11,18 @@ import {
 } from '@ui-kitten/components';
 
 import { styles } from './styles';
+import { url } from '../services/constants';
+import Popup from './popup.component';
 
 export const ElectionsScreen = ({ navigation }) => {
   const theme = useTheme();
+  const [data, setData] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [message, setMessage] = useState('Error!');
+  const [loading, setLoading] = useState(false);
 
-  const navigateCastVote = id => {
-    navigation.navigate('Cast Vote', { electionId: id });
+  const navigateCastVote = (id, name) => {
+    navigation.navigate('Cast Vote', { electionId: id, electionName: name });
   };
 
   const navigateSignOut = () => {
@@ -34,43 +40,79 @@ export const ElectionsScreen = ({ navigation }) => {
       <Button
         status={item.active ? null : 'disabled'}
         size="small"
-        onPress={() => navigateCastVote(item.id)}
+        onPress={() => navigateCastVote(item.id, item.name)}
       >
         {item.active ? 'VOTE' : 'VIEW'}
       </Button>
     );
   };
 
-  const renderItem = ({ item, index }) => (
-    <ListItem
-      key={index}
-      title={eva => (
-        <Text
-          {...eva}
-          style={{
-            color: getItemColor(item),
-            fontWeight: 'bold',
-            fontSize: 18,
-          }}
-        >
-          {`${item.title}`}
-        </Text>
-      )}
-      description={eva => (
-        <Text
-          {...eva}
-          style={{
-            fontSize: 13,
-            color: 'gray',
-          }}
-        >
-          {`${item.description}`}
-        </Text>
-      )}
-      accessoryRight={props => renderItemAccessory(props, item)}
-      style={styles.card}
-    />
-  );
+  const renderItem = ({ item, index }) => {
+    item.startDate = new Date(item.startDate).toDateString();
+    item.endDate = new Date(item.endDate).toDateString();
+    return (
+      <ListItem
+        key={index}
+        title={eva => (
+          <Text
+            {...eva}
+            style={{
+              color: getItemColor(item),
+              fontWeight: 'bold',
+              fontSize: 18,
+            }}
+          >
+            {`${item.name}`}
+          </Text>
+        )}
+        description={eva => (
+          <>
+            <Text
+              {...eva}
+              style={{
+                fontSize: 13,
+                color: 'gray',
+              }}
+            >
+              {`${item.startDate} to ${item.endDate}`}
+            </Text>
+            <Text
+              {...eva}
+              style={{
+                fontSize: 13,
+                color: 'gray',
+              }}
+            >{`${item.location}`}</Text>
+          </>
+        )}
+        accessoryRight={props => renderItemAccessory(props, item)}
+        style={styles.card}
+      />
+    );
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`${url}/eligibleElections`, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: GLOBAL.token,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        setData(json.elections);
+        setLoading(true);
+      })
+      .catch(err => {
+        console.log(err);
+        setMessage("Couldn't load data!");
+        setVisible(true);
+        setLoading(false);
+      });
+  }, [url]);
 
   return (
     <>
@@ -104,26 +146,7 @@ export const ElectionsScreen = ({ navigation }) => {
           }}
         >
           <List
-            data={[
-              {
-                id: 'GA2021',
-                title: 'General Assembly 2021',
-                description: 'Hyderabad, Telangana',
-                active: true,
-              },
-              {
-                id: 'SG2021',
-                title: 'State Government 2021',
-                description: 'Chennai, Tamil Nadu',
-                active: true,
-              },
-              {
-                id: 'ME2020',
-                title: 'Municipal Elections 2020',
-                description: 'Bangalore, Karnataka',
-                active: false,
-              },
-            ]}
+            data={data}
             renderItem={renderItem}
             style={{
               backgroundColor: 'white',
@@ -132,6 +155,7 @@ export const ElectionsScreen = ({ navigation }) => {
           />
         </Layout>
       </Layout>
+      <Popup message={message} visible={visible} setVisible={setVisible} />
     </>
   );
 };

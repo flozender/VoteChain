@@ -257,6 +257,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
   };
 
   const handleSubmit = () => {
+    setLoading(true);
     if (Object.values(data).includes('')) {
       toast({
         title: 'Data missing.',
@@ -416,7 +417,12 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="teal" width="50%" onClick={handleSubmit}>
+          <Button
+            colorScheme="teal"
+            width="50%"
+            onClick={handleSubmit}
+            isLoading={loading}
+          >
             SAVE
           </Button>
         </ModalFooter>
