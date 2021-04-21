@@ -1,6 +1,9 @@
 const db = require("../db/database.js");
+const Bluebird = require("bluebird");
 const utils = require('../helpers/utils');
 const voterRepo = require("../models/voterRepo.js");
+const electionRepo = require("../models/electionRepo.js");
+const candidateElectionRepo = require('../models/candidateElectionRepo.js');
 
 exports.createVoter = async (data) => {
   try {
@@ -102,10 +105,26 @@ exports.getVoter = async (voterId) => {
 
 exports.getEligibleElections = async (voterId) => {
   try {
-    let elections = await voterRepo.getAllEligibleElections(voterId)
+    let voter = await voterRepo.getAssemblyConstituency(voterId);
+    let allElections = await electionRepo.getAll({ exclude: [] }, {});
+    let elections = [];
+    await Bluebird.each(allElections, async (element) => {
+      element.candidates = await candidateElectionRepo.getAssignedCandidatesElectionForAdmin(
+        element.id);
+      element.candidates.forEach(candidate => {
+        candidate.candidate = candidate.candidate ? JSON.parse(candidate.candidate) : null;
+        candidate.region = candidate.region ? JSON.parse(candidate.region) : null;
+      })
+      element.regions = element.assemblyConstituencies ?
+        element.assemblyConstituencies.split(',').map(Number) : null;
+      if ((!element.assemblyConstituencies || element.regions.includes(voter.assemblyConstituency)) && element.candidates && element.candidates.length) {
+        elections.push(element);
+      }
+    })
     return {
       success: true,
-      elections
+      elections,
+      region: voter.regionName
     }
   } catch (err) {
     console.log(err);

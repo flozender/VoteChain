@@ -120,5 +120,19 @@ module.exports = {
       .catch(error => {
         throw error;
       })
+  },
+
+  getAssemblyConstituency: function (voterId) {
+    let query = `SELECT V.assemblyConstituency, R.name AS regionName
+    FROM Voter V
+    LEFT JOIN Region R
+    ON V.assemblyConstituency = R.id
+    WHERE V.id = :voterId`;
+
+    return db.query(query, { replacements: { voterId }, type: db.QueryTypes.SELECT })
+      .then(data => data)
+      .catch(error => {
+        throw error;
+      })
   }
 }
