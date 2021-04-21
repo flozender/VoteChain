@@ -132,8 +132,9 @@ exports.getEligibleElections = async voterId => {
     let allElections = await electionRepo.getAll({ exclude: [] }, {});
     let elections = [];
     await Bluebird.each(allElections, async element => {
-      element.candidates = await candidateElectionRepo.getAssignedCandidatesElectionForAdmin(
-        element.id
+      element.candidates = await candidateElectionRepo.getAssignedCandidatesElectionFromVoter(
+        element.id,
+        voterId
       );
       element.candidates.forEach(candidate => {
         candidate.candidate = candidate.candidate
