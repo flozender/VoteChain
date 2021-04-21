@@ -20,16 +20,13 @@ var DB = require('../db/database'),
     active: {
       type: db_sequelize.INTEGER
     },
-    minAge: {
-      type: db_sequelize.INTEGER
-    },
     winner: {
       type: db_sequelize.INTEGER
     },
-    national: {
+    education: {
       type: db_sequelize.INTEGER
     },
-    education: {
+    type: {
       type: db_sequelize.INTEGER
     },
     assemblyConstituencies: {

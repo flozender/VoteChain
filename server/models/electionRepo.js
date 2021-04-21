@@ -64,6 +64,7 @@ module.exports = {
     return election
       .findAll({
         attributes,
+        where: condition,
       })
       .then(data => data)
       .error(error => {
@@ -71,13 +72,15 @@ module.exports = {
       });
   },
 
-  getAllElections: function () {
-    let query = `SELECT E.*,
-    (SELECT JSON_ARRAYAGG(R.name) FROM Region R WHERE R.id IN (TRIM(BOTH '"' FROM E.assemblyConstituencies))) AS assemblyConstituencies
-    FROM Election E`;
+  getAllRegionsForElection: function (electionId, regions) {
+    let query = `SELECT JSON_ARRAYAGG(R.name) AS regions
+    FROM Election E
+    LEFT JOIN Region R
+    ON R.id in (:regions)
+    WHERE E.id = :electionId`;
 
-    return db.query(query, { replacements: {}, type: db.QueryTypes.SELECT })
-      .then(data => data)
+    return db.query(query, { replacements: { electionId, regions }, type: db.QueryTypes.SELECT })
+      .then(data => data[0])
       .catch(error => {
         throw error;
       })

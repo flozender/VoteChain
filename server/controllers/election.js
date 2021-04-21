@@ -2,11 +2,23 @@ const db = require('../db/database.js');
 const util = require('../helpers/utils.js');
 const Bluebird = require('bluebird');
 const electionRepo = require('../models/electionRepo.js');
+const regionRepo = require('../models/regionRepo.js');
 const candidateElectionRepo = require('../models/candidateElectionRepo.js');
+const election = require('../models/election.js');
 
 exports.getAllElections = async () => {
   try {
-    let elections = await electionRepo.getAllElections();
+    let elections = await electionRepo.getAll({ exclude: [] });
+    await Bluebird.each(elections, async (element) => {
+      if (element.assemblyConstituencies != null) {
+        element.regions = element.assemblyConstituencies.split(',').map(Number);
+        let regions = await electionRepo.
+          getAllRegionsForElection(element.id, element.regions);
+        console.log(regions)
+        element.assemblyConstituencies = JSON.parse(regions.regions);
+        delete element.regions;
+      }
+    })
     return {
       success: true,
       elections
@@ -34,6 +46,8 @@ exports.createElection = async (data) => {
 exports.getElection = async (electionId) => {
   try {
     let election = await electionRepo.getElection(electionId);
+    election.assemblyConstituencies = element.assemblyConstituencies ?
+      JSON.parse(element.assemblyConstituencies) : [];
     return {
       success: true,
       election
