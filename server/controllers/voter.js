@@ -31,6 +31,7 @@ exports.createVoter = async data => {
     throw err;
   }
 };
+
 exports.verifyVoterAndSendOTP = async data => {
   try {
     let voter = await voterRepo.get(
@@ -84,6 +85,20 @@ exports.verifyOTP = async data => {
     };
   }
 };
+
+exports.profile = async voterId => {
+  try {
+    let profile = await voterRepo.getProfile(voterId);
+    delete profile.otp;
+    return {
+      success: true,
+      profile
+    }
+  } catch (error) {
+    console.log(error);
+    throw err;
+  }
+}
 
 exports.getAllVoters = async () => {
   try {

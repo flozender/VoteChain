@@ -67,6 +67,17 @@ module.exports = (app) => {
     }
   });
 
+  app.get('/profile', auth.tokenValidate, async (req, res) => {
+    try {
+      let voter = await voterController.profile(req.token_data.data.voterId);
+      res.status(200).send(voter);
+    } catch (error) {
+      res.status(400).send({
+        error: JSON.stringify(error),
+      });
+    }
+  });
+
   app.get('/elections/getAssignedCandidates/:electionId', auth.tokenValidate, async (req, res) => {
     try {
       let candidates = await candidateController.getAssignedCandidatesElectionFromVoter(

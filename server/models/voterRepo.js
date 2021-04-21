@@ -43,6 +43,20 @@ module.exports = {
       });
   },
 
+  getProfile: (voterId) => {
+    let query = `SELECT V.*, R.name AS regionName
+    FROM Voter V
+    LEFT JOIN Region R
+    ON R.id = V.assemblyConstituency
+    WHERE V.id = :voterId`;
+
+    return db.query(query, { replacements: { voterId }, type: db.QueryTypes.SELECT })
+      .then(data => data[0])
+      .catch(error => {
+        throw error;
+      })
+  },
+
   getVoter: function (voterId) {
     let query = `SELECT V.*,
     CONCAT(R.name, ', ', L.name, ', ', S.name) AS assemblyConstituency,
