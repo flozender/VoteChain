@@ -67,7 +67,7 @@ module.exports = (app) => {
     }
   });
 
-  app.get('/getAssignedCandidates/:electionId', auth.tokenValidate, async (req, res) => {
+  app.get('/elections/getAssignedCandidates/:electionId', auth.tokenValidate, async (req, res) => {
     try {
       let candidates = await candidateController.getAssignedCandidatesElectionFromVoter(
         req.params.electionId, req.token_data.data.voterId);
