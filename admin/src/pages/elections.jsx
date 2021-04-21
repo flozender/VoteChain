@@ -217,31 +217,6 @@ const Elections = ({ history, currentUser, ...props }) => {
     },
   ];
 
-  const childData = [
-    {
-      candidate: {
-        id: '',
-        name: '',
-        partyID: '',
-      },
-      region: {
-        id: '',
-      },
-    },
-    {
-      candidate: {
-        id: '',
-        name: '',
-        partyID: '',
-      },
-      region: {
-        id: '',
-      },
-    },
-  ];
-
-  const childColumns = [];
-
   return (
     <Flex justifyContent="center" alignItems="center">
       <Flex
@@ -288,13 +263,7 @@ const Elections = ({ history, currentUser, ...props }) => {
             noDataComponent={<Spinner size="lg" colorScheme="teal" />}
             expandableRows={true}
             expandOnRowClicked={true}
-            expandableRowsComponent={
-              <DataTable
-                noHeader={true}
-                columns={childColumns}
-                data={childData}
-              />
-            }
+            expandableRowsComponent={<ChildTable />}
           />
           <CreateModal
             isOpen={isOpenCreate}
@@ -316,6 +285,46 @@ const Elections = ({ history, currentUser, ...props }) => {
       </Flex>
     </Flex>
   );
+};
+
+const ChildTable = () => {
+  const childData = [
+    {
+      candidate: {
+        id: '',
+        name: '',
+        partyID: '',
+      },
+      region: {
+        id: '',
+        name: '',
+      },
+    },
+    {
+      candidate: {
+        id: '',
+        name: '',
+        partyID: '',
+      },
+      region: {
+        id: '',
+        name: '',
+      },
+    },
+  ];
+
+  const childColumns = [
+    { name: 'Candidate ID', selector: 'candidate.id', sortable: true },
+    { name: 'Candidate Name', selector: 'candidate.name', sortable: true },
+    {
+      name: 'Candidate PartyID',
+      selector: 'candidate.partyID',
+      sortable: true,
+    },
+    { name: 'Region ID', selector: 'region.id', sortable: true },
+    { name: 'Region Name', selector: 'region.name', sortable: true },
+  ];
+  return <DataTable noHeader={true} columns={childColumns} data={childData} />;
 };
 
 const CreateModal = ({ isOpen, onClose, currentUser }) => {
