@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Divider,
   Icon,
@@ -35,7 +35,7 @@ export const ConfirmationScreen = ({ navigation, route }) => {
     <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
   );
 
-  const { electionId } = route.params;
+  const { electionId, electionName } = route.params;
 
   return (
     <>
@@ -72,7 +72,7 @@ export const ConfirmationScreen = ({ navigation, route }) => {
             fontWeight: 'bold',
           }}
         >
-          {electionId}
+          {electionName}
         </Text>
 
         <Layout style={styles.tab}>

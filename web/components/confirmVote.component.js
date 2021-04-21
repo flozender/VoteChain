@@ -30,10 +30,10 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
     navigation.goBack();
   };
 
-  const { electionId, candidateId } = route.params;
+  const { electionId, electionName, candidate } = route.params;
 
-  const navigateConfirmation = id => {
-    navigation.navigate('Confirmation', { electionId });
+  const navigateConfirmation = () => {
+    navigation.navigate('Confirmation', { electionId, electionName });
   };
 
   return (
@@ -66,13 +66,9 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
               marginBottom: 20,
             }}
           >
-            {electionId}
+            {electionName}
           </Text>
-          <CandidateCard
-            id={candidateId}
-            name={candidateId}
-            party={candidateId}
-          />
+          <CandidateCard candidate={candidate} />
           <Button
             style={{ width: '40%', marginTop: 20 }}
             accessoryLeft={CheckIcon}

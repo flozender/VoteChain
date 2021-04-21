@@ -29,23 +29,26 @@ export const CastVoteScreen = ({ navigation, route }) => {
     navigation.goBack();
   };
 
-  const navigateConfirmVote = id => {
+  const navigateConfirmVote = candidate => {
     navigation.navigate('Confirm Vote', {
-      candidateId: id,
+      candidate,
       electionId,
+      electionName,
     });
   };
 
-  const { electionId, electionName } = route.params;
+  const { electionId, electionName, candidates, region } = route.params;
 
   const renderItem = ({ item, index }) => {
-    console.log(item);
     return (
       <CandidateCard
         key={index}
         {...item}
         selection={selection}
-        onPress={() => setSelection(item)}
+        onPress={() => {
+          console.log('touched');
+          setSelection(item.candidate);
+        }}
       />
     );
   };
@@ -64,7 +67,7 @@ export const CastVoteScreen = ({ navigation, route }) => {
         <Layout
           style={{
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: 'column',
             width: '100%',
             justifyContent: 'center',
             alignItems: 'center',
@@ -77,33 +80,28 @@ export const CastVoteScreen = ({ navigation, route }) => {
           >
             {electionName}
           </Text>
+          <Text
+            style={{
+              fontSize: 18,
+              color: 'gray',
+              alignSelf: 'center',
+              textAlign: 'center',
+              marginTop: 5,
+            }}
+          >
+            {region}
+          </Text>
         </Layout>
         <Layout
           style={{
             width: '100%',
             marginTop: 10,
             marginBottom: 30,
-            height: '70%',
+            height: '65%',
           }}
         >
           <List
-            data={[
-              {
-                id: 'JD-32',
-                name: 'Mr. John Doe',
-                party: 'ABC',
-              },
-              {
-                id: 'JD-84',
-                name: 'Mrs. Jane Doe',
-                party: 'CDE',
-              },
-              {
-                id: 'AD-44',
-                name: 'Mr. Alex Doe',
-                party: 'XYZ',
-              },
-            ]}
+            data={candidates}
             renderItem={renderItem}
             style={{
               backgroundColor: 'white',
@@ -117,7 +115,7 @@ export const CastVoteScreen = ({ navigation, route }) => {
             <Icon {...props} name="arrow-forward-outline" />
           )}
           disabled={selection.id ? false : true}
-          onPress={() => navigateConfirmVote(selection?.id)}
+          onPress={() => navigateConfirmVote(selection)}
         >
           Select Candidate
         </Button>
@@ -127,13 +125,12 @@ export const CastVoteScreen = ({ navigation, route }) => {
   );
 };
 
-export const CandidateCard = ({ id, name, party, selection, onPress }) => {
-  const theme = useTheme();
-  const selected = id && selection?.id === id;
+export const CandidateCard = ({ candidate, selection, onPress }) => {
+  const selected = candidate.id && selection?.id === candidate.id;
   let activeStyles = {};
   if (selected) {
     activeStyles = {
-      backgroundColor: '#8ed7ce',
+      backgroundColor: '#5fdba7',
       borderColor: 'green',
       borderStyle: 'solid',
       borderWidth: 2,
@@ -143,7 +140,7 @@ export const CandidateCard = ({ id, name, party, selection, onPress }) => {
     <Layout
       style={{
         ...styles.card,
-        height: 120,
+        height: 80,
         flexDirection: 'row',
         alignItems: 'center',
         borderStyle: 'dashed',
@@ -154,14 +151,18 @@ export const CandidateCard = ({ id, name, party, selection, onPress }) => {
       onTouchEnd={onPress}
     >
       <Avatar
-        style={{ height: 90, width: 90 }}
+        style={{ height: 50, width: 50 }}
         source={require('../assets/avatar.png')}
       />
       <Layout
         style={{ backgroundColor: '#f4f4f4', ...activeStyles, borderWidth: 0 }}
       >
-        <Text style={{ ...styles.cardText }}>{`${name}`}</Text>
-        <Text style={{ ...styles.cardText }}>{`Party: ${party}`}</Text>
+        <Text
+          style={{ ...styles.cardText, fontWeight: 'bold' }}
+        >{`${candidate.partyName}`}</Text>
+        <Text
+          style={{ ...styles.cardText, fontSize: 20 }}
+        >{`${candidate.name}`}</Text>
       </Layout>
     </Layout>
   );

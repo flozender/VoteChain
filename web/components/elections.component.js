@@ -8,6 +8,7 @@ import {
   List,
   ListItem,
   useTheme,
+  Spinner,
 } from '@ui-kitten/components';
 
 import { styles } from './styles';
@@ -20,9 +21,15 @@ export const ElectionsScreen = ({ navigation }) => {
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState('Error!');
   const [loading, setLoading] = useState(false);
+  const [region, setRegion] = useState(null);
 
-  const navigateCastVote = (id, name) => {
-    navigation.navigate('Cast Vote', { electionId: id, electionName: name });
+  const navigateCastVote = (id, name, candidates, region) => {
+    navigation.navigate('Cast Vote', {
+      electionId: id,
+      electionName: name,
+      candidates,
+      region,
+    });
   };
 
   const navigateSignOut = () => {
@@ -40,7 +47,9 @@ export const ElectionsScreen = ({ navigation }) => {
       <Button
         status={item.active ? null : 'disabled'}
         size="small"
-        onPress={() => navigateCastVote(item.id, item.name)}
+        onPress={() =>
+          navigateCastVote(item.id, item.name, item.candidates, region)
+        }
       >
         {item.active ? 'VOTE' : 'VIEW'}
       </Button>
@@ -104,7 +113,8 @@ export const ElectionsScreen = ({ navigation }) => {
       .then(json => {
         if (!json.success) throw Error(json.message);
         setData(json.elections);
-        setLoading(true);
+        setRegion(json.region);
+        setLoading(false);
       })
       .catch(err => {
         console.log(err);
@@ -145,14 +155,18 @@ export const ElectionsScreen = ({ navigation }) => {
             height: '80%',
           }}
         >
-          <List
-            data={data}
-            renderItem={renderItem}
-            style={{
-              backgroundColor: 'white',
-              overflow: 'scroll',
-            }}
-          />
+          {loading ? (
+            <Spinner />
+          ) : (
+            <List
+              data={data}
+              renderItem={renderItem}
+              style={{
+                backgroundColor: 'white',
+                overflow: 'scroll',
+              }}
+            />
+          )}
         </Layout>
       </Layout>
       <Popup message={message} visible={visible} setVisible={setVisible} />
