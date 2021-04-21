@@ -66,10 +66,12 @@ module.exports = {
 
   getAssignedCandidatesElectionForAdmin: (electionId) => {
     let query = `SELECT JSON_OBJECT('id', CE.id, 'name', C.name, 'partyID', C.partyID, 'partyName', P.name) AS candidate,
-      JSON_OBJECT('regionID', CE.regionID) AS region
+      JSON_OBJECT('regionID', CE.regionID, 'regionName', R.name) AS region
       FROM CandidateElection CE
       LEFT JOIN Candidate C
       ON C.id = CE.candidateID
+      LEFT JOIN Region R
+      ON R.id = CE.regionID
       LEFT JOIN Party P
       ON P.id = C.partyID
       WHERE CE.electionID = :electionId
