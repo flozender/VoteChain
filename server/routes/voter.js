@@ -1,6 +1,6 @@
 const auth = require('../middleware/auth');
 
-module.exports = (app) => {
+module.exports = app => {
   const voterController = require('../controllers/voter.js');
   const candidateController = require('../controllers/candidate.js');
 
@@ -69,7 +69,7 @@ module.exports = (app) => {
 
   app.get('/profile', auth.tokenValidate, async (req, res) => {
     try {
-      let voter = await voterController.profile(req.token_data.data.voterId);
+      let voter = await voterController.profile(req.token_data.data.id);
       res.status(200).send(voter);
     } catch (error) {
       res.status(400).send({
@@ -78,21 +78,27 @@ module.exports = (app) => {
     }
   });
 
-  app.get('/elections/getAssignedCandidates/:electionId', auth.tokenValidate, async (req, res) => {
-    try {
-      let candidates = await candidateController.getAssignedCandidatesElectionFromVoter(
-        req.params.electionId, req.token_data.data.voterId);
-      res.status(200).send(candidates);
-    } catch (error) {
-      res.status(400).send({
-        error: JSON.stringify(error),
-      });
+  app.get(
+    '/elections/getAssignedCandidates/:electionId',
+    auth.tokenValidate,
+    async (req, res) => {
+      try {
+        let candidates = await candidateController.getAssignedCandidatesElectionFromVoter(
+          req.params.electionId,
+          req.token_data.data.id
+        );
+        res.status(200).send(candidates);
+      } catch (error) {
+        res.status(400).send({
+          error: JSON.stringify(error),
+        });
+      }
     }
-  });
+  );
 
   app.get('/eligibleElections', auth.tokenValidate, async (req, res) => {
     try {
-      let voterId = req.token_data.data.voterId;
+      let voterId = req.token_data.data.id;
       let voter = await voterController.getEligibleElections(voterId);
       res.status(200).send(voter);
     } catch (error) {
@@ -101,5 +107,4 @@ module.exports = (app) => {
       });
     }
   });
-
 };
