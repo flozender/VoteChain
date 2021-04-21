@@ -5,105 +5,113 @@ const voterRepo = require("../models/voterRepo.js");
 const electionRepo = require("../models/electionRepo.js");
 const candidateElectionRepo = require('../models/candidateElectionRepo.js');
 
-exports.createVoter = async (data) => {
+exports.createVoter = async data => {
   try {
-    data.id = data.voterId;
-    let voter = await voterRepo.checkVoterExists(data.email || null, data.mobile, data.voterId);
+    let voter = await voterRepo.checkVoterExists(
+      data.email || null,
+      data.mobile,
+      data.id
+    );
     if (voter && voter.id) {
       return {
         success: false,
-        message: `User Already exists`
-      }
+        message: `User Already exists`,
+      };
     } else {
-      data.id = data.voterId;
+      data.id = data.id;
       let createVoter = await voterRepo.add(data);
       return {
         success: true,
         message: 'Created Voter Successsfully',
-        voter: createVoter
-      }
+        voter: createVoter,
+      };
     }
   } catch (err) {
     console.log(err);
     throw err;
   }
-}
-exports.verifyVoterAndSendOTP = async (data) => {
+};
+exports.verifyVoterAndSendOTP = async data => {
   try {
-    let voter = await voterRepo.get({ exclude: [] }, { id: data.voterId, dob: data.dob })
+    let voter = await voterRepo.get(
+      { exclude: [] },
+      { id: data.id, dob: data.dob }
+    );
     if (voter && voter.id) {
       let otp = Math.floor(100000 + Math.random() * 900000);
-      await voterRepo.update({ otp }, { id: data.voterId, dob: data.dob });
-      let mail = await utils.sendEmailWithOTP(
-        voter.name,
-        voter.email,
-        otp
-      );
+      await voterRepo.update({ otp }, { id: data.id, dob: data.dob });
+      let mail = await utils.sendEmailWithOTP(voter.name, voter.email, otp);
       if (mail.accepted[0] == voter.email) {
         return {
           success: true,
-          message: 'OTP sent Successsfully'
-        }
+          message: 'OTP sent Successsfully',
+        };
       }
-
     } else {
       return {
         success: false,
-        message: `Not Authorized`
-      }
+        message: `Not Authorized`,
+      };
     }
   } catch (err) {
     console.log(err);
     throw err;
   }
-}
+};
 
-exports.verifyOTP = async (data) => {
-  let voter = await voterRepo.get({ exclude: [] }, {
-    id: data.voterId, dob: data.dob,
-    otp: data.otp
-  });
-  await voterRepo.update({ otp: null }, { id: data.voterId, dob: data.dob });
+exports.verifyOTP = async data => {
+  let voter = await voterRepo.get(
+    { exclude: [] },
+    {
+      id: data.id,
+      dob: data.dob,
+      otp: data.otp,
+    }
+  );
+  await voterRepo.update({ otp: null }, { id: data.id, dob: data.dob });
   if (voter && voter.id) {
     return utils.addToken({
-      voterId: voter.id, name: voter.name, mobile: voter.mobile,
-      email: data.email, type: "voter"
+      id: voter.id,
+      name: voter.name,
+      mobile: voter.mobile,
+      email: data.email,
+      type: 'voter',
     });
   } else {
     return {
       success: false,
-      message: `OTP Not Verified, Resend OTP and Try Again`
-    }
+      message: `OTP Not Verified, Resend OTP and Try Again`,
+    };
   }
-}
+};
 
 exports.getAllVoters = async () => {
   try {
     let voters = await voterRepo.getAllVoters();
     return {
       success: true,
-      voters
-    }
+      voters,
+    };
   } catch (err) {
     console.log(err);
     throw err;
   }
-}
+};
 
-exports.getVoter = async (voterId) => {
+exports.getVoter = async id => {
   try {
-    let voter = await voterRepo.getVoter(voterId);
+    let voter = await voterRepo.getVoter(id);
     return {
       success: true,
-      voter
-    }
+      voter,
+    };
   } catch (err) {
     console.log(err);
     throw err;
   }
-}
+};
 
-exports.getEligibleElections = async (voterId) => {
+exports.getEligibleElections = async voterId => {
   try {
     let voter = await voterRepo.getAssemblyConstituency(voterId);
     let allElections = await electionRepo.getAll({ exclude: [] }, {});
@@ -130,17 +138,17 @@ exports.getEligibleElections = async (voterId) => {
     console.log(err);
     throw err;
   }
-}
+};
 
-exports.updateVoter = async (details, voterId) => {
+exports.updateVoter = async (details, id) => {
   try {
-    let voter = await voterRepo.update(details, { id: voterId });
+    let voter = await voterRepo.update(details, { id: id });
     return {
       success: true,
-      message: `Updated Successfully`
-    }
+      message: `Updated Successfully`,
+    };
   } catch (err) {
     console.log(err);
     throw err;
   }
-}
+};

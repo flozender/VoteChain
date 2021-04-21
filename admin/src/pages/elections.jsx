@@ -13,6 +13,13 @@ import {
   ModalBody,
   ModalFooter,
   ModalCloseButton,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerBody,
+  DrawerHeader,
+  DrawerFooter,
+  DrawerCloseButton,
   useDisclosure,
   Input,
   useToast,
@@ -21,7 +28,11 @@ import {
   RadioGroup,
   Stack,
   Spinner,
+  List,
+  ListItem,
+  ListIcon,
 } from '@chakra-ui/react';
+import { CheckCircleIcon } from '@chakra-ui/icons';
 import DataTable from 'react-data-table-component';
 import fetchApi from '../services/fetch-custom.js';
 import '../assets/scroll.css';
@@ -70,12 +81,21 @@ const Elections = ({ history, currentUser, ...props }) => {
     onOpen: onOpenCreate,
     onClose: onCloseCreate,
   } = useDisclosure();
+
   const {
     isOpen: isOpenAdd,
     onOpen: onOpenAdd,
     onClose: onCloseAdd,
   } = useDisclosure();
+
+  const {
+    isOpen: isOpenView,
+    onOpen: onOpenView,
+    onClose: onCloseView,
+  } = useDisclosure();
+
   const [electionID, setElectionID] = useState(null);
+  const [viewAC, setViewAC] = useState([]);
   const toast = useToast();
   const [data, setData] = useState([]);
 
@@ -122,7 +142,26 @@ const Elections = ({ history, currentUser, ...props }) => {
     {
       name: 'Assembly Constituency',
       selector: 'assemblyConstituency',
-      sortable: true,
+      cell: row => {
+        if (row.assemblyConstituencies) {
+          return (
+            <Button
+              alignSelf="center"
+              size="sm"
+              colorScheme="teal"
+              variant="outline"
+              onClick={() => {
+                setViewAC(row.assemblyConstituencies);
+                onOpenView();
+              }}
+            >
+              VIEW
+            </Button>
+          );
+        } else {
+          return <Text>N/A</Text>;
+        }
+      },
     },
     {
       name: 'Education',
@@ -178,31 +217,6 @@ const Elections = ({ history, currentUser, ...props }) => {
     },
   ];
 
-  const childData = [
-    {
-      candidate: {
-        id: '',
-        name: '',
-        partyID: '',
-      },
-      region: {
-        id: '',
-      },
-    },
-    {
-      candidate: {
-        id: '',
-        name: '',
-        partyID: '',
-      },
-      region: {
-        id: '',
-      },
-    },
-  ];
-
-  const childColumns = [];
-
   return (
     <Flex justifyContent="center" alignItems="center">
       <Flex
@@ -249,13 +263,7 @@ const Elections = ({ history, currentUser, ...props }) => {
             noDataComponent={<Spinner size="lg" colorScheme="teal" />}
             expandableRows={true}
             expandOnRowClicked={true}
-            expandableRowsComponent={
-              <DataTable
-                noHeader={true}
-                columns={childColumns}
-                data={childData}
-              />
-            }
+            expandableRowsComponent={<ChildTable />}
           />
           <CreateModal
             isOpen={isOpenCreate}
@@ -268,10 +276,55 @@ const Elections = ({ history, currentUser, ...props }) => {
             currentUser={currentUser}
             electionID={electionID}
           />
+          <ViewModal
+            isOpen={isOpenView}
+            onClose={onCloseView}
+            viewAC={viewAC}
+          />
         </Flex>
       </Flex>
     </Flex>
   );
+};
+
+const ChildTable = () => {
+  const childData = [
+    {
+      candidate: {
+        id: '',
+        name: '',
+        partyID: '',
+      },
+      region: {
+        id: '',
+        name: '',
+      },
+    },
+    {
+      candidate: {
+        id: '',
+        name: '',
+        partyID: '',
+      },
+      region: {
+        id: '',
+        name: '',
+      },
+    },
+  ];
+
+  const childColumns = [
+    { name: 'Candidate ID', selector: 'candidate.id', sortable: true },
+    { name: 'Candidate Name', selector: 'candidate.name', sortable: true },
+    {
+      name: 'Candidate PartyID',
+      selector: 'candidate.partyID',
+      sortable: true,
+    },
+    { name: 'Region ID', selector: 'region.id', sortable: true },
+    { name: 'Region Name', selector: 'region.name', sortable: true },
+  ];
+  return <DataTable noHeader={true} columns={childColumns} data={childData} />;
 };
 
 const CreateModal = ({ isOpen, onClose, currentUser }) => {
@@ -762,6 +815,36 @@ const AddModal = ({ isOpen, onClose, currentUser, electionID }) => {
         </ModalFooter>
       </ModalContent>
     </Modal>
+  );
+};
+
+const ViewModal = ({ isOpen, onClose, viewAC }) => {
+  return (
+    <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="md">
+      <DrawerOverlay>
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>Eligible Assembly Constituencies</DrawerHeader>
+
+          <DrawerBody>
+            <List spacing={3}>
+              {viewAC.map((e, i) => (
+                <ListItem key={i}>
+                  <ListIcon as={CheckCircleIcon} color="green.500" />
+                  {e}
+                </ListItem>
+              ))}
+            </List>
+          </DrawerBody>
+
+          <DrawerFooter>
+            <Button variant="outline" mr={3} onClick={onClose}>
+              Close
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </DrawerOverlay>
+    </Drawer>
   );
 };
 
