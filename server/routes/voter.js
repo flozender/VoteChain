@@ -2,6 +2,7 @@ const auth = require('../middleware/auth');
 
 module.exports = (app) => {
   const voterController = require('../controllers/voter.js');
+  const candidateController = require('../controllers/candidate.js');
 
   app.post('/auth', async (req, res) => {
     try {
@@ -59,6 +60,18 @@ module.exports = (app) => {
     try {
       let voter = await voterController.getVoter(req.params.voterId);
       res.status(200).send(voter);
+    } catch (error) {
+      res.status(400).send({
+        error: JSON.stringify(error),
+      });
+    }
+  });
+
+  app.get('/getAssignedCandidates/:electionId', auth.tokenValidate, async (req, res) => {
+    try {
+      let candidates = await candidateController.getAssignedCandidatesElectionFromVoter(
+        req.params.electionId, req.token_data.data.voterId);
+      res.status(200).send(candidates);
     } catch (error) {
       res.status(400).send({
         error: JSON.stringify(error),

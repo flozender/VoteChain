@@ -131,6 +131,18 @@ module.exports = app => {
     }
   });
 
+  app.get('/admin/getAssignedCandidates/:electionId', auth.adminTokenValidate, async (req, res) => {
+    try {
+      let candidates = await candidateController.getAssignedCandidatesElectionForAdmin(
+        req.params.electionId);
+      res.status(200).send(candidates);
+    } catch (error) {
+      res.status(400).send({
+        error: JSON.stringify(error),
+      });
+    }
+  });
+
   app.get(`/admin/regions/:stateId`, auth.adminTokenValidate, async (req, res) => {
     try {
       let regions = await regionController.getAllRegionsFromState(req.params.stateId);

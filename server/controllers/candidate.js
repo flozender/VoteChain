@@ -2,6 +2,7 @@ const db = require('../db/database.js');
 const util = require('../helpers/utils.js');
 const candidate = require('../models/candidate.js');
 const candidateRepo = require('../models/candidateRepo.js');
+const candidateElectionRepo = require('../models/candidateElectionRepo.js');
 
 exports.getAllCandidates = async () => {
   try {
@@ -77,6 +78,42 @@ exports.deleteCandidate = async candidateId => {
     return {
       success: true,
       message: `Updated Successfully`,
+    };
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+exports.getAssignedCandidatesElectionFromVoter = async (electionId, voterId) => {
+  try {
+    let candidates = await candidateElectionRepo.getAssignedCandidatesElectionFromVoter(
+      electionId, voterId);
+    candidates.forEach(element => {
+      element.candidate = element.candidate ? JSON.parse(element.candidate) : null;
+      element.region = element.region ? JSON.parse(element.region) : null;
+    })
+    return {
+      success: true,
+      candidates
+    };
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+exports.getAssignedCandidatesElectionForAdmin = async (electionId) => {
+  try {
+    let candidates = await candidateElectionRepo.getAssignedCandidatesElectionForAdmin(
+      electionId);
+    candidates.forEach(element => {
+      element.candidate = element.candidate ? JSON.parse(element.candidate) : null;
+      element.region = element.region ? JSON.parse(element.region) : null;
+    })
+    return {
+      success: true,
+      candidates
     };
   } catch (err) {
     console.log(err);
