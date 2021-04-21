@@ -45,9 +45,12 @@ exports.createElection = async (data) => {
 
 exports.getElection = async (electionId) => {
   try {
-    let election = await electionRepo.getElection(electionId);
-    election.assemblyConstituencies = element.assemblyConstituencies ?
-      JSON.parse(element.assemblyConstituencies) : [];
+    let election = await electionRepo.get({ exclude: [] }, { id: electionId });
+    election.regions = election.assemblyConstituencies.split(',').map(Number);
+    let regions = await electionRepo.
+      getAllRegionsForElection(election.id, election.regions);
+    election.assemblyConstituencies = JSON.parse(regions.regions);
+    delete election.regions;
     return {
       success: true,
       election
