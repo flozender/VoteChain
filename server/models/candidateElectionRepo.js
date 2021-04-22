@@ -45,7 +45,7 @@ module.exports = {
   },
 
   getAssignedCandidatesElectionFromVoter: (electionId, voterId) => {
-    let query = `SELECT JSON_OBJECT('id', CE.candidateID, 'name', C.name, 'partyID', C.partyID, 'partyName', P.name) AS candidate,
+    let query = `SELECT JSON_OBJECT('id', CE.candidateID, 'name', C.name, 'partyID', C.partyID, 'partyName', P.name, 'partyImgURL', P.imgURL) AS candidate,
       JSON_OBJECT('regionID', CE.regionID) AS region
       FROM CandidateElection CE
       LEFT JOIN Candidate C
@@ -65,7 +65,7 @@ module.exports = {
   },
 
   getAssignedCandidatesElectionForAdmin: (electionId) => {
-    let query = `SELECT JSON_OBJECT('id', CE.id, 'name', C.name, 'partyID', C.partyID, 'partyName', P.name) AS candidate,
+    let query = `SELECT JSON_OBJECT('id', CE.id, 'name', C.name, 'partyID', C.partyID, 'partyName', P.name, 'partyImgURL', P.imgURL) AS candidate,
       JSON_OBJECT('regionID', CE.regionID, 'regionName', R.name) AS region
       FROM CandidateElection CE
       LEFT JOIN Candidate C

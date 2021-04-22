@@ -88,8 +88,11 @@ exports.updateElection = async (details, electionId) => {
 exports.assignCandidates = async (details, electionId) => {
   try {
     await Bluebird.each(details.candidates, async (candidate) => {
-      candidate.electionID = electionId
-      await candidateElectionRepo.add(candidate);
+      candidate.electionID = electionId;
+      let isCandidateExists = await candidateElectionRepo.get({ exclude: [] }, { candidateID: candidate.candidateID, electionID: electionId });
+      if (!isCandidateExists && !isCandidateExists.candidateID) {
+        await candidateElectionRepo.add(candidate);
+      }
     })
     return {
       success: true,
