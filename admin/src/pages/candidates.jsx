@@ -120,47 +120,55 @@ const data = [
   },
 ];
 
-const columns = [
-  { name: 'Candidate ID', selector: 'id', sortable: true },
-  {
-    name: 'Name',
-    sortable: true,
-    cell: row => <div style={{ textAlign: 'left' }}>{row.name}</div>,
-  },
-  { name: 'Age', selector: 'age', sortable: true },
-  { name: 'Gender', selector: 'gender', sortable: true },
-  {
-    name: 'Assembly Constituency',
-    selector: 'assemblyConstituency',
-    sortable: true,
-  },
-  {
-    name: 'Educated',
-    sortable: true,
-    cell: row => {
-      if (row.education) {
-        return <Text>Yes</Text>;
-      } else {
-        return <Text>No</Text>;
-      }
-    },
-  },
-  { name: 'Party ID', selector: 'partyID', sortable: true },
-  {
-    name: 'Manage',
-    right: true,
-    cell: row => (
-      <Button size="sm" colorScheme="teal">
-        EDIT
-      </Button>
-    ),
-  },
-];
-
 const Candidates = ({ history, currentUser, ...props }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const [data, setData] = useState([]);
+  const [prefilled, setPrefilled] = useState({});
+  const columns = [
+    { name: 'Candidate ID', selector: 'id', sortable: true },
+    {
+      name: 'Name',
+      sortable: true,
+      cell: row => <div style={{ textAlign: 'left' }}>{row.name}</div>,
+    },
+    { name: 'Age', selector: 'age', sortable: true },
+    { name: 'Gender', selector: 'gender', sortable: true },
+    {
+      name: 'Assembly Constituency',
+      selector: 'assemblyConstituency',
+      sortable: true,
+    },
+    {
+      name: 'Educated',
+      sortable: true,
+      cell: row => {
+        if (row.education) {
+          return <Text>Yes</Text>;
+        } else {
+          return <Text>No</Text>;
+        }
+      },
+    },
+    { name: 'Party ID', selector: 'partyID', sortable: true },
+    {
+      name: 'Manage',
+      right: true,
+      cell: row => (
+        <Button
+          size="sm"
+          colorScheme="teal"
+          onClick={() => {
+            console.log('Setting', row);
+            setPrefilled({ ...row });
+            onOpen();
+          }}
+        >
+          EDIT
+        </Button>
+      ),
+    },
+  ];
 
   useEffect(() => {
     fetchApi('/admin/candidates', {
@@ -217,7 +225,14 @@ const Candidates = ({ history, currentUser, ...props }) => {
             mb={5}
           >
             <Heading width="100%">Candidate Management</Heading>
-            <Button colorScheme="green" alignSelf="flex-end" onClick={onOpen}>
+            <Button
+              colorScheme="green"
+              alignSelf="flex-end"
+              onClick={() => {
+                setPrefilled({});
+                onOpen();
+              }}
+            >
               ENROLL
             </Button>
           </Flex>
@@ -233,6 +248,8 @@ const Candidates = ({ history, currentUser, ...props }) => {
             isOpen={isOpen}
             onClose={onClose}
             currentUser={currentUser}
+            prefilled={prefilled}
+            setPrefilled={setPrefilled}
           />
         </Flex>
       </Flex>
@@ -240,7 +257,13 @@ const Candidates = ({ history, currentUser, ...props }) => {
   );
 };
 
-const CreateModal = ({ isOpen, onClose, currentUser }) => {
+const CreateModal = ({
+  isOpen,
+  onClose,
+  currentUser,
+  prefilled,
+  setPrefilled,
+}) => {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
@@ -251,6 +274,19 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
     education: '0',
     partyID: '',
   });
+
+  useEffect(() => {
+    if (prefilled) {
+      setData({
+        name: prefilled.name,
+        age: prefilled.age,
+        gender: prefilled.gender?.toString(),
+        assemblyConstituency: prefilled.assemblyConstituency,
+        partyID: prefilled.partyID,
+        education: prefilled.education?.toString(),
+      });
+    }
+  }, [prefilled]);
 
   const handleChange = e => {
     setData(data => ({ ...data, [e.target.name]: e.target.value }));
@@ -267,8 +303,17 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
         isClosable: true,
       });
     } else {
-      fetchApi('/admin/createCandidate', {
-        method: 'post',
+      let url, method;
+      if (prefilled.id) {
+        url = `/admin/updateCandidate/${prefilled.id}`;
+        method = 'put';
+      } else {
+        url = '/admin/createCandidate';
+        method = 'post';
+      }
+      console.log(url);
+      fetchApi(url, {
+        method: method,
         body: JSON.stringify(data),
         headers: {
           'Content-Type': 'application/json',
@@ -288,6 +333,9 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
           });
           setLoading(false);
           onClose();
+          if (prefilled) {
+            setPrefilled({});
+          }
         })
         .catch(err => {
           console.log(err);
@@ -303,6 +351,8 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
         });
     }
   };
+
+  const { name, age, gender, assemblyConstituency, partyID, education } = data;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -325,6 +375,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
                 placeholder="Enter Name"
                 onChange={handleChange}
                 width="72%"
+                value={name}
               />
             </Stack>
             <Stack
@@ -340,6 +391,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
                 placeholder="Enter Age"
                 onChange={handleChange}
                 width="72%"
+                value={age}
               />
             </Stack>
             <RadioGroup
@@ -347,6 +399,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
               onChange={value => setData(data => ({ ...data, gender: value }))}
               name="gender"
               width="100%"
+              value={gender}
             >
               <Stack
                 spacing={5}
@@ -374,6 +427,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
                 placeholder="Assembly Constituency"
                 onChange={handleChange}
                 width="72%"
+                value={assemblyConstituency}
               />
             </Stack>
             <RadioGroup
@@ -384,6 +438,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
               }
               name="education"
               width="100%"
+              value={education}
             >
               <Stack
                 spacing={5}
@@ -393,8 +448,8 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
                 width="100%"
               >
                 <Text size="md"> Educated </Text>
-                <Radio value="No">No</Radio>
-                <Radio value="Yes">Yes</Radio>
+                <Radio value="0">No</Radio>
+                <Radio value="1">Yes</Radio>
               </Stack>
             </RadioGroup>
             <Stack
@@ -411,6 +466,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
                 placeholder="Enter Party ID"
                 onChange={handleChange}
                 width="72%"
+                value={partyID}
               />
             </Stack>
           </VStack>
