@@ -292,14 +292,15 @@ const ChildTable = ({ data }) => {
     { name: 'Candidate ID', selector: 'candidate.id', sortable: true },
     { name: 'Candidate Name', selector: 'candidate.name', sortable: true },
     {
-      name: 'Candidate PartyID',
-      selector: 'candidate.partyID',
+      name: 'Party Name',
+      selector: 'candidate.partyName',
       sortable: true,
     },
-    { name: 'Region ID', selector: 'region.id', sortable: true },
-    { name: 'Region Name', selector: 'region.name', sortable: true },
+    { name: 'Region Name', selector: 'region.regionName', sortable: true },
   ];
-  return <DataTable noHeader={true} columns={childColumns} data={data} />;
+  return (
+    <DataTable noHeader={true} columns={childColumns} data={data.candidates} />
+  );
 };
 
 const CreateModal = ({ isOpen, onClose, currentUser }) => {
