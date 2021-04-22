@@ -64,9 +64,7 @@ const conditionalRowStyles = [
   {
     when: row => row.active,
     style: {
-      backgroundColor: '#5fdba7',
-      color: 'white',
-
+      color: '#2dc270',
       '&:hover': {
         color: 'white',
         backgroundColor: '#5fdba7',
