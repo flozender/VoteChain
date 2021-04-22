@@ -1,12 +1,12 @@
 pragma solidity ^0.5.16;
 
 contract Voting {
-    // an event that is called whenever a Candidate is added so the frontend could
-    // appropriately display the candidate with the right element id (it is used
-    // to vote for the candidate, since it is one of arguments for the function "vote")
-    event AddedCandidate(uint candidateID);
 
-    // describes a Voter, which has an id and the ID of the candidate they voted for
+    event AddedElection(uint electionID);
+    event AddedCandidateElection(bytes32 candidateElectionID);
+    event VoteCasted(bytes32 voterElectionID);
+    event AddedRegionElectionWinner(bytes32 regionElectionWinnerID);
+
     address owner;
     constructor() public {
         owner=msg.sender;
@@ -15,50 +15,82 @@ contract Voting {
         require(msg.sender == owner);
         _;
     }
-    struct Voter {
-        bytes32 uid; // bytes32 type are basically strings
-        uint candidateIDVote;
-    }
-    // describes a Candidate
-    struct Candidate {
-        bytes32 name;
-        bytes32 party; 
-        // "bool doesExist" is to check if this Struct exists
-        // This is so we can keep track of the candidates 
+
+    struct Election {
+        uint id;
+        uint electionType;
+        uint education;
+        uint winner;
+        bytes32 assemblyConstituencies;
+        bool active;
         bool doesExist; 
     }
 
-    // These state variables are used keep track of the number of Candidates/Voters 
-    // and used to as a way to index them     
-    uint numCandidates; // declares a state variable - number Of Candidates
-    uint numVoters;
+    struct CandidateElection {
+        bytes32 id;
+        uint electionID;
+        uint candidateID;
+        uint regionID;
+        bool doesExist; 
+    }
 
-    
-    // Think of these as a hash table, with the key as a uint and value of 
-    // the struct Candidate/Voter. These mappings will be used in the majority
-    // of our transactions/calls
-    // These mappings will hold all the candidates and Voters respectively
-    mapping (uint => Candidate) candidates;
-    mapping (uint => Voter) voters;
+    struct VoterElection {
+        bytes32 id;
+        bytes32 voterID;
+        uint regionID;
+        uint electionID;
+        uint candidateID;
+    }
+
+    struct RegionElectionWinner {
+        bytes32 id;
+        uint electionID;
+        uint candidateID;
+        uint regionID;
+    }
+ 
+    uint numElections;
+    uint numVoterElections;
+    uint numCandidateElections;
+    uint numRegionElectionWinners;
+
+    mapping (uint => Election) elections;
+    mapping (bytes32 => VoterElection) voterElections;
+    mapping (bytes32 => CandidateElection) candidateElections;
+    mapping (bytes32 => RegionElectionWinner) regionElectionWinners;
     
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      *  These functions perform transactions, editing the mappings *
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-    function addCandidate(bytes32 name, bytes32 party) onlyOwner public {
-        // candidateID is the return variable
-        uint candidateID = numCandidates++;
-        // Create new Candidate Struct with name and saves it to storage.
-        candidates[candidateID] = Candidate(name,party,true);
-        emit AddedCandidate(candidateID);
+     
+    function addElection(uint id, uint electionType, uint education, uint winner, bytes32 assemblyConstituencies) onlyOwner public {
+        numElections++;
+        elections[id] = Election(id, electionType, education, winner, assemblyConstituencies, true, true);
+        emit AddedElection(id);
     }
 
-    function vote(bytes32 uid, uint candidateID) public {
-        // checks if the struct exists for that candidate
-        if (candidates[candidateID].doesExist == true) {
-            uint voterID = numVoters++; //voterID is the return variable
-            voters[voterID] = Voter(uid,candidateID);
-        }
+    // Here candidateElectionID = "CND" + str(candidateID) + "ELC" + str(electionID);
+    function addCandidateElection(bytes32 candidateElectionID, uint candidateID, uint electionID, uint regionID) onlyOwner public {
+        numCandidateElections++;
+        candidateElections[candidateElectionID] = CandidateElection(candidateElectionID, candidateID, electionID, regionID, true);
+        emit AddedCandidateElection(candidateElectionID);
+    }
+
+    // Here voterElectionID = "VTR" + str(voterID) + "ELC" + str(electionID);
+    function vote(bytes32 voterElectionID, bytes32 candidateElectionID, uint electionID, uint regionID, uint candidateID, bytes32 voterID) public {
+        require(candidateElections[candidateElectionID].doesExist == true);
+        numVoterElections++;
+        voterElections[voterElectionID] = VoterElection(voterElectionID, voterID, regionID, electionID, candidateID);
+        emit VoteCasted(voterElectionID);
+    }
+
+    // Here RegionElectionWinnerID = "RGN" + str(regionID) + "ELC" + str(electionID);
+    function addRegionElectionWinner(bytes32 RegionElectionWinnerID, bytes32 candidateElectionID, uint regionID, uint electionID, uint candidateID) onlyOwner public {
+        numRegionElectionWinners++;
+        require(candidateElections[candidateElectionID].doesExist == true);
+        require(candidateElections[candidateElectionID].regionID == regionID);
+        regionElectionWinners[RegionElectionWinnerID] = RegionElectionWinner(RegionElectionWinnerID, regionID, electionID, candidateID);
+        emit AddedRegionElectionWinner(RegionElectionWinnerID);
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -68,26 +100,23 @@ contract Voting {
 
     // finds the total amount of votes for a specific candidate by looping
     // through voters 
-    function totalVotes(uint candidateID) view public returns (uint) {
-        uint numOfVotes = 0; // we will return this
-        for (uint i = 0; i < numVoters; i++) {
-            // if the voter votes for this specific candidate, we increment the number
-            if (voters[i].candidateIDVote == candidateID) {
-                numOfVotes++;
-            }
-        }
-        return numOfVotes; 
+    // function totalVotes(uint candidateID) view public returns (uint) {
+    //     uint numOfVotes = 0; // we will return this
+    //     for (uint i = 0; i < numVoters; i++) {
+    //         // if the voter votes for this specific candidate, we increment the number
+    //         if (voters[i].candidateIDVote == candidateID) {
+    //             numOfVotes++;
+    //         }
+    //     }
+    //     return numOfVotes; 
+    // }
+
+    function getNumOfElections() public view returns(uint) {
+        return numElections;
     }
 
-    function getNumOfCandidates() public view returns(uint) {
-        return numCandidates;
-    }
-
-    function getNumOfVoters() public view returns(uint) {
-        return numVoters;
-    }
     // returns candidate information, including its ID, name, and party
-    function getCandidate(uint candidateID) public view returns (uint,bytes32, bytes32) {
-        return (candidateID,candidates[candidateID].name,candidates[candidateID].party);
-    }
+    // function getCandidate(uint candidateID) public view returns (uint,bytes32, bytes32) {
+    //     return (candidateID,candidates[candidateID].name,candidates[candidateID].party);
+    // }
 }
