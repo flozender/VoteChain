@@ -159,7 +159,6 @@ const Candidates = ({ history, currentUser, ...props }) => {
           size="sm"
           colorScheme="teal"
           onClick={() => {
-            console.log('Setting', row);
             setPrefilled({ ...row });
             onOpen();
           }}
