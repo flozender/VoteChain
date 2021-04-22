@@ -287,32 +287,7 @@ const Elections = ({ history, currentUser, ...props }) => {
   );
 };
 
-const ChildTable = () => {
-  const childData = [
-    {
-      candidate: {
-        id: '',
-        name: '',
-        partyID: '',
-      },
-      region: {
-        id: '',
-        name: '',
-      },
-    },
-    {
-      candidate: {
-        id: '',
-        name: '',
-        partyID: '',
-      },
-      region: {
-        id: '',
-        name: '',
-      },
-    },
-  ];
-
+const ChildTable = ({ data }) => {
   const childColumns = [
     { name: 'Candidate ID', selector: 'candidate.id', sortable: true },
     { name: 'Candidate Name', selector: 'candidate.name', sortable: true },
@@ -324,7 +299,7 @@ const ChildTable = () => {
     { name: 'Region ID', selector: 'region.id', sortable: true },
     { name: 'Region Name', selector: 'region.name', sortable: true },
   ];
-  return <DataTable noHeader={true} columns={childColumns} data={childData} />;
+  return <DataTable noHeader={true} columns={childColumns} data={data} />;
 };
 
 const CreateModal = ({ isOpen, onClose, currentUser }) => {
