@@ -64,9 +64,7 @@ const conditionalRowStyles = [
   {
     when: row => row.active,
     style: {
-      backgroundColor: '#5fdba7',
-      color: 'white',
-
+      color: '#2dc270',
       '&:hover': {
         color: 'white',
         backgroundColor: '#5fdba7',
@@ -287,44 +285,20 @@ const Elections = ({ history, currentUser, ...props }) => {
   );
 };
 
-const ChildTable = () => {
-  const childData = [
-    {
-      candidate: {
-        id: '',
-        name: '',
-        partyID: '',
-      },
-      region: {
-        id: '',
-        name: '',
-      },
-    },
-    {
-      candidate: {
-        id: '',
-        name: '',
-        partyID: '',
-      },
-      region: {
-        id: '',
-        name: '',
-      },
-    },
-  ];
-
+const ChildTable = ({ data }) => {
   const childColumns = [
     { name: 'Candidate ID', selector: 'candidate.id', sortable: true },
     { name: 'Candidate Name', selector: 'candidate.name', sortable: true },
     {
-      name: 'Candidate PartyID',
-      selector: 'candidate.partyID',
+      name: 'Party Name',
+      selector: 'candidate.partyName',
       sortable: true,
     },
-    { name: 'Region ID', selector: 'region.id', sortable: true },
-    { name: 'Region Name', selector: 'region.name', sortable: true },
+    { name: 'Region Name', selector: 'region.regionName', sortable: true },
   ];
-  return <DataTable noHeader={true} columns={childColumns} data={childData} />;
+  return (
+    <DataTable noHeader={true} columns={childColumns} data={data.candidates} />
+  );
 };
 
 const CreateModal = ({ isOpen, onClose, currentUser }) => {
