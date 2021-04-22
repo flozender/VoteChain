@@ -1,20 +1,58 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import Select from 'react-select';
-import { Heading, Flex, Button, Text, VStack, Stack } from '@chakra-ui/react';
+import {
+  Heading,
+  Flex,
+  Button,
+  Text,
+  VStack,
+  Stack,
+  useToast,
+} from '@chakra-ui/react';
+import fetchApi from '../services/fetch-custom.js';
 import '../assets/scroll.css';
 
-const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' },
-];
-
-const Results = ({ history }) => {
+const Results = ({ history, currentUser, ...props }) => {
   const [data, setData] = useState({
-    election: '',
+    election: null,
   });
-  const { elections } = data;
+  const toast = useToast();
+  const [value, setValue] = useState([]);
+  const { election } = data;
+
+  useEffect(() => {
+    fetchApi('/admin/elections', {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${currentUser.token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        json.elections = json.elections
+          .filter(e => {
+            return e.active;
+          })
+          .map(e => {
+            return { label: e.name, value: e.id };
+          });
+        setValue(json.elections);
+      })
+      .catch(err => {
+        console.log(err);
+        toast({
+          position: 'bottom-left',
+          title: 'Could not load data',
+          description: err.message,
+          status: 'error',
+          duration: 1000,
+          isClosable: true,
+        });
+      });
+  }, [currentUser, toast]);
 
   const handleChange = e => {
     setData(data => ({ ...data, [e.field]: e.value }));
@@ -79,7 +117,7 @@ const Results = ({ history }) => {
                 text="Elections"
                 id="election"
                 placeholder="Select Elections"
-                data={options}
+                data={value}
                 handleCustomChange={handleChange}
                 width="80%"
               />
@@ -92,9 +130,7 @@ const Results = ({ history }) => {
               width="100%"
               m={3}
             >
-              <Button
-                colorScheme="teal"
-              >
+              <Button colorScheme="teal" disabled={election ? false : true}>
                 Count and Publish
               </Button>
             </Stack>
