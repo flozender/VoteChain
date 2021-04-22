@@ -10,6 +10,17 @@ exports.getAllElections = async () => {
   try {
     let elections = await electionRepo.getAll({ exclude: [] });
     await Bluebird.each(elections, async (element) => {
+      element.candidates = await candidateElectionRepo.getAssignedCandidatesElectionForAdmin(
+        element.id
+      );
+      element.candidates.forEach(candidate => {
+        candidate.candidate = candidate.candidate
+          ? JSON.parse(candidate.candidate)
+          : null;
+        candidate.region = candidate.region
+          ? JSON.parse(candidate.region)
+          : null;
+      });
       if (element.assemblyConstituencies != null) {
         element.regions = element.assemblyConstituencies.split(',').map(Number);
         let regions = await electionRepo.
