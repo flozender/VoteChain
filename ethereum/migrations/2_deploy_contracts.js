@@ -1,10 +1,12 @@
 var Voting = artifacts.require('../contracts/Voting.sol');
 const fs = require('fs');
-const path = '../../../server/blockchain/Metadata.js';
+const path = require('path');
+const metaDataPath = path.resolve('../../server/blockchain/Metadata.js');
+console.log('Writing to: ', metaDataPath);
 module.exports = function (deployer) {
   deployer.deploy(Voting).then(() => {
     fs.writeFile(
-      __dirname + path,
+      metaDataPath,
       'const ADDRESS = ' + "'" + Voting.address + "';",
       err => {
         if (err) {
@@ -14,14 +16,14 @@ module.exports = function (deployer) {
       }
     );
     fs.appendFile(
-      __dirname + path,
+      metaDataPath,
       '\nconst ABI = ' + JSON.stringify(Voting.abi) + ';',
       err => {
         if (err) {
           console.log(err);
         } else {
           fs.appendFile(
-            __dirname + path,
+            metaDataPath,
             '\nmodule.exports = { ADDRESS, ABI };',
             err => {
               if (err) {
