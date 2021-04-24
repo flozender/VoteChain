@@ -61,7 +61,8 @@ contract Voting {
      *  These functions perform transactions, editing the mappings *
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
      
-    function addElection(uint id) onlyOwner public {
+    function addElection(uint id) public onlyOwner{
+        require(elections[id].doesExist == false);
         numElections++;
         elections[id] = Election(id, true);
         emit AddedElection(id);

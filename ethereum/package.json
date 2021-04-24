@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "webpack-dev-server",
     "build": "webpack",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "ganache": "ganache-cli -m 'electric gift gold bitter boring surface stumble swift peanut adult horse dish'"
   },
   "author": "",
   "license": "MIT",
@@ -20,6 +21,7 @@
     "copy-webpack-plugin": "^4.3.1",
     "css-loader": "^0.28.8",
     "eslint-plugin-import": "^2.8.0",
+    "ganache-cli": "^6.12.2",
     "json-loader": "^0.5.7",
     "lite-server": "^2.3.0",
     "style-loader": "^0.19.1",
