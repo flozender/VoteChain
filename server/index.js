@@ -8,10 +8,11 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const Voting = require('./blockchain/Methods');
-const voting = new Voting();
-voting.addElection(2);
-voting.getNumOfElections();
+// Use blockchain functions like this
+// const Voting = require('./blockchain/Methods');
+// const voting = new Voting();
+// voting.addElection(2);
+// voting.getNumOfElections();
 
 require('./routes/admin.js')(app);
 require('./routes/voter.js')(app);
