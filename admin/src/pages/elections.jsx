@@ -135,8 +135,18 @@ const Elections = ({ history, currentUser, ...props }) => {
         </div>
       ),
     },
-    { name: 'Start Date', selector: 'startDate', sortable: true },
-    { name: 'End Date', selector: 'endDate', sortable: true },
+    {
+      name: 'Start Date',
+      selector: 'startDate',
+      sortable: true,
+      cell: row => new Date(row.startDate).toLocaleDateString(),
+    },
+    {
+      name: 'End Date',
+      selector: 'endDate',
+      sortable: true,
+      cell: row => new Date(row.endDate).toLocaleDateString(),
+    },
     {
       name: 'Assembly Constituency',
       selector: 'assemblyConstituency',
