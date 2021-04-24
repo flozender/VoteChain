@@ -1,4 +1,5 @@
 const db = require('../db/database.js');
+const moment = require('moment');
 const Bluebird = require('bluebird');
 const utils = require('../helpers/utils');
 const voterRepo = require('../models/voterRepo.js');
@@ -132,6 +133,12 @@ exports.getEligibleElections = async voterId => {
     let allElections = await electionRepo.getAll({ exclude: [] }, {});
     let elections = [];
     await Bluebird.each(allElections, async element => {
+      element.active = moment().isBetween(
+        moment(element.startDate),
+        moment(element.endDate)
+      )
+        ? 1
+        : 0;
       element.candidates = await candidateElectionRepo.getAssignedCandidatesElectionFromVoter(
         element.id,
         voterId
