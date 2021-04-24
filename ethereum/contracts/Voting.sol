@@ -91,7 +91,7 @@ contract Voting {
         int currentCandidateID = getCandidateID(candidateID, electionID, regionID);
         require(currentCandidateID != -1);
         uint regionElectionWinnerID = numRegionElectionWinners++;
-        regionElectionWinners[regionElectionWinnerID] = RegionElectionWinner(regionElectionWinnerID, candidateID, votes, regionID, electionID );
+        regionElectionWinners[regionElectionWinnerID] = RegionElectionWinner(regionElectionWinnerID, candidateID, votes, regionID, electionID);
         emit AddedRegionElectionWinner(regionElectionWinnerID);
     }
 
