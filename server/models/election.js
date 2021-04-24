@@ -6,6 +6,7 @@ var DB = require('../db/database'),
       id: {
         type: db_sequelize.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
       },
       name: {
         type: db_sequelize.STRING,

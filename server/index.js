@@ -9,10 +9,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Use blockchain functions like this
-// const Voting = require('./blockchain/Methods');
-// const voting = new Voting();
-// voting.addElection(2);
-// voting.getNumOfElections();
+// let a = async () => {
+//   const Voting = require('./blockchain/Methods');
+//   await Voting.addElection(6);
+//   await Voting.getNumOfElections();
+// };
+
+// a();
 
 require('./routes/admin.js')(app);
 require('./routes/voter.js')(app);

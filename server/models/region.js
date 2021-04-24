@@ -1,11 +1,12 @@
-var DB = require("../db/database"),
+var DB = require('../db/database'),
   db_sequelize = DB.Sequelize,
   region = DB.define(
-    "Region",
+    'Region',
     {
       id: {
         type: db_sequelize.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
       },
       name: {
         type: db_sequelize.STRING,

@@ -7,7 +7,7 @@ module.exports = {
       .create(data, {
         raw: true,
       })
-      .then(res => res)
+      .then(res => res.dataValues)
       .catch(error => {
         throw error;
       });
@@ -53,11 +53,15 @@ module.exports = {
     FROM Election E
     WHERE E.id = :electionId`;
 
-    return db.query(query, { replacements: { electionId }, type: db.QueryTypes.SELECT })
+    return db
+      .query(query, {
+        replacements: { electionId },
+        type: db.QueryTypes.SELECT,
+      })
       .then(data => data[0])
       .catch(error => {
         throw error;
-      })
+      });
   },
 
   getAll: function (attributes, condition) {
@@ -79,10 +83,14 @@ module.exports = {
     ON R.id in (:regions)
     WHERE E.id = :electionId`;
 
-    return db.query(query, { replacements: { electionId, regions }, type: db.QueryTypes.SELECT })
+    return db
+      .query(query, {
+        replacements: { electionId, regions },
+        type: db.QueryTypes.SELECT,
+      })
       .then(data => data[0])
       .catch(error => {
         throw error;
-      })
-  }
+      });
+  },
 };

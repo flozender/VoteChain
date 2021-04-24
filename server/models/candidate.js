@@ -1,11 +1,12 @@
-var DB = require("../db/database"),
+var DB = require('../db/database'),
   db_sequelize = DB.Sequelize,
   candidate = DB.define(
-    "Candidate",
+    'Candidate',
     {
       id: {
         type: db_sequelize.STRING,
         primaryKey: true,
+        autoIncrement: true,
       },
       name: {
         type: db_sequelize.STRING,

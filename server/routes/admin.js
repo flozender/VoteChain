@@ -217,10 +217,7 @@ module.exports = app => {
 
         let data = await electionController.createElection(body);
         if (data && data.success) {
-          res.status(200).send({
-            success: true,
-            message: `Created Election Successfully`,
-          });
+          res.status(200).send(data);
         } else {
           res.status(200).send({
             success: false,
