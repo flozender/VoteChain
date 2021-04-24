@@ -191,7 +191,7 @@ const Elections = ({ history, currentUser, ...props }) => {
         } else if (row.type === 2) {
           return <Text>State</Text>;
         } else {
-          return <Text>MLC</Text>;
+          return <Text>Region</Text>;
         }
       },
     },
@@ -457,7 +457,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
                   State
                 </Radio>
                 <Radio colorScheme="teal" value="3">
-                  MLC
+                  Region
                 </Radio>
               </Stack>
             </RadioGroup>
