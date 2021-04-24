@@ -19,11 +19,6 @@ contract Voting {
 
     struct Election {
         uint id;
-        uint electionType;
-        uint education;
-        uint winner;
-        bytes32 assemblyConstituencies;
-        bool active;
         bool doesExist; 
     }
 
@@ -66,9 +61,9 @@ contract Voting {
      *  These functions perform transactions, editing the mappings *
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
      
-    function addElection(uint id, uint electionType, uint education, uint winner, bytes32 assemblyConstituencies) onlyOwner public {
+    function addElection(uint id) onlyOwner public {
         numElections++;
-        elections[id] = Election(id, electionType, education, winner, assemblyConstituencies, true, true);
+        elections[id] = Election(id, true);
         emit AddedElection(id);
     }
 
@@ -78,7 +73,7 @@ contract Voting {
         emit AddedCandidateElection(candidateElectionID);
     }
 
-    function vote(bytes32 voterID, uint electionID, uint regionID, uint candidateID) public {
+    function vote(bytes32 voterID, uint electionID, uint regionID, uint candidateID) onlyOwner public {
         int currentCandidateID = getCandidateID(candidateID, electionID, regionID);
         require(currentCandidateID != -1);
         uint voterElectionID = numVoterElections++;
@@ -162,4 +157,9 @@ contract Voting {
         return currentCandidateID;
     }
 
+    function getNumOfVotesForCandidateInElection(uint candidateID, uint electionID, uint regionID) public view returns(uint) {
+        int currentCandidateID = getCandidateID(candidateID, electionID, regionID);
+        return candidateElections[uint(currentCandidateID)].votes; 
+    }
+    
 }
