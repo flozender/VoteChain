@@ -3,9 +3,10 @@ pragma solidity ^0.5.16;
 contract Voting {
 
     event AddedElection(uint electionID);
-    event AddedCandidateElection(bytes32 candidateElectionID);
-    event VoteCasted(bytes32 voterElectionID);
-    event AddedRegionElectionWinner(bytes32 regionElectionWinnerID);
+    event AddedCandidateElection(uint candidateElectionID);
+    event VoteCasted(uint voterElectionID);
+    event AddedRegionElectionWinner(uint regionElectionWinnerID);
+    event GeneratedWinner(uint winner, uint votes);
 
     address owner;
     constructor() public {
@@ -27,15 +28,16 @@ contract Voting {
     }
 
     struct CandidateElection {
-        bytes32 id;
+        uint id;
         uint electionID;
         uint candidateID;
         uint regionID;
+        uint votes;
         bool doesExist; 
     }
 
     struct VoterElection {
-        bytes32 id;
+        uint id;
         bytes32 voterID;
         uint regionID;
         uint electionID;
@@ -43,10 +45,11 @@ contract Voting {
     }
 
     struct RegionElectionWinner {
-        bytes32 id;
-        uint electionID;
+        uint id;
         uint candidateID;
+        uint votes;
         uint regionID;
+        uint electionID;
     }
  
     uint numElections;
@@ -55,9 +58,9 @@ contract Voting {
     uint numRegionElectionWinners;
 
     mapping (uint => Election) elections;
-    mapping (bytes32 => VoterElection) voterElections;
-    mapping (bytes32 => CandidateElection) candidateElections;
-    mapping (bytes32 => RegionElectionWinner) regionElectionWinners;
+    mapping (uint => VoterElection) voterElections;
+    mapping (uint => CandidateElection) candidateElections;
+    mapping (uint => RegionElectionWinner) regionElectionWinners;
     
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      *  These functions perform transactions, editing the mappings *
@@ -69,54 +72,94 @@ contract Voting {
         emit AddedElection(id);
     }
 
-    // Here candidateElectionID = "CND" + str(candidateID) + "ELC" + str(electionID);
-    function addCandidateElection(bytes32 candidateElectionID, uint candidateID, uint electionID, uint regionID) onlyOwner public {
-        numCandidateElections++;
-        candidateElections[candidateElectionID] = CandidateElection(candidateElectionID, candidateID, electionID, regionID, true);
+    function addCandidateElection(uint candidateID, uint electionID, uint regionID) onlyOwner public {
+        uint candidateElectionID = numCandidateElections++;
+        candidateElections[candidateElectionID] = CandidateElection(candidateElectionID, candidateID, electionID, regionID, 0, true);
         emit AddedCandidateElection(candidateElectionID);
     }
 
-    // Here voterElectionID = "VTR" + str(voterID) + "ELC" + str(electionID);
-    function vote(bytes32 voterElectionID, bytes32 candidateElectionID, uint electionID, uint regionID, uint candidateID, bytes32 voterID) public {
-        require(candidateElections[candidateElectionID].doesExist == true);
-        numVoterElections++;
+    function vote(bytes32 voterID, uint electionID, uint regionID, uint candidateID) public {
+        int currentCandidateID = getCandidateID(candidateID, electionID, regionID);
+        require(currentCandidateID != -1);
+        uint voterElectionID = numVoterElections++;
         voterElections[voterElectionID] = VoterElection(voterElectionID, voterID, regionID, electionID, candidateID);
+        candidateElections[uint(currentCandidateID)].votes++;
         emit VoteCasted(voterElectionID);
     }
 
-    // Here RegionElectionWinnerID = "RGN" + str(regionID) + "ELC" + str(electionID);
-    function addRegionElectionWinner(bytes32 RegionElectionWinnerID, bytes32 candidateElectionID, uint regionID, uint electionID, uint candidateID) onlyOwner public {
-        numRegionElectionWinners++;
-        require(candidateElections[candidateElectionID].doesExist == true);
-        require(candidateElections[candidateElectionID].regionID == regionID);
-        regionElectionWinners[RegionElectionWinnerID] = RegionElectionWinner(RegionElectionWinnerID, regionID, electionID, candidateID);
-        emit AddedRegionElectionWinner(RegionElectionWinnerID);
+    function addRegionElectionWinner(uint regionID, uint electionID, uint candidateID, uint votes) onlyOwner private {
+        int currentCandidateID = getCandidateID(candidateID, electionID, regionID);
+        require(currentCandidateID != -1);
+        uint regionElectionWinnerID = numRegionElectionWinners++;
+        regionElectionWinners[regionElectionWinnerID] = RegionElectionWinner(regionElectionWinnerID, candidateID, votes, regionID, electionID );
+        emit AddedRegionElectionWinner(regionElectionWinnerID);
+    }
+
+    function generateWinner(uint regionID, uint electionID) onlyOwner public {
+        uint maxVotes = 0;
+        uint winner = 0;
+        for (uint i = 0; i < numCandidateElections; i++) {
+            if (candidateElections[i].electionID == electionID && candidateElections[i].regionID == regionID) {
+                if (candidateElections[i].votes > maxVotes){
+                    maxVotes = candidateElections[i].votes;
+                    winner = candidateElections[i].candidateID;
+                }
+            }
+        }
+        addRegionElectionWinner(regionID, electionID, winner, maxVotes);
+        emit GeneratedWinner(winner, maxVotes);
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * 
      *  Getter Functions, marked by the key word "view" *
      * * * * * * * * * * * * * * * * * * * * * * * * * */
-    
 
-    // finds the total amount of votes for a specific candidate by looping
-    // through voters 
-    // function totalVotes(uint candidateID) view public returns (uint) {
-    //     uint numOfVotes = 0; // we will return this
-    //     for (uint i = 0; i < numVoters; i++) {
-    //         // if the voter votes for this specific candidate, we increment the number
-    //         if (voters[i].candidateIDVote == candidateID) {
-    //             numOfVotes++;
-    //         }
-    //     }
-    //     return numOfVotes; 
-    // }
+    function getRegionElectionWinner(uint regionID, uint electionID) public view returns(uint, uint) {
+        uint winner = 0;
+        uint votes = 0;
+        for (uint i = 0; i < numRegionElectionWinners; i++) {
+            if (regionElectionWinners[i].electionID == electionID && regionElectionWinners[i].regionID == regionID) {
+                winner = regionElectionWinners[i].candidateID;
+                votes = regionElectionWinners[i].votes;
+                break;
+            }
+        }
+        return (winner, votes);
+    }
 
     function getNumOfElections() public view returns(uint) {
         return numElections;
     }
 
-    // returns candidate information, including its ID, name, and party
-    // function getCandidate(uint candidateID) public view returns (uint,bytes32, bytes32) {
-    //     return (candidateID,candidates[candidateID].name,candidates[candidateID].party);
-    // }
+    function getNumOfCandidates(uint electionID) public view returns(uint) {
+        uint count = 0;
+        for (uint i = 0; i < numCandidateElections; i++) {
+            if (candidateElections[i].electionID == electionID) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    function getNumOfVoters(uint electionID) public view returns(uint) {
+        uint count = 0;
+        for (uint i = 0; i < numVoterElections; i++) {
+            if (voterElections[i].electionID == electionID) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    function getCandidateID(uint candidateID, uint electionID, uint regionID) private view returns(int) {
+        int currentCandidateID = -1;
+        for (uint i = 0; i < numCandidateElections; i++) {
+            if (candidateElections[i].candidateID == candidateID && candidateElections[i].electionID == electionID && candidateElections[i].regionID == regionID) {
+                currentCandidateID = int(i);
+                break;
+            }
+        }
+        return currentCandidateID;
+    }
+
 }
