@@ -5,6 +5,7 @@ const utils = require('../helpers/utils');
 const voterRepo = require('../models/voterRepo.js');
 const electionRepo = require('../models/electionRepo.js');
 const candidateElectionRepo = require('../models/candidateElectionRepo.js');
+const smartContract = require('../blockchain/Methods.js');
 
 exports.createVoter = async data => {
   try {
@@ -77,6 +78,7 @@ exports.verifyOTP = async data => {
       name: voter.name,
       mobile: voter.mobile,
       email: data.email,
+      regionID: data.assemblyConstituency,
       type: 'voter',
     });
   } else {
@@ -172,6 +174,40 @@ exports.getEligibleElections = async voterId => {
   } catch (err) {
     console.log(err);
     throw err;
+  }
+};
+
+exports.vote = async details => {
+  try {
+    let checkCandidate = await candidateElectionRepo.get(
+      { exclude: [] },
+      {
+        candidateID: details.candidateID,
+        electionID: details.electionID,
+        regionID: details.regionID,
+      }
+    );
+    let res = {};
+    if (!checkCandidate) {
+      res = {
+        success: false,
+        message: 'Candidate does not exists',
+      };
+    } else {
+      await smartContract.vote(
+        details.id,
+        details.electionID,
+        details.regionID,
+        details.candidateID
+      );
+      res = {
+        success: true,
+        message: 'Voted Successfully',
+      };
+    }
+    return res;
+  } catch (error) {
+    throw error;
   }
 };
 

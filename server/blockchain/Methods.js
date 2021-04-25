@@ -23,6 +23,15 @@ let smartContract = {
       .catch(err => console.log(err));
   },
 
+  vote: async (voterID, electionID, regionID, candidateID) => {
+    let accounts = await web3.eth.getAccounts();
+    instance.methods
+      .vote(voterID, electionID, regionID, candidateID)
+      .send({ from: accounts[0] })
+      .then(receipt => console.log(receipt.transactionHash))
+      .catch(err => console.log(err));
+  },
+
   getNumOfElections: async () => {
     let accounts = await web3.eth.getAccounts();
     instance.methods

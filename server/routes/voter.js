@@ -56,6 +56,20 @@ module.exports = app => {
     }
   });
 
+  app.post('/vote', auth.tokenValidate, async (req, res) => {
+    try {
+      let body = Object.assign({}, req.body);
+      body.id = req.token_data.data.id;
+      body.regionID = req.token_data.data.regionID;
+      let vote = await voterController.vote(body);
+      res.status(200).send(vote);
+    } catch (error) {
+      res.status(400).send({
+        error: JSON.stringify(error),
+      });
+    }
+  });
+
   app.get('/voter/:voterId', auth.tokenValidate, async (req, res) => {
     try {
       let voter = await voterController.getVoter(req.params.voterId);
