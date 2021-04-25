@@ -75,8 +75,11 @@ contract Voting {
     }
 
     function vote(bytes32 voterID, uint electionID, uint regionID, uint candidateID) onlyOwner public {
+        require(elections[electionID].doesExist == true);
         int currentCandidateID = getCandidateID(candidateID, electionID, regionID);
         require(currentCandidateID != -1);
+        bool hasVoted = hasVoterVoted(voterID, electionID);
+        require(hasVoted == false);
         uint voterElectionID = numVoterElections++;
         voterElections[voterElectionID] = VoterElection(voterElectionID, voterID, regionID, electionID, candidateID);
         candidateElections[uint(currentCandidateID)].votes++;
@@ -109,6 +112,17 @@ contract Voting {
     /* * * * * * * * * * * * * * * * * * * * * * * * * * 
      *  Getter Functions, marked by the key word "view" *
      * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+    function hasVoterVoted(bytes32 voterID, uint electionID) private view returns(bool) {
+        bool voted = false;
+        for (uint i = 0; i < numVoterElections; i++){
+            if (voterElections[i].voterID == voterID && voterElections[i].electionID == electionID){
+                voted = true;
+                break;
+            }
+        }
+        return voted;
+    }
 
     function getRegionElectionWinner(uint regionID, uint electionID) public view returns(uint, uint) {
         uint winner = 0;
