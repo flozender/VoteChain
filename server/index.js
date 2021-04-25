@@ -10,9 +10,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Use blockchain functions like this
 // let a = async () => {
-//   const voting = require('./blockchain/Methods');
-//   await voting.addElection(6);
-//   await voting.getNumOfElections();
+//   const contract = require('./blockchain/Methods');
+//   await contract.addElection(6);
+//   await contract.getNumOfElections();
 // };
 
 // a();

@@ -2,7 +2,7 @@ const db = require('../db/database.js');
 const util = require('../helpers/utils.js');
 const Bluebird = require('bluebird');
 const moment = require('moment');
-const voting = require('../blockchain/Methods');
+const contract = require('../blockchain/Methods');
 const electionRepo = require('../models/electionRepo.js');
 const regionRepo = require('../models/regionRepo.js');
 const candidateElectionRepo = require('../models/candidateElectionRepo.js');
@@ -53,7 +53,7 @@ exports.getAllElections = async () => {
 exports.createElection = async data => {
   try {
     let election = await electionRepo.add(data);
-    await voting.addElection(election.id);
+    await contract.addElection(election.id);
     return {
       success: true,
       message: `Election Created Successfully`,
@@ -108,7 +108,7 @@ exports.assignCandidates = async (details, electionId) => {
       );
       if (!isCandidateExists && !isCandidateExists.candidateID) {
         await candidateElectionRepo.add(candidate);
-        await voting.addCandidateElection(
+        await contract.addCandidateElection(
           candidate.candidateID,
           electionID,
           candidate.regionID
