@@ -207,6 +207,7 @@ exports.vote = async details => {
     }
     return res;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
