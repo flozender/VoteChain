@@ -24,6 +24,7 @@ import Voters from './pages/voters';
 import Candidates from './pages/candidates';
 import Results from './pages/results';
 import Logout from './pages/logout';
+import ViewResults from './pages/viewResults';
 
 const App = props => {
   let user = JSON.parse(localStorage.getItem('app-user')) || null;
@@ -81,6 +82,16 @@ const App = props => {
           path="/results"
           component={() => (
             <Results
+              currentUser={currentUser}
+              setCurrentUser={setCurrentUser}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/elections/:electionID"
+          component={() => (
+            <ViewResults
               currentUser={currentUser}
               setCurrentUser={setCurrentUser}
             />

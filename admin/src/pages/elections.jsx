@@ -37,29 +37,6 @@ import DataTable from 'react-data-table-component';
 import fetchApi from '../services/fetch-custom.js';
 import '../assets/scroll.css';
 
-const groupedOptions = [
-  {
-    label: 'Locality 1',
-    options: [
-      { value: 'Region 1', label: 'Ocean', color: '#00B8D9' },
-      { value: 'Region 2', label: 'Blue', color: '#0052CC' },
-    ],
-  },
-  {
-    label: 'Locality 2',
-    options: [
-      { value: 'Region 1', label: 'Ocean', color: '#00B8D9' },
-      { value: 'Region 2', label: 'Blue', color: '#0052CC' },
-    ],
-  },
-];
-
-const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' },
-];
-
 const conditionalRowStyles = [
   {
     when: row => row.active,
@@ -199,6 +176,23 @@ const Elections = ({ history, currentUser, ...props }) => {
       name: 'Winner',
       sortable: true,
       cell: row => <Text fontWeight="bold">{row.winner?.name}</Text>,
+    },
+    {
+      name: 'Votes',
+      button: true,
+      ignoreRowClick: true,
+      allowOverflow: true,
+      cell: row => {
+        return (
+          <Button
+            size="sm"
+            colorScheme="teal"
+            onClick={() => history.push(`/elections/${row.id}`)}
+          >
+            View
+          </Button>
+        );
+      },
     },
     {
       name: 'Manage',
