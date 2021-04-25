@@ -4,7 +4,7 @@ const provider = new Provider();
 const contract = new Contract();
 const web3 = provider.web3;
 const instance = contract.initContract();
-let Voting = {
+let voting = {
   addElection: async electionID => {
     let accounts = await web3.eth.getAccounts();
     instance.methods
@@ -32,4 +32,4 @@ let Voting = {
       .catch(err => console.log(err));
   },
 };
-module.exports = Voting;
+module.exports = voting;
