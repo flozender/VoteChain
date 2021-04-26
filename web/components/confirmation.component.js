@@ -23,10 +23,6 @@ export const ConfirmationScreen = ({ navigation, route }) => {
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState('Error!');
 
-  const navigateBack = () => {
-    navigation.goBack();
-  };
-
   const navigateAuth = () => {
     navigation.navigate('Auth');
   };
@@ -39,15 +35,13 @@ export const ConfirmationScreen = ({ navigation, route }) => {
     navigation.navigate('Results', { electionId, electionName });
   };
 
-  const { electionId, electionName } = route.params;
+  // let { electionId, electionName } = route.params;
+  let electionId = 1;
+  let electionName = 'nnnn';
 
   return (
     <>
-      <TopNavigation
-        title="VoteChain"
-        alignment="center"
-        accessoryLeft={BackAction}
-      />
+      <TopNavigation title="VoteChain" alignment="center" />
       <Divider />
       <Layout
         style={{
@@ -55,16 +49,14 @@ export const ConfirmationScreen = ({ navigation, route }) => {
           flex: 1,
           flexDirection: 'column',
           width: '100%',
-          marginTop: 30,
           alignItems: 'center',
-          marginBottom: 10,
         }}
       >
         <Text
           style={{
             fontSize: 18,
             width: '70%',
-            marginTop: 50,
+            marginTop: 25,
             marginBottom: 5,
             textAlign: 'center',
             color: 'gray',
@@ -78,12 +70,13 @@ export const ConfirmationScreen = ({ navigation, route }) => {
             fontSize: 40,
             textAlign: 'center',
             fontWeight: 'bold',
+            marginBottom: 15,
           }}
         >
           {electionName}
         </Text>
 
-        <Layout style={styles.tab}>
+        <Layout style={{ ...styles.tab, marginBottom: 50 }}>
           <Text
             style={{
               fontSize: 14,
@@ -109,14 +102,13 @@ export const ConfirmationScreen = ({ navigation, route }) => {
               borderWidth: 2,
               borderColor: 'gray',
               borderStyle: 'solid',
+              padding: 10,
             }}
           >
             <Text
               style={{
                 fontSize: 23,
-                fontWeight: 'bold',
                 paddingBottom: 5,
-                marginBottom: 5,
               }}
             >
               Winning Party
@@ -141,7 +133,7 @@ export const ConfirmationScreen = ({ navigation, route }) => {
           </Layout>
           <Text
             style={{
-              fontSize: 23,
+              fontSize: 20,
             }}
           >
             Region_Name Winner

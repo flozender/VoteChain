@@ -25,12 +25,7 @@ export const ResultsScreen = ({ navigation, route }) => {
     <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
   );
 
-  const Votes1 = () => <Text>76</Text>;
-  const Votes2 = () => <Text>66</Text>;
-
   const { electionId, electionName } = route.params;
-
-  const [selectedIndex, setSelectedIndex] = React.useState(null);
 
   return (
     <>
@@ -58,7 +53,6 @@ export const ResultsScreen = ({ navigation, route }) => {
             style={{
               fontSize: 18,
               width: '70%',
-              marginTop: 50,
               marginBottom: 5,
               textAlign: 'center',
               color: 'gray',
@@ -81,7 +75,7 @@ export const ResultsScreen = ({ navigation, route }) => {
           style={{
             ...styles.container,
             width: '90%',
-            height: '60%',
+            height: '70%',
             marginHorizontal: 'auto',
             borderWidth: 2,
             borderColor: 'gray',
@@ -89,22 +83,56 @@ export const ResultsScreen = ({ navigation, route }) => {
             marginBottom: 90,
           }}
         >
-          <Menu
-            style={{ backgroundColor: '#fff', width: 'auto' }}
-            selectedIndex={selectedIndex}
-            onSelect={index => setSelectedIndex(index)}
-          >
+          <Menu style={{ backgroundColor: '#fff', width: 'auto' }}>
             <MenuGroup title="Region Name">
-              <MenuItem title="Candidate Name1" accessoryRight={Votes1} />
-              <MenuItem title="Candidate Name2" accessoryRight={Votes2} />
+              <MenuItem
+                title="Candidate Name1"
+                accessoryRight={props => <Text {...props}>31</Text>}
+              />
+              <MenuItem
+                title="Candidate Name1"
+                accessoryRight={props => <Text {...props}>31</Text>}
+              />
             </MenuGroup>
             <MenuGroup title="Region Name">
-              <MenuItem title="Candidate Name1" accessoryRight={Votes1} />
-              <MenuItem title="Candidate Name2" accessoryRight={Votes2} />
+              <MenuItem
+                title="Candidate Name1"
+                accessoryRight={props => <Text {...props}>31</Text>}
+              />
+              <MenuItem
+                title="Candidate Name1"
+                accessoryRight={props => <Text {...props}>31</Text>}
+              />
             </MenuGroup>
             <MenuGroup title="Region Name">
-              <MenuItem title="Candidate Name1" accessoryRight={Votes1} />
-              <MenuItem title="Candidate Name2" accessoryRight={Votes2} />
+              <MenuItem
+                title="Candidate Name1"
+                accessoryRight={props => <Text {...props}>31</Text>}
+              />
+              <MenuItem
+                title="Candidate Name1"
+                accessoryRight={props => <Text {...props}>31</Text>}
+              />
+            </MenuGroup>
+            <MenuGroup title="Region Name">
+              <MenuItem
+                title="Candidate Name1"
+                accessoryRight={props => <Text {...props}>31</Text>}
+              />
+              <MenuItem
+                title="Candidate Name1"
+                accessoryRight={props => <Text {...props}>31</Text>}
+              />
+            </MenuGroup>
+            <MenuGroup title="Region Name">
+              <MenuItem
+                title="Candidate Name1"
+                accessoryRight={props => <Text {...props}>31</Text>}
+              />
+              <MenuItem
+                title="Candidate Name1"
+                accessoryRight={props => <Text {...props}>31</Text>}
+              />
             </MenuGroup>
           </Menu>
         </Layout>
