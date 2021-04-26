@@ -55,10 +55,6 @@ exports.createElection = async data => {
   try {
     let election = await electionRepo.add(data);
     await smartContract.addElection(election.id);
-    // await smartContract.getNumOfElections();
-    // await smartContract.getNumOfParties(21);
-    // await smartContract.getNumOfCandidates(21);
-    // await smartContract.getCountOfParties();
     return {
       success: true,
       message: `Election Created Successfully`,
