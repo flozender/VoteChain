@@ -24,7 +24,7 @@ exports.createVoter = async data => {
       let createVoter = await voterRepo.add(data);
       return {
         success: true,
-        message: 'Created Voter Successsfully',
+        message: 'Created Voter Successfully',
         voter: createVoter,
       };
     }
@@ -47,7 +47,7 @@ exports.verifyVoterAndSendOTP = async data => {
       if (mail.accepted[0] == voter.email) {
         return {
           success: true,
-          message: 'OTP sent Successsfully',
+          message: 'OTP sent Successfully',
         };
       }
     } else {
