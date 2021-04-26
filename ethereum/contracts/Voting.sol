@@ -3,10 +3,9 @@ pragma solidity ^0.5.16;
 contract Voting {
 
     event AddedElection(uint electionID);
+    event AddedPartyElection(uint partyElectionID);
     event AddedCandidateElection(uint candidateElectionID);
     event VoteCasted(uint voterElectionID);
-    event AddedRegionElectionWinner(uint regionElectionWinnerID);
-    event GeneratedWinner(uint winner, uint votes);
 
     address owner;
     constructor() public {
@@ -21,16 +20,7 @@ contract Voting {
         uint id;
         bool doesExist; 
     }
-
-    struct CandidateElection {
-        uint id;
-        uint electionID;
-        uint candidateID;
-        uint regionID;
-        uint votes;
-        bool doesExist; 
-    }
-
+    
     struct VoterElection {
         uint id;
         bytes32 voterID;
@@ -39,38 +29,57 @@ contract Voting {
         uint candidateID;
     }
 
-    struct RegionElectionWinner {
+    struct CandidateElection {
         uint id;
         uint candidateID;
-        uint votes;
+        uint partyID;
         uint regionID;
         uint electionID;
+        uint votes;
+        bool doesExist; 
     }
- 
+
+    struct PartyElection {
+        uint id;
+        uint partyID;
+        uint electionID;
+        uint votes;
+        bool doesExist;
+    }
+
     uint numElections;
     uint numVoterElections;
     uint numCandidateElections;
-    uint numRegionElectionWinners;
+    uint numPartyElections;
 
     mapping (uint => Election) elections;
     mapping (uint => VoterElection) voterElections;
     mapping (uint => CandidateElection) candidateElections;
-    mapping (uint => RegionElectionWinner) regionElectionWinners;
+    mapping (uint => PartyElection) partyElections;
     
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      *  These functions perform transactions, editing the mappings *
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
      
-    function addElection(uint id) public onlyOwner{
+    function addElection(uint id) onlyOwner public {
         require(elections[id].doesExist == false);
         numElections++;
         elections[id] = Election(id, true);
         emit AddedElection(id);
     }
 
-    function addCandidateElection(uint candidateID, uint electionID, uint regionID) onlyOwner public {
+    function addParty(uint partyID, uint electionID) onlyOwner public {
+        int currentPartyID = getPartyID(partyID, electionID);
+        if (currentPartyID != -1) {
+            uint partyElectionID = numPartyElections++;
+            partyElections[partyElectionID] = PartyElection(partyElectionID, partyID, electionID, 0, true);
+            emit AddedPartyElection(partyElectionID);
+        }
+    }
+
+    function addCandidateElection(uint candidateID, uint electionID, uint regionID, uint partyID) onlyOwner public {
         uint candidateElectionID = numCandidateElections++;
-        candidateElections[candidateElectionID] = CandidateElection(candidateElectionID, candidateID, electionID, regionID, 0, true);
+        candidateElections[candidateElectionID] = CandidateElection(candidateElectionID, candidateID, partyID, regionID, electionID, 0, true);
         emit AddedCandidateElection(candidateElectionID);
     }
 
@@ -83,30 +92,11 @@ contract Voting {
         uint voterElectionID = numVoterElections++;
         voterElections[voterElectionID] = VoterElection(voterElectionID, voterID, regionID, electionID, candidateID);
         candidateElections[uint(currentCandidateID)].votes++;
+        uint partyID = candidateElections[uint(currentCandidateID)].partyID;
+        int currentPartyID = getPartyID(partyID, electionID);
+        require(currentPartyID != -1);
+        partyElections[uint(currentPartyID)].votes++;
         emit VoteCasted(voterElectionID);
-    }
-
-    function addRegionElectionWinner(uint regionID, uint electionID, uint candidateID, uint votes) onlyOwner private {
-        int currentCandidateID = getCandidateID(candidateID, electionID, regionID);
-        require(currentCandidateID != -1);
-        uint regionElectionWinnerID = numRegionElectionWinners++;
-        regionElectionWinners[regionElectionWinnerID] = RegionElectionWinner(regionElectionWinnerID, candidateID, votes, regionID, electionID);
-        emit AddedRegionElectionWinner(regionElectionWinnerID);
-    }
-
-    function generateWinner(uint regionID, uint electionID) onlyOwner public {
-        uint maxVotes = 0;
-        uint winner = 0;
-        for (uint i = 0; i < numCandidateElections; i++) {
-            if (candidateElections[i].electionID == electionID && candidateElections[i].regionID == regionID) {
-                if (candidateElections[i].votes > maxVotes){
-                    maxVotes = candidateElections[i].votes;
-                    winner = candidateElections[i].candidateID;
-                }
-            }
-        }
-        addRegionElectionWinner(regionID, electionID, winner, maxVotes);
-        emit GeneratedWinner(winner, maxVotes);
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -122,19 +112,6 @@ contract Voting {
             }
         }
         return voted;
-    }
-
-    function getRegionElectionWinner(uint regionID, uint electionID) public view returns(uint, uint) {
-        uint winner = 0;
-        uint votes = 0;
-        for (uint i = 0; i < numRegionElectionWinners; i++) {
-            if (regionElectionWinners[i].electionID == electionID && regionElectionWinners[i].regionID == regionID) {
-                winner = regionElectionWinners[i].candidateID;
-                votes = regionElectionWinners[i].votes;
-                break;
-            }
-        }
-        return (winner, votes);
     }
 
     function getNumOfElections() public view returns(uint) {
@@ -172,9 +149,24 @@ contract Voting {
         return currentCandidateID;
     }
 
-    function getNumOfVotesForCandidateInElection(uint candidateID, uint electionID, uint regionID) public view returns(uint) {
+    function getPartyID(uint partyID, uint electionID) private view returns(int) {
+        int currentPartyID = -1;
+        for (uint i = 0; i < numPartyElections; i++) {
+            if (partyElections[i].partyID == partyID && partyElections[i].electionID == electionID) {
+                currentPartyID = int(i);
+                break;
+            }
+        }
+        return currentPartyID;
+    }
+
+    function getVotesForParty(uint partyID, uint electionID) public view returns(uint) {
+        int currentPartyID = getPartyID(partyID, electionID);
+        return partyElections[uint(currentPartyID)].votes; 
+    }
+    
+    function getVotesForCandidate(uint candidateID, uint electionID, uint regionID) public view returns(uint) {
         int currentCandidateID = getCandidateID(candidateID, electionID, regionID);
         return candidateElections[uint(currentCandidateID)].votes; 
     }
-    
 }
