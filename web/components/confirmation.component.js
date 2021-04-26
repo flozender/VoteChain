@@ -51,8 +51,13 @@ export const ConfirmationScreen = ({ navigation, route }) => {
       <Divider />
       <Layout
         style={{
+          display: 'flex',
           flex: 1,
+          flexDirection: 'column',
+          width: '100%',
+          marginTop: 30,
           alignItems: 'center',
+          marginBottom: 10,
         }}
       >
         <Text
