@@ -21,4 +21,5 @@ require('./routes/admin.js')(app);
 require('./routes/voter.js')(app);
 
 app.listen(2002, () => console.log('Server @ port 2002'));
+console.log("Don't forget to start Ganache on port 8545");
 module.exports = app;

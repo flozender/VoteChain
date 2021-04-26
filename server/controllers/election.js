@@ -127,7 +127,7 @@ exports.assignCandidates = async (details, electionID) => {
       }
     });
     return {
-      success: false,
+      success: true,
       message: `Added Successfully`,
     };
   } catch (err) {

@@ -22,7 +22,7 @@ let smartContract = {
     let accounts = await web3.eth.getAccounts();
     instance.methods
       .addParty(partyID, electionID)
-      .send({ from: accounts[0] })
+      .send({ from: accounts[0], gas: 3000000 })
       .then(receipt => console.log(receipt.transactionHash))
       .catch(err => {
         console.log(err);
@@ -34,7 +34,7 @@ let smartContract = {
     let accounts = await web3.eth.getAccounts();
     instance.methods
       .addCandidateElection(candidateID, electionID, regionID, partyID)
-      .send({ from: accounts[0] })
+      .send({ from: accounts[0], gas: 3000000 })
       .then(receipt => console.log(receipt.transactionHash))
       .catch(err => {
         console.log(err);
