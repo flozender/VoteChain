@@ -98,15 +98,15 @@ exports.updateElection = async (details, electionId) => {
   }
 };
 
-exports.assignCandidates = async (details, electionId) => {
+exports.assignCandidates = async (details, electionID) => {
   try {
     await Bluebird.each(details.candidates, async candidate => {
-      candidate.electionID = electionId;
+      candidate.electionID = electionID;
       let isCandidateExists = await candidateElectionRepo.get(
         { exclude: [] },
-        { candidateID: candidate.candidateID, electionID: electionId }
+        { candidateID: candidate.candidateID, electionID: electionID }
       );
-      if (!isCandidateExists && !isCandidateExists.candidateID) {
+      if (!isCandidateExists) {
         await candidateElectionRepo.add(candidate);
         await smartContract.addCandidateElection(
           candidate.candidateID,
@@ -117,7 +117,7 @@ exports.assignCandidates = async (details, electionId) => {
     });
     return {
       success: true,
-      message: `Updated Successfully`,
+      message: `Added Successfully`,
     };
   } catch (err) {
     console.log(err);
