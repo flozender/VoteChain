@@ -87,51 +87,17 @@ export const ResultsScreen = ({ navigation, route }) => {
             <MenuGroup title="Region Name">
               <MenuItem
                 title="Candidate Name1"
-                accessoryRight={props => <Text {...props}>31</Text>}
+                accessoryRight={props => {
+                  delete props.tintColor;
+                  return <Text {...props}>31</Text>;
+                }}
               />
               <MenuItem
                 title="Candidate Name1"
-                accessoryRight={props => <Text {...props}>31</Text>}
-              />
-            </MenuGroup>
-            <MenuGroup title="Region Name">
-              <MenuItem
-                title="Candidate Name1"
-                accessoryRight={props => <Text {...props}>31</Text>}
-              />
-              <MenuItem
-                title="Candidate Name1"
-                accessoryRight={props => <Text {...props}>31</Text>}
-              />
-            </MenuGroup>
-            <MenuGroup title="Region Name">
-              <MenuItem
-                title="Candidate Name1"
-                accessoryRight={props => <Text {...props}>31</Text>}
-              />
-              <MenuItem
-                title="Candidate Name1"
-                accessoryRight={props => <Text {...props}>31</Text>}
-              />
-            </MenuGroup>
-            <MenuGroup title="Region Name">
-              <MenuItem
-                title="Candidate Name1"
-                accessoryRight={props => <Text {...props}>31</Text>}
-              />
-              <MenuItem
-                title="Candidate Name1"
-                accessoryRight={props => <Text {...props}>31</Text>}
-              />
-            </MenuGroup>
-            <MenuGroup title="Region Name">
-              <MenuItem
-                title="Candidate Name1"
-                accessoryRight={props => <Text {...props}>31</Text>}
-              />
-              <MenuItem
-                title="Candidate Name1"
-                accessoryRight={props => <Text {...props}>31</Text>}
+                accessoryRight={props => {
+                  delete props.tintColor;
+                  return <Text {...props}>31</Text>;
+                }}
               />
             </MenuGroup>
           </Menu>

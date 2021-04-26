@@ -318,7 +318,20 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
     type: '',
   });
 
+  useEffect(() => {
+    setData({
+      name: '',
+      startDate: '',
+      endDate: '',
+      location: '',
+      assemblyConstituency: '',
+      education: '0',
+      type: '',
+    });
+  }, [currentUser]);
+
   const submitData = data => {
+    setLoading(true);
     if (Object.values(data).includes('')) {
       toast({
         title: 'Data missing.',
@@ -327,6 +340,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
         duration: 1000,
         isClosable: true,
       });
+      setLoading(false);
     } else {
       fetchApi('/admin/createElection', {
         method: 'post',

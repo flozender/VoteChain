@@ -39,6 +39,8 @@ export const OTPScreen = ({ navigation, route }) => {
     const success = json => {
       GLOBAL.voter = json.voter;
       GLOBAL.token = `Bearer ${json.token}`;
+      console.log('voter', json.voter);
+      console.log('token', json.token);
       setLoading(false);
       navigation.navigate('Elections');
     };

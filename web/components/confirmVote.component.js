@@ -11,12 +11,14 @@ import {
   Avatar,
   List,
 } from '@ui-kitten/components';
+import { ActivityIndicator } from 'react-native';
 import { CandidateCard } from './castVote.component';
 import { styles } from './styles';
 import { url } from '../services/constants';
 import Popup from './popup.component';
 
 export const ConfirmVoteScreen = ({ navigation, route }) => {
+  const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState('Error!');
 
@@ -32,8 +34,36 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
 
   const { electionId, electionName, candidate } = route.params;
 
-  const navigateConfirmation = () => {
-    navigation.navigate('Confirmation', { electionId, electionName });
+  const handleSubmit = async () => {
+    setLoading(true);
+
+    const success = () => {
+      setLoading(false);
+      navigation.navigate('Confirmation', { electionId, electionName });
+    };
+    const body = {
+      electionID: electionId,
+      candidateID: candidate.id,
+    };
+    console.log(body, url);
+    fetch(`${url}/vote`, {
+      method: 'post',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        success();
+      })
+      .catch(err => {
+        console.log(err);
+        setMessage('Voting failed!');
+        setVisible(true);
+        setLoading(false);
+      });
   };
 
   return (
@@ -71,8 +101,12 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
           <CandidateCard candidate={candidate} />
           <Button
             style={{ width: '40%', marginTop: 20 }}
-            accessoryLeft={CheckIcon}
-            onPress={navigateConfirmation}
+            onPress={handleSubmit}
+            accessoryLeft={
+              loading
+                ? () => <ActivityIndicator color="white" size="small" />
+                : CheckIcon
+            }
           >
             Confirm Vote
           </Button>
