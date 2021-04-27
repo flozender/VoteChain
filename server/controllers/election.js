@@ -36,7 +36,6 @@ exports.getAllElections = async () => {
           element.id,
           element.regions
         );
-        console.log(regions);
         element.assemblyConstituencies = JSON.parse(regions.regions);
         delete element.regions;
       }
@@ -54,15 +53,19 @@ exports.getAllElections = async () => {
 exports.createElection = async data => {
   try {
     let election = await electionRepo.add(data);
-    await smartContract.addElection(election.id);
+    let receipt = await smartContract.addElection(election.id);
     return {
       success: true,
       message: `Election Created Successfully`,
       election,
+      receipt,
     };
   } catch (err) {
     console.log(err);
-    throw err;
+    return {
+      success: false,
+      message: err.data[Object.keys(err.data)[0]].reason,
+    };
   }
 };
 
@@ -128,7 +131,10 @@ exports.assignCandidates = async (details, electionID) => {
     };
   } catch (err) {
     console.log(err);
-    throw err;
+    return {
+      success: false,
+      message: err.data[Object.keys(err.data)[0]].reason,
+    };
   }
 };
 

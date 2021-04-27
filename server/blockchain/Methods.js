@@ -8,50 +8,38 @@ const instance = contract.initContract();
 let smartContract = {
   addElection: async electionID => {
     let accounts = await web3.eth.getAccounts();
-    instance.methods
+    let receipt = await instance.methods
       .addElection(electionID)
-      .send({ from: accounts[0] })
-      .then(receipt => console.log(receipt.transactionHash))
-      .catch(err => {
-        console.log(err);
-        throw err;
-      });
+      .send({ from: accounts[0] });
+    console.log(receipt.transactionHash);
+    return receipt;
   },
 
   addParty: async (partyID, electionID) => {
     let accounts = await web3.eth.getAccounts();
-    instance.methods
+    let receipt = await instance.methods
       .addParty(partyID, electionID)
-      .send({ from: accounts[0], gas: 3000000 })
-      .then(receipt => console.log(receipt.transactionHash))
-      .catch(err => {
-        console.log(err);
-        throw err;
-      });
+      .send({ from: accounts[0], gas: 3000000 });
+    console.log(receipt.transactionHash);
+    return receipt;
   },
 
   addCandidateElection: async (candidateID, electionID, regionID, partyID) => {
     let accounts = await web3.eth.getAccounts();
-    instance.methods
+    let receipt = await instance.methods
       .addCandidateElection(candidateID, electionID, regionID, partyID)
-      .send({ from: accounts[0], gas: 3000000 })
-      .then(receipt => console.log(receipt.transactionHash))
-      .catch(err => {
-        console.log(err);
-        throw err;
-      });
+      .send({ from: accounts[0], gas: 3000000 });
+    console.log(receipt.transactionHash);
+    return receipt;
   },
 
   vote: async (voterID, electionID, regionID, candidateID) => {
     let accounts = await web3.eth.getAccounts();
-    instance.methods
+    let receipt = await instance.methods
       .vote(voterID, electionID, regionID, candidateID)
-      .send({ from: accounts[0] })
-      .then(receipt => console.log(receipt.transactionHash))
-      .catch(err => {
-        console.log(err);
-        throw err;
-      });
+      .send({ from: accounts[0], gas: 3000000 });
+    console.log(receipt.transactionHash);
+    return receipt;
   },
 
   getNumOfElections: async () => {

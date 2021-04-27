@@ -14,9 +14,9 @@ const { Navigator, Screen } = createStackNavigator();
 
 const HomeNavigator = () => (
   <Navigator headerMode="none">
-    <Screen name="Elections" component={ElectionsScreen} />
     <Screen name="Auth" component={AuthScreen} />
     <Screen name="OTP" component={OTPScreen} />
+    <Screen name="Elections" component={ElectionsScreen} />
     <Screen name="Cast Vote" component={CastVoteScreen} />
     <Screen name="Confirm Vote" component={ConfirmVoteScreen} />
     <Screen name="Confirmation" component={ConfirmationScreen} />

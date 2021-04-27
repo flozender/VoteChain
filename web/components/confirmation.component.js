@@ -35,9 +35,7 @@ export const ConfirmationScreen = ({ navigation, route }) => {
     navigation.navigate('Results', { electionId, electionName });
   };
 
-  // let { electionId, electionName } = route.params;
-  let electionId = 1;
-  let electionName = 'nnnn';
+  let { electionId, electionName } = route.params;
 
   return (
     <>

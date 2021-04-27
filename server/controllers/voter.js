@@ -77,8 +77,8 @@ exports.verifyOTP = async data => {
       id: voter.id,
       name: voter.name,
       mobile: voter.mobile,
-      email: data.email,
-      regionID: data.assemblyConstituency,
+      email: voter.email,
+      regionID: voter.assemblyConstituency,
       type: 'voter',
     });
   } else {
@@ -194,7 +194,7 @@ exports.vote = async details => {
         message: 'Candidate does not exist',
       };
     } else {
-      await smartContract.vote(
+      const receipt = await smartContract.vote(
         details.id,
         details.electionID,
         details.regionID,
@@ -206,9 +206,11 @@ exports.vote = async details => {
       };
     }
     return res;
-  } catch (error) {
-    console.log(error);
-    throw error;
+  } catch (err) {
+    return {
+      success: false,
+      message: err.data[Object.keys(err.data)[0]].reason,
+    };
   }
 };
 
