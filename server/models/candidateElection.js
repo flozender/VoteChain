@@ -1,7 +1,7 @@
-var DB = require("../db/database"),
+var DB = require('../db/database'),
   db_sequelize = DB.Sequelize,
   candidateElection = DB.define(
-    "CandidateElection",
+    'CandidateElection',
     {
       candidateID: {
         type: db_sequelize.INTEGER,
@@ -10,6 +10,9 @@ var DB = require("../db/database"),
         type: db_sequelize.INTEGER,
       },
       regionID: {
+        type: db_sequelize.INTEGER,
+      },
+      votes: {
         type: db_sequelize.INTEGER,
       },
     },

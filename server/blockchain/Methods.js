@@ -37,7 +37,21 @@ let smartContract = {
     instance.methods
       .getNumOfElections()
       .call()
-      .then(value => console.log('Number of elections: ', value))
+      .then(value => {
+        console.log('Number of elections: ', value);
+        return value;
+      })
+      .catch(err => console.log(err));
+  },
+  getRegionWiseCandidateVotes: async (candidateID, electionID, regionID) => {
+    let accounts = await web3.eth.getAccounts();
+    instance.methods
+      .getVotesForCandidate(candidateID, electionID, regionID)
+      .call()
+      .then(value => {
+        console.log('Number of elections: ', value);
+        return value;
+      })
       .catch(err => console.log(err));
   },
 };

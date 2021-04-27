@@ -1,12 +1,12 @@
 var candidateElection = require('./candidateElection');
 let db = require('../db/database');
 
-
 module.exports = {
   add: function (data) {
-    return candidateElection.create(data, {
-      raw: true
-    })
+    return candidateElection
+      .create(data, {
+        raw: true,
+      })
       .then(res => res)
       .catch(error => {
         throw error;
@@ -14,9 +14,10 @@ module.exports = {
   },
 
   update: function (update_object, condition) {
-    return candidateElection.update(update_object, {
-      where: condition
-    })
+    return candidateElection
+      .update(update_object, {
+        where: condition,
+      })
       .then(data => data)
       .error(error => {
         throw error;
@@ -24,9 +25,10 @@ module.exports = {
   },
 
   delete: function (condition) {
-    return candidateElection.destroy({
-      where: condition
-    })
+    return candidateElection
+      .destroy({
+        where: condition,
+      })
       .then(data => data)
       .catch(error => {
         throw error;
@@ -34,10 +36,23 @@ module.exports = {
   },
 
   get: function (attributes, condition) {
-    return candidateElection.findOne({
-      attributes,
-      where: condition
-    })
+    return candidateElection
+      .findOne({
+        attributes,
+        where: condition,
+      })
+      .then(data => data)
+      .error(error => {
+        throw error;
+      });
+  },
+
+  getAll: function (attributes, condition) {
+    return candidateElection
+      .findAll({
+        attributes,
+        where: condition,
+      })
       .then(data => data)
       .error(error => {
         throw error;
@@ -57,14 +72,18 @@ module.exports = {
       WHERE CE.regionID = V.assemblyConstituency AND CE.electionID = :electionId
       ORDER BY CE.candidateID ASC, CE.regionID`;
 
-    return db.query(query, { replacements: { electionId, voterId }, type: db.QueryTypes.SELECT })
+    return db
+      .query(query, {
+        replacements: { electionId, voterId },
+        type: db.QueryTypes.SELECT,
+      })
       .then(data => data)
       .catch(error => {
         throw error;
-      })
+      });
   },
 
-  getAssignedCandidatesElectionForAdmin: (electionId) => {
+  getAssignedCandidatesElectionForAdmin: electionId => {
     let query = `SELECT JSON_OBJECT('id', CE.id, 'name', C.name, 'partyID', C.partyID, 'partyName', P.name, 'partyImgURL', P.imgURL) AS candidate,
       JSON_OBJECT('regionID', CE.regionID, 'regionName', R.name) AS region
       FROM CandidateElection CE
@@ -77,11 +96,14 @@ module.exports = {
       WHERE CE.electionID = :electionId
       ORDER BY CE.candidateID, CE.regionID`;
 
-    return db.query(query, { replacements: { electionId }, type: db.QueryTypes.SELECT })
+    return db
+      .query(query, {
+        replacements: { electionId },
+        type: db.QueryTypes.SELECT,
+      })
       .then(data => data)
       .catch(error => {
         throw error;
-      })
-  }
-
-}
+      });
+  },
+};

@@ -142,3 +142,34 @@ exports.deleteAssignedCandidates = async (details, electionId) => {
     throw err;
   }
 };
+
+exports.generateWinner = async electionID => {
+  try {
+    let allRegionWiseCandidates = await candidateElectionRepo.getAll(
+      { exclude: [] },
+      { electionID }
+    );
+    await Bluebird.each(allRegionWiseCandidates, async region => {
+      let votes = await smartContract.getRegionWiseCandidateVotes(
+        region.candidateID,
+        electionID,
+        region.regionID
+      );
+      await candidateElectionRepo.update(
+        { votes },
+        {
+          electionID,
+          candidateID: region.candidateID,
+          regionID: region.regionID,
+        }
+      );
+    });
+    return {
+      success: true,
+      message: 'Votes Generated Successfully',
+    };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
