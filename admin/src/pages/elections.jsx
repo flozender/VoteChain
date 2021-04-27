@@ -383,6 +383,12 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
     setData(data => ({ ...data, [e.target.name]: e.target.value }));
   };
 
+  const dd = [
+    { value: 'chocolate', label: 'Chocolate' },
+    { value: 'strawberry', label: 'Strawberry' },
+    { value: 'vanilla', label: 'Vanilla' },
+  ];
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -413,10 +419,14 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
               placeholder="Location"
               onChange={handleChange}
             />
-            <Input
-              name="assemblyConstituency"
-              placeholder="Assembly Constituency"
-              onChange={handleChange}
+
+            <DropdownAC
+              text="Assembly Constituency"
+              id="assemblyConstituency"
+              placeholder="Select Assembly Constituency"
+              data={dd}
+              // handleCustomChange={handleChange}
+              width="100%"
             />
             <RadioGroup
               defaultValue="0"
@@ -861,7 +871,35 @@ const Dropdown = ({
       isRequired
       onChange={obj => {
         obj.field = id;
-        handleCustomChange(obj, setFieldValue);
+        // handleCustomChange(obj, setFieldValue);
+      }}
+      styles={customStyles}
+      options={data}
+    />
+  );
+};
+const DropdownAC = ({
+  handleCustomChange,
+  data,
+  id,
+  setFieldValue,
+  width = '25vw',
+}) => {
+  const customStyles = {
+    container: provided => ({
+      ...provided,
+      width: width,
+      marginBottom: '10px',
+    }),
+  };
+  return (
+    <Select
+      id={id}
+      placeholder="Select Assembly Constituency"
+      isRequired
+      onChange={obj => {
+        obj.field = id;
+        // handleCustomChange(obj, setFieldValue);
       }}
       styles={customStyles}
       options={data}
