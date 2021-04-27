@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   },
   input: { width: '70%', marginBottom: 20 },
   tab: {
-    height: '35%',
+    height: '60%',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',

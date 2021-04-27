@@ -145,6 +145,7 @@ web/*.mobileprovision
 web/*.orig.*
 web/web-build/
 web/.DS_Store
+web/services/constants.js
 
 # server
 server/node_modules

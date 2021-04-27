@@ -191,7 +191,7 @@ exports.vote = async details => {
     if (!checkCandidate) {
       res = {
         success: false,
-        message: 'Candidate does not exists',
+        message: 'Candidate does not exist',
       };
     } else {
       await smartContract.vote(

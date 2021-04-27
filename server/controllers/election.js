@@ -6,6 +6,7 @@ const smartContract = require('../blockchain/Methods');
 const electionRepo = require('../models/electionRepo.js');
 const regionRepo = require('../models/regionRepo.js');
 const candidateElectionRepo = require('../models/candidateElectionRepo.js');
+const candidateRepo = require('../models/candidateRepo.js');
 const election = require('../models/election.js');
 
 exports.getAllElections = async () => {
@@ -98,26 +99,32 @@ exports.updateElection = async (details, electionId) => {
   }
 };
 
-exports.assignCandidates = async (details, electionId) => {
+exports.assignCandidates = async (details, electionID) => {
   try {
+    electionID = parseInt(electionID);
     await Bluebird.each(details.candidates, async candidate => {
-      candidate.electionID = electionId;
+      let cand = await candidateRepo.get(['partyID'], {
+        id: candidate.candidateID,
+      });
+      candidate.electionID = electionID;
       let isCandidateExists = await candidateElectionRepo.get(
         { exclude: [] },
-        { candidateID: candidate.candidateID, electionID: electionId }
+        { candidateID: candidate.candidateID, electionID: electionID }
       );
-      if (!isCandidateExists && !isCandidateExists.candidateID) {
-        await candidateElectionRepo.add(candidate);
+      if (!isCandidateExists) {
+        await smartContract.addParty(cand.partyID, electionID);
         await smartContract.addCandidateElection(
           candidate.candidateID,
           electionID,
-          candidate.regionID
+          candidate.regionID,
+          cand.partyID
         );
+        await candidateElectionRepo.add(candidate);
       }
     });
     return {
       success: true,
-      message: `Updated Successfully`,
+      message: `Added Successfully`,
     };
   } catch (err) {
     console.log(err);

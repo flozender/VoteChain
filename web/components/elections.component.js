@@ -16,6 +16,11 @@ import { url } from '../services/constants';
 import Popup from './popup.component';
 
 export const ElectionsScreen = ({ navigation }) => {
+  GLOBAL.token = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IldSSDI2NjA2NzMiLCJuYW1lIjoiVGF5ZWViIEhhc2FuIiwibW9iaWxlIjoiMCIsInR5cGUiOiJ2b3RlciIsImV4cCI6MTYxOTQ0NzkwNywiaWF0IjoxNjE5NDE3OTA3fQ.ZtuEBpxuZjtORzz6xg7hrh2k8v9aH79IjWwGHe_a3EQ`;
+  GLOBAL.voter = {
+    name: 'Tayeeb Hasan',
+    voterId: 'WRH2660673',
+  };
   const theme = useTheme();
   const [data, setData] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -29,6 +34,13 @@ export const ElectionsScreen = ({ navigation }) => {
       electionName: name,
       candidates,
       region,
+    });
+  };
+
+  const navigateResults = (id, name) => {
+    navigation.navigate('Results', {
+      electionId: id,
+      electionName: name,
     });
   };
 
@@ -47,9 +59,13 @@ export const ElectionsScreen = ({ navigation }) => {
       <Button
         status={item.active ? null : 'disabled'}
         size="small"
-        onPress={() =>
-          navigateCastVote(item.id, item.name, item.candidates, region)
-        }
+        onPress={() => {
+          if (item.active) {
+            navigateCastVote(item.id, item.name, item.candidates, region);
+          } else {
+            navigateResults(item.id, item.name);
+          }
+        }}
       >
         {item.active ? 'VOTE' : 'VIEW'}
       </Button>
@@ -112,6 +128,7 @@ export const ElectionsScreen = ({ navigation }) => {
       .then(res => res.json())
       .then(json => {
         if (!json.success) throw Error(json.message);
+        console.log(json.elections);
         setData(json.elections);
         setRegion(json.region);
         setLoading(false);
