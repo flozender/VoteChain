@@ -395,8 +395,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
       data:
         values.length > 0
           ? assemblyConstituency.filter(
-              review =>
-                values.every(value => review.label.indexOf(value.label) >= 0) // check if every selected value is in a row
+              ac => values.every(value => ac.label.indexOf(value.label) >= 0) // check if every selected value is in a row
             )
           : assemblyConstituency,
     }));
