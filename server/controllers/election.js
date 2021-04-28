@@ -233,9 +233,9 @@ exports.generateGlobalWinner = async electionID => {
     partyVotes.sort((a, b) => {
       return b.votes - a.votes;
     });
-    let temp = [partyVotes[0].id];
+    let temp = [];
     let highestVotes = Number(partyVotes[0].votes);
-    partyVotes = partyVotes.slice(1, partyVotes.length);
+    // partyVotes = partyVotes.slice(1, partyVotes.length);
     await Bluebird.each(partyVotes, async party => {
       if (party.votes == highestVotes) {
         temp.push(party.id);
