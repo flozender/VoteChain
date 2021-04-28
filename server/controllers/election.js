@@ -110,20 +110,14 @@ exports.assignCandidates = async (details, electionID) => {
         id: candidate.candidateID,
       });
       candidate.electionID = electionID;
-      let isCandidateExists = await candidateElectionRepo.get(
-        { exclude: [] },
-        { candidateID: candidate.candidateID, electionID: electionID }
+      await smartContract.addParty(cand.partyID, electionID);
+      await smartContract.addCandidateElection(
+        candidate.candidateID,
+        electionID,
+        candidate.regionID,
+        cand.partyID
       );
-      if (!isCandidateExists) {
-        await smartContract.addParty(cand.partyID, electionID);
-        await smartContract.addCandidateElection(
-          candidate.candidateID,
-          electionID,
-          candidate.regionID,
-          cand.partyID
-        );
-        await candidateElectionRepo.add(candidate);
-      }
+      await candidateElectionRepo.add(candidate);
     });
     return {
       success: true,

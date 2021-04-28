@@ -8,15 +8,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Use blockchain functions like this
-// let a = async () => {
-//   const smartContract = require('./blockchain/Methods');
-//   // await smartContract.addElection(6);
-//   await smartContract.getNumOfElections();
-// };
-
-// a();
-
 require('./routes/admin.js')(app);
 require('./routes/voter.js')(app);
 
