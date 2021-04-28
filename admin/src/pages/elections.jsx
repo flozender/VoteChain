@@ -871,7 +871,7 @@ const Dropdown = ({
       isRequired
       onChange={obj => {
         obj.field = id;
-        // handleCustomChange(obj, setFieldValue);
+        handleCustomChange(obj, setFieldValue);
       }}
       styles={customStyles}
       options={data}
@@ -897,10 +897,10 @@ const DropdownAC = ({
       id={id}
       placeholder="Select Assembly Constituency"
       isRequired
-      onChange={obj => {
-        obj.field = id;
-        // handleCustomChange(obj, setFieldValue);
-      }}
+      // onChange={obj => {
+      //   obj.field = id;
+      //   handleCustomChange(obj, setFieldValue);
+      // }}
       styles={customStyles}
       options={data}
     />
