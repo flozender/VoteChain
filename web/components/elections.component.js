@@ -16,11 +16,6 @@ import { url } from '../services/constants';
 import Popup from './popup.component';
 
 export const ElectionsScreen = ({ navigation }) => {
-  GLOBAL.token = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IldSSDI2NjA2NzMiLCJuYW1lIjoiVGF5ZWViIEhhc2FuIiwibW9iaWxlIjoiMCIsInR5cGUiOiJ2b3RlciIsImV4cCI6MTYxOTQ0NzkwNywiaWF0IjoxNjE5NDE3OTA3fQ.ZtuEBpxuZjtORzz6xg7hrh2k8v9aH79IjWwGHe_a3EQ`;
-  GLOBAL.voter = {
-    name: 'Tayeeb Hasan',
-    voterId: 'WRH2660673',
-  };
   const theme = useTheme();
   const [data, setData] = useState([]);
   const [visible, setVisible] = useState(false);

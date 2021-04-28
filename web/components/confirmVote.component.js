@@ -32,7 +32,7 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
     navigation.goBack();
   };
 
-  const { electionId, electionName, candidate } = route.params;
+  const { electionId, electionName, candidate, region } = route.params;
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -51,6 +51,7 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
       body: JSON.stringify(body),
       headers: {
         'Content-Type': 'application/json',
+        Authorization: GLOBAL.token,
       },
     })
       .then(res => res.json())
@@ -60,7 +61,7 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
       })
       .catch(err => {
         console.log(err);
-        setMessage('Voting failed!');
+        setMessage(err.message || 'Voting failed!');
         setVisible(true);
         setLoading(false);
       });
@@ -93,37 +94,56 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
               fontSize: 30,
               alignSelf: 'center',
               textAlign: 'center',
-              marginBottom: 20,
             }}
           >
             {electionName}
           </Text>
-          <CandidateCard candidate={candidate} />
-          <Button
-            style={{ width: '40%', marginTop: 20 }}
-            onPress={handleSubmit}
-            accessoryLeft={
-              loading
-                ? () => <ActivityIndicator color="white" size="small" />
-                : CheckIcon
-            }
-          >
-            Confirm Vote
-          </Button>
           <Text
             style={{
-              marginTop: 10,
-              textAlign: 'center',
+              fontSize: 18,
               color: 'gray',
-              fontStyle: 'italic',
-              marginBottom: 10,
+              alignSelf: 'center',
+              textAlign: 'center',
+              marginTop: 5,
+              marginBottom: 15,
             }}
           >
-            This action cannot be undone!
+            {region}
           </Text>
-          <Button appearance="ghost" size="giant" onPress={navigateBack}>
-            Back
-          </Button>
+          <CandidateCard
+            candidate={candidate}
+            width="95%"
+            selection={candidate}
+          />
+          <Layout
+            style={{ display: 'flex', marginTop: '95%', alignItems: 'center' }}
+          >
+            <Button
+              style={{ width: '40%' }}
+              onPress={handleSubmit}
+              accessoryLeft={
+                loading
+                  ? () => <ActivityIndicator color="white" size="small" />
+                  : CheckIcon
+              }
+            >
+              Confirm Vote
+            </Button>
+            <Text
+              style={{
+                marginTop: 10,
+                textAlign: 'center',
+                color: 'gray',
+                fontStyle: 'italic',
+                marginBottom: 10,
+              }}
+            >
+              This action cannot be undone!
+            </Text>
+            <Button appearance="ghost" size="giant" onPress={navigateBack}>
+              Back
+            </Button>
+          </Layout>
         </Layout>
       </Layout>
       <Popup message={message} visible={visible} setVisible={setVisible} />

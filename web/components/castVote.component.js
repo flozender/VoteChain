@@ -20,6 +20,7 @@ export const CastVoteScreen = ({ navigation, route }) => {
   const [selection, setSelection] = useState({});
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState('Error!');
+  const { electionId, electionName, candidates, region } = route.params;
 
   const BackIcon = props => <Icon {...props} name="arrow-back" />;
   const BackAction = () => (
@@ -34,10 +35,9 @@ export const CastVoteScreen = ({ navigation, route }) => {
       candidate,
       electionId,
       electionName,
+      region,
     });
   };
-
-  const { electionId, electionName, candidates, region } = route.params;
 
   const renderItem = ({ item, index }) => {
     return (
@@ -46,7 +46,6 @@ export const CastVoteScreen = ({ navigation, route }) => {
         {...item}
         selection={selection}
         onPress={() => {
-          console.log('touched');
           setSelection(item.candidate);
         }}
       />
@@ -125,7 +124,7 @@ export const CastVoteScreen = ({ navigation, route }) => {
   );
 };
 
-export const CandidateCard = ({ candidate, selection, onPress }) => {
+export const CandidateCard = ({ candidate, selection, onPress, ...props }) => {
   const selected = candidate.id && selection?.id === candidate.id;
   let activeStyles = {};
   if (selected) {
@@ -147,6 +146,7 @@ export const CandidateCard = ({ candidate, selection, onPress }) => {
         borderColor: 'gray',
         borderWidth: 1,
         ...activeStyles,
+        ...props,
       }}
       onTouchEnd={onPress}
     >
