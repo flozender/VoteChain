@@ -2,6 +2,7 @@ const auth = require('../middleware/auth');
 
 module.exports = app => {
   const voterController = require('../controllers/voter.js');
+  const electionController = require('../controllers/election.js');
   const candidateController = require('../controllers/candidate.js');
 
   app.post('/auth', async (req, res) => {
@@ -69,6 +70,23 @@ module.exports = app => {
       });
     }
   });
+
+  app.get(
+    '/getRegionWiseVotes/:electionId',
+    auth.tokenValidate,
+    async (req, res) => {
+      try {
+        let votes = await electionController.getRegionWiseVotes(
+          req.params.electionId
+        );
+        res.status(200).send(votes);
+      } catch (error) {
+        res.status(400).send({
+          error: JSON.stringify(error),
+        });
+      }
+    }
+  );
 
   app.get('/voter/:voterId', auth.tokenValidate, async (req, res) => {
     try {

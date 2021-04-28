@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Use blockchain functions like this
 // let a = async () => {
 //   const smartContract = require('./blockchain/Methods');
-//   await smartContract.addElection(6);
+//   // await smartContract.addElection(6);
 //   await smartContract.getNumOfElections();
 // };
 

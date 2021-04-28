@@ -76,6 +76,23 @@ module.exports = {
       });
   },
 
+  getWinnerNames: (winners, electionId) => {
+    let query = `SELECT JSON_ARRAYAGG(C.name) AS winners
+    FROM Election E
+    LEFT JOIN Candidate C ON C.id IN (:winners)
+    WHERE E.id = :electionId`;
+
+    return db
+      .query(query, {
+        replacements: { winners, electionId },
+        type: db.QueryTypes.SELECT,
+      })
+      .then(data => data[0])
+      .catch(error => {
+        throw error;
+      });
+  },
+
   getAllRegionsForElection: function (electionId, regions) {
     let query = `SELECT JSON_ARRAYAGG(R.name) AS regions
     FROM Election E

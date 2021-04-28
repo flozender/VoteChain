@@ -180,3 +180,70 @@ exports.generateWinner = async electionID => {
     throw error;
   }
 };
+
+exports.getRegionWiseVotes = async electionID => {
+  try {
+    let votes = await candidateElectionRepo.getRegionWiseVotes(electionID);
+    votes.forEach(element => {
+      element.candidates = element.candidates
+        ? JSON.parse(element.candidates)
+        : [];
+    });
+    let election = await electionRepo.get(['winner', 'isTie'], {
+      id: electionID,
+    });
+    election.winner = election.winner
+      ? String(election.winner).split(',')
+      : null;
+    let winners = {};
+    winners.winners = null;
+    if (election.winner) {
+      winners = await electionRepo.getWinnerNames(election.winner, electionID);
+      winners.winners = JSON.parse(winners.winners);
+    }
+    console;
+    return {
+      success: true,
+      votes,
+      isTie: election.isTie,
+      winners: winners.winners || null,
+    };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+exports.generateGlobalWinner = async electionID => {
+  try {
+    let parties = await candidateElectionRepo.getPartiesElection(electionID);
+    parties.partyIDs = parties.partyIDs ? JSON.parse(parties.partyIDs) : [];
+    partyVotes = [];
+    await Bluebird.each(parties.partyIDs, async party => {
+      let votes = await smartContract.getGlobalWinners(party, electionID);
+      partyVotes.push({ id: party, votes });
+    });
+
+    partyVotes.sort((a, b) => {
+      return b.votes - a.votes;
+    });
+    let temp = [partyVotes[0].id];
+    let highestVotes = Number(partyVotes[0].votes);
+    partyVotes = partyVotes.slice(1, partyVotes.length);
+    await Bluebird.each(partyVotes, async party => {
+      if (party.votes == highestVotes) {
+        temp.push(party.id);
+      }
+    });
+    let winner = temp.join();
+    let isTie = winner.length == 1 ? 0 : 1;
+    await electionRepo.update({ winner, isTie }, { id: electionID });
+    return {
+      success: true,
+      message: 'Winner generated successfully',
+    };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};

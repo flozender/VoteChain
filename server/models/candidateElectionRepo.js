@@ -106,4 +106,45 @@ module.exports = {
         throw error;
       });
   },
+
+  getPartiesElection: electionId => {
+    let query = `SELECT JSON_ARRAYAGG(C.partyID) AS partyIDs
+      FROM CandidateElection CE 
+      LEFT JOIN Candidate C ON C.id = CE.candidateID 
+      WHERE CE.electionID = :electionId`;
+
+    return db
+      .query(query, {
+        replacements: { electionId },
+        type: db.QueryTypes.SELECT,
+      })
+      .then(data => data[0])
+      .catch(error => {
+        throw error;
+      });
+  },
+
+  getRegionWiseVotes: electionId => {
+    let query = `SELECT DISTINCT CE.electionID, CE.regionID, R.name AS regionName,
+      (SELECT JSON_ARRAYAGG(JSON_OBJECT('candidateID', X.candidateID, 'votes',
+      X.votes, 'name', C.name, 'partyID', C.partyID, 'partyName', P.name)) 
+      FROM CandidateElection X
+      LEFT JOIN Candidate C ON C.id = X.candidateID
+      LEFT JOIN Party P ON P.id = C.partyID
+      WHERE X.electionID = :electionId AND X.regionID = CE.regionID
+      ORDER BY X.votes DESC) AS candidates
+      FROM CandidateElection CE 
+      LEFT JOIN Region R ON R.id = CE.regionID 
+      WHERE CE.electionID = :electionId ORDER BY CE.regionID `;
+
+    return db
+      .query(query, {
+        replacements: { electionId },
+        type: db.QueryTypes.SELECT,
+      })
+      .then(data => data)
+      .catch(error => {
+        throw error;
+      });
+  },
 };

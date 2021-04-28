@@ -67,17 +67,34 @@ let smartContract = {
 
   getRegionWiseCandidateVotes: async (candidateID, electionID, regionID) => {
     let accounts = await web3.eth.getAccounts();
-    instance.methods
+    let votes = await instance.methods
       .getVotesForCandidate(candidateID, electionID, regionID)
       .call()
       .then(value => {
-        console.log('Number of elections: ', value);
+        console.log('Number of votes: ', value);
         return value;
       })
       .catch(err => {
         console.log(err);
         throw err;
       });
+    return votes;
+  },
+
+  getGlobalWinners: async (partyID, electionID) => {
+    let accounts = await web3.eth.getAccounts();
+    let votes = await instance.methods
+      .getVotesForParty(partyID, electionID)
+      .call()
+      .then(value => {
+        console.log('Number of votes: ', value);
+        return value;
+      })
+      .catch(err => {
+        console.log(err);
+        throw err;
+      });
+    return votes;
   },
 
   getNumOfCandidates: async electionID => {

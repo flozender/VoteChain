@@ -233,6 +233,40 @@ module.exports = app => {
   );
 
   app.post(
+    '/admin/generateElectionResults/:electionId',
+    auth.adminTokenValidate,
+    async (req, res) => {
+      try {
+        let result = await electionController.generateWinner(
+          req.params.electionId
+        );
+        res.status(200).send(result);
+      } catch (error) {
+        res.status(400).send({
+          error: JSON.stringify(error),
+        });
+      }
+    }
+  );
+
+  app.post(
+    '/admin/generateGlobalElectionResults/:electionId',
+    auth.adminTokenValidate,
+    async (req, res) => {
+      try {
+        let result = await electionController.generateGlobalWinner(
+          req.params.electionId
+        );
+        res.status(200).send(result);
+      } catch (error) {
+        res.status(400).send({
+          error: JSON.stringify(error),
+        });
+      }
+    }
+  );
+
+  app.post(
     `/admin/assignCandidates/:electionId`,
     auth.adminTokenValidate,
     async (req, res) => {

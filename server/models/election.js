@@ -21,12 +21,15 @@ var DB = require('../db/database'),
         type: db_sequelize.STRING,
       },
       winner: {
-        type: db_sequelize.INTEGER,
+        type: db_sequelize.STRING,
       },
       education: {
         type: db_sequelize.INTEGER,
       },
       type: {
+        type: db_sequelize.INTEGER,
+      },
+      isTie: {
         type: db_sequelize.INTEGER,
       },
       assemblyConstituencies: {
