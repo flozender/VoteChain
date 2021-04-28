@@ -219,6 +219,8 @@ exports.generateGlobalWinner = async electionID => {
     let parties = await candidateElectionRepo.getPartiesElection(electionID);
     parties.partyIDs = parties.partyIDs ? JSON.parse(parties.partyIDs) : [];
     partyVotes = [];
+    let set = new Set(parties.partyIDs);
+    parties.partyIDs = Array.from(set);
     await Bluebird.each(parties.partyIDs, async party => {
       let votes = await smartContract.getGlobalWinners(party, electionID);
       partyVotes.push({ id: party, votes });
@@ -229,7 +231,6 @@ exports.generateGlobalWinner = async electionID => {
     });
     let temp = [];
     let highestVotes = Number(partyVotes[0].votes);
-    // partyVotes = partyVotes.slice(1, partyVotes.length);
     await Bluebird.each(partyVotes, async party => {
       if (party.votes == highestVotes) {
         temp.push(party.id);
