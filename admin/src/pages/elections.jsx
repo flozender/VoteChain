@@ -313,7 +313,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
     startDate: '',
     endDate: '',
     location: '',
-    assemblyConstituency: '',
+    assemblyConstituency: [],
     education: '0',
     type: '',
   });
@@ -324,7 +324,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
       startDate: '',
       endDate: '',
       location: '',
-      assemblyConstituency: '',
+      assemblyConstituency: [],
       education: '0',
       type: '',
     });
@@ -379,8 +379,27 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
     }
   };
 
+  const dd = [
+    { value: 'chocolate', label: 'Chocolate' },
+    { value: 'strawberry', label: 'Strawberry' },
+    { value: 'vanilla', label: 'Vanilla' },
+  ];
+
   const handleChange = e => {
     setData(data => ({ ...data, [e.target.name]: e.target.value }));
+  };
+
+  const handleChange1 = assemblyConstituency => values => {
+    this.setState(state => ({
+      [assemblyConstituency]: values,
+      data:
+        values.length > 0
+          ? assemblyConstituency.filter(
+              review =>
+                values.every(value => review.label.indexOf(value.label) >= 0) // check if every selected value is in a row
+            )
+          : assemblyConstituency,
+    }));
   };
 
   return (
@@ -413,11 +432,15 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
               placeholder="Location"
               onChange={handleChange}
             />
-            <Input
-              name="assemblyConstituency"
-              placeholder="Assembly Constituency"
-              onChange={handleChange}
-            />
+            <Stack spacing={5} width="100%">
+              <Select
+                isMulti
+                name="assemblyConstituency"
+                options={dd}
+                placeholder="Select Assembly Constituency"
+                onChange={handleChange1}
+              />
+            </Stack>
             <RadioGroup
               defaultValue="0"
               alignSelf="flex-start"
