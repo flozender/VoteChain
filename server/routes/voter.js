@@ -88,6 +88,23 @@ module.exports = app => {
     }
   );
 
+  app.get(
+    '/getPartyWiseVotes/:electionId',
+    auth.tokenValidate,
+    async (req, res) => {
+      try {
+        let votes = await electionController.getPartyWiseResults(
+          req.params.electionId
+        );
+        res.status(200).send(votes);
+      } catch (error) {
+        res.status(400).send({
+          error: JSON.stringify(error),
+        });
+      }
+    }
+  );
+
   app.get('/voter/:voterId', auth.tokenValidate, async (req, res) => {
     try {
       let voter = await voterController.getVoter(req.params.voterId);

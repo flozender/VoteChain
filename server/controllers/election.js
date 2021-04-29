@@ -8,6 +8,7 @@ const regionRepo = require('../models/regionRepo.js');
 const candidateElectionRepo = require('../models/candidateElectionRepo.js');
 const candidateRepo = require('../models/candidateRepo.js');
 const election = require('../models/election.js');
+const partyRepo = require('../models/partyRepo.js');
 
 exports.getAllElections = async () => {
   try {
@@ -242,6 +243,37 @@ exports.generateGlobalWinner = async electionID => {
     return {
       success: true,
       message: 'Winner generated successfully',
+    };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+exports.getPartyWiseResults = async electionID => {
+  try {
+    let parties = await candidateElectionRepo.getPartiesElection(electionID);
+    parties.partyIDs = parties.partyIDs ? JSON.parse(parties.partyIDs) : [];
+    partyVotes = [];
+    let set = new Set(parties.partyIDs);
+    parties.partyIDs = Array.from(set);
+    await Bluebird.each(parties.partyIDs, async party => {
+      let votes = await smartContract.getGlobalWinners(party, electionID);
+      let selectedParty = await partyRepo.get({ exclude: [] }, { id: party });
+      partyVotes.push({
+        id: party,
+        votes,
+        name: selectedParty.name,
+        president: selectedParty.president,
+      });
+    });
+
+    partyVotes.sort((a, b) => {
+      return b.votes - a.votes;
+    });
+    return {
+      success: true,
+      parties: partyVotes,
     };
   } catch (error) {
     console.log(error);
