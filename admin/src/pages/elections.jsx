@@ -389,15 +389,10 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
     setData(data => ({ ...data, [e.target.name]: e.target.value }));
   };
 
-  const handleChange1 = assemblyConstituency => values => {
-    this.setState(state => ({
-      [assemblyConstituency]: values,
-      data:
-        values.length > 0
-          ? assemblyConstituency.filter(
-              ac => values.every(value => ac.label.indexOf(value.label) >= 0) // check if every selected value is in a row
-            )
-          : assemblyConstituency,
+  const handleChangeAC = a => {
+    setData(data => ({
+      ...data,
+      assemblyConstituencies: a.map(e => e.value).toString(),
     }));
   };
 
@@ -431,15 +426,16 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
               placeholder="Location"
               onChange={handleChange}
             />
-            <Stack spacing={5} width="100%">
-              <Select
-                isMulti
-                name="assemblyConstituency"
-                options={dd}
-                placeholder="Select Assembly Constituency"
-                onChange={handleChange1}
-              />
-            </Stack>
+            <Dropdown
+              isMulti
+              text="Assembly Constituency"
+              id="assemblyConstituency"
+              placeholder="Select Assembly Constituency"
+              data={dd}
+              handleCustomChange={handleChangeAC}
+              width="100%"
+            />
+
             <RadioGroup
               defaultValue="0"
               alignSelf="flex-start"
@@ -868,6 +864,7 @@ const Dropdown = ({
   id,
   setFieldValue,
   width = '25vw',
+  ...props
 }) => {
   const customStyles = {
     container: provided => ({
@@ -887,6 +884,7 @@ const Dropdown = ({
       }}
       styles={customStyles}
       options={data}
+      {...props}
     />
   );
 };
