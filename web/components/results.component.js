@@ -25,7 +25,7 @@ export const ResultsScreen = ({ navigation, route }) => {
     <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
   );
 
-  const { electionId, electionName } = route.params;
+  const { electionId, electionName, votes } = route.params;
 
   return (
     <>
@@ -84,25 +84,27 @@ export const ResultsScreen = ({ navigation, route }) => {
           }}
         >
           <Menu style={{ backgroundColor: '#fff', width: 'auto' }}>
-            <MenuGroup title="Region Name">
-              <MenuItem
-                title="Candidate Name1"
-                accessoryRight={props => {
-                  delete props.tintColor;
-                  return <Text {...props}>31</Text>;
-                }}
-              />
-              <MenuItem
-                title="Candidate Name1"
-                accessoryRight={props => {
-                  delete props.tintColor;
-                  return <Text {...props}>31</Text>;
-                }}
-              />
-            </MenuGroup>
+            {votes.map(e => {
+              return (
+                <MenuGroup title={e.regionName}>
+                  <CandidateMenu candidates={e.candidates} />
+                </MenuGroup>
+              );
+            })}
           </Menu>
         </Layout>
       </Layout>
     </>
   );
+};
+
+const CandidateMenu = ({ candidates }) => {
+  return candidates.map(e => (
+    <MenuItem
+      title={e.name}
+      accessoryRight={props => {
+        return <Text {...props}>{e.votes}</Text>;
+      }}
+    />
+  ));
 };
