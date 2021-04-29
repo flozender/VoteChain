@@ -316,6 +316,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
     assemblyConstituency: [],
     education: '0',
     type: '',
+    state: '',
   });
 
   const [values, setValues] = useState({
@@ -338,6 +339,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
       assemblyConstituency: [],
       education: '0',
       type: '',
+      state: '',
     });
   }, [currentUser]);
 
@@ -402,7 +404,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
           });
         });
     }
-  }, [currentUser, toast, values]);
+  }, [currentUser, toast, data.state]);
 
   const submitData = data => {
     setLoading(true);
