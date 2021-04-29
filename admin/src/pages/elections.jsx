@@ -318,6 +318,17 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
     type: '',
   });
 
+  const [values, setValues] = useState({
+    states: [],
+    assemblyConstituencies: [],
+  });
+
+  const { states, assemblyConstituencies } = values;
+
+  const handleChangeState = e => {
+    setData(data => ({ ...data, [e.field]: e.label, state: e.value }));
+  };
+
   useEffect(() => {
     setData({
       name: '',
@@ -329,6 +340,69 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
       type: '',
     });
   }, [currentUser]);
+
+  useEffect(() => {
+    fetchApi('/admin/states', {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${currentUser.token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        const stateMap = json.states.map((e, i) => ({
+          value: e.id,
+          label: e.name,
+        }));
+        setValues(values => ({ ...values, states: stateMap }));
+      })
+      .catch(err => {
+        console.log(err);
+        toast({
+          position: 'bottom-left',
+          title: 'Could not load states',
+          description: err.message,
+          status: 'error',
+          duration: 1000,
+          isClosable: true,
+        });
+      });
+
+    if (data.state) {
+      fetchApi(`/admin/regions/${data.state}`, {
+        method: 'get',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (!json.success) throw Error(json.message);
+          const regionMap = json.regions.map((e, i) => ({
+            value: e.id,
+            label: `${e.name} - ${e.pincode}`,
+          }));
+          setValues(values => ({
+            ...values,
+            assemblyConstituencies: regionMap,
+          }));
+        })
+        .catch(err => {
+          console.log(err);
+          toast({
+            position: 'bottom-left',
+            title: 'Could not load ACs',
+            description: err.message,
+            status: 'error',
+            duration: 1000,
+            isClosable: true,
+          });
+        });
+    }
+  }, [currentUser, toast, values]);
 
   const submitData = data => {
     setLoading(true);
@@ -379,12 +453,6 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
     }
   };
 
-  const dd = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' },
-  ];
-
   const handleChange = e => {
     setData(data => ({ ...data, [e.target.name]: e.target.value }));
   };
@@ -421,21 +489,6 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
               type="date"
               onChange={handleChange}
             />
-            <Input
-              name="location"
-              placeholder="Location"
-              onChange={handleChange}
-            />
-            <Dropdown
-              isMulti
-              text="Assembly Constituency"
-              id="assemblyConstituency"
-              placeholder="Select Assembly Constituency"
-              data={dd}
-              handleCustomChange={handleChangeAC}
-              width="100%"
-            />
-
             <RadioGroup
               defaultValue="0"
               alignSelf="flex-start"
@@ -487,6 +540,23 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
                 </Radio>
               </Stack>
             </RadioGroup>
+            <Dropdown
+              name="location"
+              id="location"
+              placeholder="Select Location"
+              data={states}
+              handleCustomChange={handleChangeState}
+              width="100%"
+            />
+            <Dropdown
+              isMulti
+              text="Assembly Constituency"
+              id="assemblyConstituency"
+              placeholder="Select Assembly Constituency"
+              data={assemblyConstituencies}
+              handleCustomChange={handleChangeAC}
+              width="100%"
+            />
           </VStack>
         </ModalBody>
 
