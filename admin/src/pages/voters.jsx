@@ -325,7 +325,6 @@ const CreateModal = ({
         url = '/admin/createVoter';
         method = 'post';
       }
-      console.log(url);
       fetchApi(url, {
         method: method,
         body: JSON.stringify(data),
@@ -487,7 +486,27 @@ const CreateModal = ({
                 <Radio value="Other">Other</Radio>
               </Stack>
             </RadioGroup>
-
+            <RadioGroup
+              alignSelf="flex-start"
+              onChange={value =>
+                setData(data => ({ ...data, education: value }))
+              }
+              name="education"
+              width="100%"
+              value={education}
+            >
+              <Stack
+                spacing={5}
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                width="100%"
+              >
+                <Text size="md"> Educated </Text>
+                <Radio value="0">No</Radio>
+                <Radio value="1">Yes</Radio>
+              </Stack>
+            </RadioGroup>
             <Stack
               spacing={5}
               direction="row"
@@ -522,27 +541,6 @@ const CreateModal = ({
                 width="80%"
               />
             </Stack>
-            <RadioGroup
-              alignSelf="flex-start"
-              onChange={value =>
-                setData(data => ({ ...data, education: value }))
-              }
-              name="education"
-              width="100%"
-              value={education}
-            >
-              <Stack
-                spacing={5}
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                width="100%"
-              >
-                <Text size="md"> Educated </Text>
-                <Radio value="0">No</Radio>
-                <Radio value="1">Yes</Radio>
-              </Stack>
-            </RadioGroup>
           </VStack>
         </ModalBody>
 
