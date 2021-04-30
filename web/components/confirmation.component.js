@@ -42,6 +42,10 @@ export const ConfirmationScreen = ({ navigation, route }) => {
     });
   };
 
+  const navigatePartyResults = () => {
+    navigation.navigate('PartyResults', { electionId, electionName, currentVotes: votes });
+  };
+
   let { electionId, electionName, region } = route.params;
 
   useEffect(() => {
@@ -169,6 +173,15 @@ export const ConfirmationScreen = ({ navigation, route }) => {
                   : 'TIE'
                 : 'TBD'}
             </Text>
+            <Button
+              style={{
+                marginBottom: 20,
+              }}
+              onPress={navigatePartyResults}
+              // disabled={votes ? false : true}
+            >
+              Details
+            </Button>
           </Layout>
           <Text
             style={{
@@ -195,7 +208,7 @@ export const ConfirmationScreen = ({ navigation, route }) => {
             onPress={navigateResults}
             disabled={votes ? false : true}
           >
-            Details
+            Breakdown
           </Button>
         </Layout>
         <Button accessoryLeft={BackwardIcon} onPress={navigateAuth}>

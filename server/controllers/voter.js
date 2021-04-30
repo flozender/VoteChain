@@ -147,6 +147,10 @@ exports.getEligibleElections = async voterId => {
         element.id,
         voterId
       );
+      let winnerArray = String(element.winner).split(',');
+      let winners = await electionRepo.getWinnerNames(winnerArray, element.id);
+
+      element.winner = element.winner ? JSON.parse(winners.winners) : [];
       element.candidates.forEach(candidate => {
         candidate.candidate = candidate.candidate
           ? JSON.parse(candidate.candidate)
@@ -193,21 +197,39 @@ exports.vote = async details => {
       }
     );
     let res = {};
-    if (!checkCandidate) {
-      res = {
-        success: false,
-        message: 'Candidate does not exist',
-      };
+    let election = await electionRepo.get(
+      { election: [] },
+      { id: details.electionID }
+    );
+    if (
+      moment()
+        .utc()
+        .isBetween(
+          moment(election.startDate).utc(),
+          moment(election.endDate).utc()
+        )
+    ) {
+      if (!checkCandidate) {
+        res = {
+          success: false,
+          message: 'Candidate does not exist',
+        };
+      } else {
+        const receipt = await smartContract.vote(
+          details.id,
+          details.electionID,
+          details.regionID,
+          details.candidateID
+        );
+        res = {
+          success: true,
+          message: 'Voted Successfully',
+        };
+      }
     } else {
-      const receipt = await smartContract.vote(
-        details.id,
-        details.electionID,
-        details.regionID,
-        details.candidateID
-      );
       res = {
         success: true,
-        message: 'Voted Successfully',
+        message: 'Election ended',
       };
     }
     return res;
