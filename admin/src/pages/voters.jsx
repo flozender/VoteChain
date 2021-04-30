@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
+import Select from 'react-select';
 import {
   Heading,
   Flex,
@@ -202,6 +203,12 @@ const CreateModal = ({
     email: '',
     mobile: '',
   });
+
+  const [values, setValues] = useState({
+    states: [],
+    assemblyConstituencies: [],
+  });
+
   useEffect(() => {
     if (prefilled) {
       setData({
@@ -219,9 +226,85 @@ const CreateModal = ({
     }
   }, [prefilled]);
 
+  useEffect(() => {
+    fetchApi('/admin/states', {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${currentUser.token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        const stateMap = json.states.map((e, i) => ({
+          value: e.id,
+          label: e.name,
+        }));
+        setValues(values => ({ ...values, states: stateMap }));
+      })
+      .catch(err => {
+        console.log(err);
+        toast({
+          position: 'bottom-left',
+          title: 'Could not load states',
+          description: err.message,
+          status: 'error',
+          duration: 1000,
+          isClosable: true,
+        });
+      });
+
+    if (data.state) {
+      fetchApi(`/admin/regions/${data.state}`, {
+        method: 'get',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (!json.success) throw Error(json.message);
+          const regionMap = json.regions.map((e, i) => ({
+            value: e.id,
+            label: `${e.name} - ${e.pincode}`,
+          }));
+          setValues(values => ({
+            ...values,
+            assemblyConstituencies: regionMap,
+          }));
+        })
+        .catch(err => {
+          console.log(err);
+          toast({
+            position: 'bottom-left',
+            title: 'Could not load ACs',
+            description: err.message,
+            status: 'error',
+            duration: 1000,
+            isClosable: true,
+          });
+        });
+    }
+  }, [currentUser, toast, data.state]);
+
   const handleChange = e => {
     setData(data => ({ ...data, [e.target.name]: e.target.value }));
   };
+
+  const handleChangeState = e => {
+    setData(data => ({ ...data, [e.field]: e.label, state: e.value }));
+  };
+
+  const handleChangeAC = e => {
+    setData(data => ({
+      ...data,
+      assemblyConstituency: e.value,
+    }));
+  };
+
+  const { states, assemblyConstituencies } = values;
 
   const handleSubmit = () => {
     setLoading(true);
@@ -404,6 +487,24 @@ const CreateModal = ({
                 <Radio value="Other">Other</Radio>
               </Stack>
             </RadioGroup>
+
+            <Stack
+              spacing={5}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              width="100%"
+            >
+              <Text size="md">State</Text>
+              <Dropdown
+                text="State"
+                id="state"
+                placeholder="Select State"
+                data={states}
+                handleCustomChange={handleChangeState}
+                width="80%"
+              />
+            </Stack>
             <Stack
               spacing={5}
               direction="row"
@@ -412,13 +513,13 @@ const CreateModal = ({
               width="100%"
             >
               <Text size="md">AC</Text>
-              {/* TODO: change this to dynamic dropdown */}
-              <Input
-                name="assemblyConstituency"
-                placeholder="Assembly Constituency"
-                onChange={handleChange}
+              <Dropdown
+                text="Assembly Constituency"
+                id="assemblyConstituency"
+                placeholder="Select Assembly Constituency"
+                data={assemblyConstituencies}
+                handleCustomChange={handleChangeAC}
                 width="80%"
-                value={assemblyConstituency}
               />
             </Stack>
             <RadioGroup
@@ -457,6 +558,37 @@ const CreateModal = ({
         </ModalFooter>
       </ModalContent>
     </Modal>
+  );
+};
+
+const Dropdown = ({
+  handleCustomChange,
+  data,
+  id,
+  setFieldValue,
+  width = '25vw',
+  ...props
+}) => {
+  const customStyles = {
+    container: provided => ({
+      ...provided,
+      width: width,
+      marginBottom: '10px',
+    }),
+  };
+  return (
+    <Select
+      id={id}
+      placeholder="Select Option"
+      isRequired
+      onChange={obj => {
+        obj.field = id;
+        handleCustomChange(obj, setFieldValue);
+      }}
+      styles={customStyles}
+      options={data}
+      {...props}
+    />
   );
 };
 

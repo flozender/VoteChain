@@ -129,13 +129,6 @@ const Nav = ({ history, currentUser }) => {
             mr={3}
             colorScheme="teal"
             variant="outline"
-            onClick={() => history.push('/profile')}
-          >
-            Profile
-          </Button>
-          <Button
-            mr={3}
-            colorScheme="teal"
             onClick={() => history.push('/logout')}
           >
             Log out

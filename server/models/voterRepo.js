@@ -96,15 +96,15 @@ module.exports = {
 
   getAllVoters: function () {
     let query = `SELECT V.*,
-      CONCAT(R.name, ', ', L.name, ', ', S.name) AS assemblyConstituency,
+      CONCAT(R.name, ', ', L.name, ', ', S.name) AS assemblyConstituency,      
       R.pincode
       FROM Voter V
       LEFT JOIN Region R
       ON R.id = V.assemblyConstituency
       LEFT JOIN Locality L
-      ON L.id = R.id
+      ON L.id = R.localityID
       LEFT JOIN State S
-      ON S.id = L.id`;
+      ON S.id = L.stateID`;
 
     return db
       .query(query, { replacements: {}, type: db.QueryTypes.SELECT })
