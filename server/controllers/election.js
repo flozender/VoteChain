@@ -14,12 +14,16 @@ exports.getAllElections = async () => {
   try {
     let elections = await electionRepo.getAll({ exclude: [] });
     await Bluebird.each(elections, async element => {
-      element.active = moment().isBetween(
-        moment(element.startDate),
-        moment(element.endDate)
-      )
-        ? 1
-        : 0;
+      element.active =
+        !element.winner &&
+        moment()
+          .utc()
+          .isBetween(
+            moment(element.startDate).utc(),
+            moment(element.endDate).utc()
+          )
+          ? 1
+          : 0;
       element.candidates = await candidateElectionRepo.getAssignedCandidatesElectionForAdmin(
         element.id
       );
