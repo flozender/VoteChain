@@ -88,7 +88,7 @@ export const CastVoteScreen = ({ navigation, route }) => {
               marginTop: 5,
             }}
           >
-            {region}
+            {region.regionName}
           </Text>
         </Layout>
         <Layout

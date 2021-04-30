@@ -39,7 +39,7 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
 
     const success = () => {
       setLoading(false);
-      navigation.navigate('Confirmation', { electionId, electionName });
+      navigation.navigate('Confirmation', { electionId, electionName, region });
     };
     const body = {
       electionID: electionId,
@@ -108,7 +108,7 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
               marginBottom: 15,
             }}
           >
-            {region}
+            {region.regionName}
           </Text>
           <CandidateCard
             candidate={candidate}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Divider,
   Icon,
@@ -20,8 +20,11 @@ const BackwardIcon = props => (
 );
 
 export const ConfirmationScreen = ({ navigation, route }) => {
+  const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState('Error!');
+  const [votes, setVotes] = useState([]);
+  const [winners, setWinners] = useState([]);
 
   const navigateAuth = () => {
     navigation.navigate('Auth');
@@ -32,10 +35,36 @@ export const ConfirmationScreen = ({ navigation, route }) => {
   );
 
   const navigateResults = () => {
-    navigation.navigate('Results', { electionId, electionName });
+    navigation.navigate('Results', { electionId, electionName, votes });
   };
 
-  let { electionId, electionName } = route.params;
+  let { electionId, electionName, region } = route.params;
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`${url}/getRegionWiseVotes/${electionId}`, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: GLOBAL.token,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        setVotes(json.votes);
+        setWinners(json.winners);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+        setMessage("Couldn't load data!");
+        setVisible(true);
+        setLoading(false);
+      });
+  }, [url]);
+
+  const currentRegion = votes.filter(e => e.regionID == region.regionID)[0];
 
   return (
     <>
@@ -93,7 +122,7 @@ export const ConfirmationScreen = ({ navigation, route }) => {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'space-between',
-              marginBottom: 30,
+              marginBottom: 15,
               width: '85%',
               marginHorizontal: 'auto',
               backgroundColor: '#fff',
@@ -119,22 +148,31 @@ export const ConfirmationScreen = ({ navigation, route }) => {
                 paddingBottom: 5,
               }}
             >
-              Party Name
+              {winners
+                ? winners.length == 1
+                  ? winners[0].partyName
+                  : 'TIE'
+                : 'TBD'}
             </Text>
             <Text
               style={{
                 fontSize: 23,
               }}
             >
-              President Name
+              {winners
+                ? winners.length == 1
+                  ? winners[0].name
+                  : 'TIE'
+                : 'TBD'}
             </Text>
           </Layout>
           <Text
             style={{
-              fontSize: 20,
+              fontSize: 18,
+              marginBottom: 0,
             }}
           >
-            Region_Name Winner
+            {votes.length > 0 ? `${currentRegion.regionName}'s winner` : ''}
           </Text>
           <Text
             style={{
@@ -142,13 +180,16 @@ export const ConfirmationScreen = ({ navigation, route }) => {
               fontWeight: 'bold',
             }}
           >
-            Candidate Name
+            {votes.length > 0
+              ? `${currentRegion.candidates[0].name}, ${currentRegion.candidates[0].partyName}`
+              : ''}
           </Text>
           <Button
             style={{
               marginBottom: 20,
             }}
             onPress={navigateResults}
+            disabled={votes ? false : true}
           >
             Details
           </Button>
