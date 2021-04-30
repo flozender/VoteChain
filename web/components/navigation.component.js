@@ -9,11 +9,13 @@ import { ConfirmVoteScreen } from './confirmVote.component';
 import { ConfirmationScreen } from './confirmation.component';
 import { SignOutScreen } from './signOut.component';
 import { ResultsScreen } from './results.component';
+import { PartyResultsScreen } from './partyResults.component';
 
 const { Navigator, Screen } = createStackNavigator();
 
 const HomeNavigator = () => (
   <Navigator headerMode="none">
+    <Screen name="Party Results" component={PartyResultsScreen} />
     <Screen name="Auth" component={AuthScreen} />
     <Screen name="OTP" component={OTPScreen} />
     <Screen name="Elections" component={ElectionsScreen} />
