@@ -336,7 +336,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
     endDate: '',
     location: '',
     assemblyConstituency: [],
-    education: '0',
+    education: '',
     type: '',
     state: '',
   });
@@ -357,11 +357,8 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
       name: '',
       startDate: '',
       endDate: '',
-      location: '',
-      assemblyConstituency: [],
       education: '0',
       type: '',
-      state: '',
     });
   }, [currentUser]);
 
@@ -488,6 +485,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
     }));
   };
 
+  const { type } = data;
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -514,7 +512,6 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
               onChange={handleChange}
             />
             <RadioGroup
-              defaultValue="0"
               alignSelf="flex-start"
               onChange={value =>
                 setData(data => ({ ...data, education: value }))
@@ -564,23 +561,27 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
                 </Radio>
               </Stack>
             </RadioGroup>
-            <Dropdown
-              name="location"
-              id="location"
-              placeholder="Select Location"
-              data={states}
-              handleCustomChange={handleChangeState}
-              width="100%"
-            />
-            <Dropdown
-              isMulti
-              text="Assembly Constituency"
-              id="assemblyConstituency"
-              placeholder="Select Assembly Constituency"
-              data={assemblyConstituencies}
-              handleCustomChange={handleChangeAC}
-              width="100%"
-            />
+            {type === '2' || type === '3' ? (
+              <Dropdown
+                name="location"
+                id="location"
+                placeholder="Select State"
+                data={states}
+                handleCustomChange={handleChangeState}
+                width="100%"
+              />
+            ) : null}
+            {type === '3' ? (
+              <Dropdown
+                isMulti
+                text="Assembly Constituency"
+                id="assemblyConstituency"
+                placeholder="Select Assembly Constituencies"
+                data={assemblyConstituencies}
+                handleCustomChange={handleChangeAC}
+                width="100%"
+              />
+            ) : null}
           </VStack>
         </ModalBody>
 
