@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
+import Select from 'react-select';
 import {
   Heading,
   Flex,
@@ -24,101 +25,6 @@ import {
 import DataTable from 'react-data-table-component';
 import fetchApi from '../services/fetch-custom.js';
 import '../assets/scroll.css';
-
-const conditionalRowStyles = [];
-
-const data = [
-  {
-    cid: 'CID5799100',
-    name: 'Mr John Doe',
-    age: '42',
-    gender: 'Male',
-    assemblyConstituency: 'Nampally',
-    education: true,
-    pid: 'ABC',
-  },
-  {
-    cid: 'CID5799101',
-    name: 'Mrs. Jane Doe',
-    age: '35',
-    gender: 'Female',
-    assemblyConstituency: 'Secunderabad',
-    education: true,
-    pid: 'MIM',
-  },
-  {
-    cid: 'CID5799102',
-    name: 'Mr Alex Doe',
-    age: '38',
-    gender: 'Male',
-    assemblyConstituency: 'Malakpet',
-    education: false,
-    pid: 'JDP',
-  },
-  {
-    cid: 'CID5799103',
-    name: 'Mr Peter Doe',
-    age: '45',
-    gender: 'Male',
-    assemblyConstituency: 'Kukatpally',
-    education: true,
-    pid: 'CGG',
-  },
-  {
-    cid: 'CID5799104',
-    name: 'Mrs. Vanessa Doe',
-    age: '32',
-    gender: 'Female',
-    assemblyConstituency: 'Medchal',
-    education: true,
-    pid: 'XYZ',
-  },
-  {
-    cid: 'CID5799105',
-    name: 'Mr Robert Doe',
-    age: '48',
-    gender: 'Male',
-    assemblyConstituency: 'Secunderbad',
-    education: false,
-    pid: 'STP',
-  },
-  {
-    cid: 'CID5799106',
-    name: 'Mrs. Jennifer Doe',
-    age: '46',
-    gender: 'Female',
-    assemblyConstituency: 'Medchal',
-    education: true,
-    pid: 'TDP',
-  },
-  {
-    cid: 'CID5799107',
-    name: 'Mr Kevin Doe',
-    age: '53',
-    gender: 'Male',
-    assemblyConstituency: 'Nampally',
-    education: false,
-    pid: 'TRS',
-  },
-  {
-    cid: 'CID5799108',
-    name: 'Mr Jack Doe',
-    age: '55',
-    gender: 'Male',
-    assemblyConstituency: 'Nampally',
-    education: false,
-    pid: 'BJP',
-  },
-  {
-    cid: 'CID5799109',
-    name: 'Mr Zack Doe',
-    age: '42',
-    gender: 'Male',
-    assemblyConstituency: 'Malakpet',
-    education: true,
-    pid: 'ZTS',
-  },
-];
 
 const Candidates = ({ history, currentUser, ...props }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -239,7 +145,6 @@ const Candidates = ({ history, currentUser, ...props }) => {
             noHeader={true}
             columns={columns}
             data={data}
-            conditionalRowStyles={conditionalRowStyles}
             customStyles={{ table: { style: { marginBottom: '30px' } } }}
             noDataComponent={<Spinner size="lg" colorScheme="teal" />}
           />
@@ -274,6 +179,11 @@ const CreateModal = ({
     partyID: '',
   });
 
+  const [values, setValues] = useState({
+    states: [],
+    assemblyConstituencies: [],
+  });
+
   useEffect(() => {
     if (prefilled) {
       setData({
@@ -287,8 +197,82 @@ const CreateModal = ({
     }
   }, [prefilled]);
 
+  useEffect(() => {
+    fetchApi('/admin/states', {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${currentUser.token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        const stateMap = json.states.map((e, i) => ({
+          value: e.id,
+          label: e.name,
+        }));
+        setValues(values => ({ ...values, states: stateMap }));
+      })
+      .catch(err => {
+        console.log(err);
+        toast({
+          position: 'bottom-left',
+          title: 'Could not load states',
+          description: err.message,
+          status: 'error',
+          duration: 1000,
+          isClosable: true,
+        });
+      });
+
+    if (data.state) {
+      fetchApi(`/admin/regions/${data.state}`, {
+        method: 'get',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (!json.success) throw Error(json.message);
+          const regionMap = json.regions.map((e, i) => ({
+            value: e.id,
+            label: `${e.name} - ${e.pincode}`,
+          }));
+          setValues(values => ({
+            ...values,
+            assemblyConstituencies: regionMap,
+          }));
+        })
+        .catch(err => {
+          console.log(err);
+          toast({
+            position: 'bottom-left',
+            title: 'Could not load ACs',
+            description: err.message,
+            status: 'error',
+            duration: 1000,
+            isClosable: true,
+          });
+        });
+    }
+  }, [currentUser, toast, data.state]);
+
   const handleChange = e => {
     setData(data => ({ ...data, [e.target.name]: e.target.value }));
+  };
+
+  const handleChangeState = e => {
+    setData(data => ({ ...data, [e.field]: e.label, state: e.value }));
+  };
+
+  const handleChangeAC = e => {
+    setData(data => ({
+      ...data,
+      assemblyConstituency: e.value,
+    }));
   };
 
   const handleSubmit = () => {
@@ -310,7 +294,6 @@ const CreateModal = ({
         url = '/admin/createCandidate';
         method = 'post';
       }
-      console.log(url);
       fetchApi(url, {
         method: method,
         body: JSON.stringify(data),
@@ -352,7 +335,8 @@ const CreateModal = ({
   };
 
   const { name, age, gender, assemblyConstituency, partyID, education } = data;
-
+  const { states, assemblyConstituencies } = values;
+  console.log(assemblyConstituency);
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -373,7 +357,7 @@ const CreateModal = ({
                 name="name"
                 placeholder="Enter Name"
                 onChange={handleChange}
-                width="72%"
+                width="80%"
                 value={name}
               />
             </Stack>
@@ -389,7 +373,7 @@ const CreateModal = ({
                 name="age"
                 placeholder="Enter Age"
                 onChange={handleChange}
-                width="72%"
+                width="80%"
                 value={age}
               />
             </Stack>
@@ -420,13 +404,31 @@ const CreateModal = ({
               justifyContent="space-between"
               width="100%"
             >
+              <Text size="md">State</Text>
+              <Dropdown
+                text="State"
+                id="state"
+                placeholder="Select State"
+                data={states}
+                handleCustomChange={handleChangeState}
+                width="80%"
+              />
+            </Stack>
+            <Stack
+              spacing={5}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              width="100%"
+            >
               <Text size="md">AC</Text>
-              <Input
-                name="assemblyConstituency"
-                placeholder="Assembly Constituency"
-                onChange={handleChange}
-                width="72%"
-                value={assemblyConstituency}
+              <Dropdown
+                text="Assembly Constituency"
+                id="assemblyConstituency"
+                placeholder="Select Assembly Constituency"
+                data={assemblyConstituencies}
+                handleCustomChange={handleChangeAC}
+                width="80%"
               />
             </Stack>
             <RadioGroup
@@ -464,7 +466,7 @@ const CreateModal = ({
                 name="partyID"
                 placeholder="Enter Party ID"
                 onChange={handleChange}
-                width="72%"
+                width="80%"
                 value={partyID}
               />
             </Stack>
@@ -483,6 +485,37 @@ const CreateModal = ({
         </ModalFooter>
       </ModalContent>
     </Modal>
+  );
+};
+
+const Dropdown = ({
+  handleCustomChange,
+  data,
+  id,
+  setFieldValue,
+  width = '25vw',
+  ...props
+}) => {
+  const customStyles = {
+    container: provided => ({
+      ...provided,
+      width: width,
+      marginBottom: '10px',
+    }),
+  };
+  return (
+    <Select
+      id={id}
+      placeholder="Select Option"
+      isRequired
+      onChange={obj => {
+        obj.field = id;
+        handleCustomChange(obj, setFieldValue);
+      }}
+      styles={customStyles}
+      options={data}
+      {...props}
+    />
   );
 };
 

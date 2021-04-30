@@ -35,11 +35,15 @@ export const ConfirmationScreen = ({ navigation, route }) => {
   );
 
   const navigateResults = () => {
-    navigation.navigate('Results', { electionId, electionName, votes });
+    navigation.navigate('Results', {
+      electionId,
+      electionName,
+      currentVotes: votes,
+    });
   };
 
   const navigatePartyResults = () => {
-    navigation.navigate('PartyResults', { electionId, electionName, votes });
+    navigation.navigate('PartyResults', { electionId, electionName, currentVotes: votes });
   };
 
   let { electionId, electionName, region } = route.params;

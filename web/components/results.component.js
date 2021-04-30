@@ -10,13 +10,19 @@ import {
   MenuGroup,
   MenuItem,
   Button,
+  Spinner,
 } from '@ui-kitten/components';
 
 import { styles } from './styles';
+import Popup from './popup.component';
 
 const BackIcon = props => <Icon {...props} name="arrow-back" />;
 
 export const ResultsScreen = ({ navigation, route }) => {
+  const [votes, setVotes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('Error!');
+
   const navigateBack = () => {
     navigation.goBack();
   };
@@ -25,7 +31,34 @@ export const ResultsScreen = ({ navigation, route }) => {
     <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
   );
 
-  const { electionId, electionName, votes } = route.params;
+  const { electionId, electionName, currentVotes } = route.params;
+
+  if (!currentVotes) {
+    useEffect(() => {
+      setLoading(true);
+      fetch(`${url}/getRegionWiseVotes/${electionId}`, {
+        method: 'get',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: GLOBAL.token,
+        },
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (!json.success) throw Error(json.message);
+          setVotes(json.votes);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.log(err);
+          setMessage("Couldn't load data!");
+          setVisible(true);
+          setLoading(false);
+        });
+    }, [url]);
+  } else {
+    setVotes(currentVotes);
+  }
 
   return (
     <>
@@ -83,17 +116,22 @@ export const ResultsScreen = ({ navigation, route }) => {
             marginBottom: 90,
           }}
         >
-          <Menu style={{ backgroundColor: '#fff', width: 'auto' }}>
-            {votes.map(e => {
-              return (
-                <MenuGroup title={e.regionName}>
-                  <CandidateMenu candidates={e.candidates} />
-                </MenuGroup>
-              );
-            })}
-          </Menu>
+          {loading ? (
+            <Spinner />
+          ) : (
+            <Menu style={{ backgroundColor: '#fff', width: 'auto' }}>
+              {votes.map(e => {
+                return (
+                  <MenuGroup title={e.regionName}>
+                    <CandidateMenu candidates={e.candidates} />
+                  </MenuGroup>
+                );
+              })}
+            </Menu>
+          )}
         </Layout>
       </Layout>
+      <Popup message={message} visible={visible} setVisible={setVisible} />
     </>
   );
 };

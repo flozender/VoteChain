@@ -17,6 +17,7 @@ import { styles } from './styles';
 const BackIcon = props => <Icon {...props} name="arrow-back" />;
 
 export const PartyResultsScreen = ({ navigation, route }) => {
+  const [party, setParty] = useState([]);
   const navigateBack = () => {
     navigation.goBack();
   };
@@ -25,7 +26,7 @@ export const PartyResultsScreen = ({ navigation, route }) => {
     <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
   );
 
-  // const { electionId, electionName, votes } = route.params;
+  // const { electionId, electionName, currentVotes } = route.params;
 
   return (
     <>
