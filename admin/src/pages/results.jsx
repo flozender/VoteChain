@@ -9,6 +9,7 @@ import {
   VStack,
   Stack,
   useToast,
+  Spinner,
 } from '@chakra-ui/react';
 import fetchApi from '../services/fetch-custom.js';
 import '../assets/scroll.css';
@@ -17,6 +18,7 @@ const Results = ({ history, currentUser, ...props }) => {
   const [data, setData] = useState({
     election: null,
   });
+  const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [value, setValue] = useState([]);
   const { election } = data;
@@ -32,9 +34,10 @@ const Results = ({ history, currentUser, ...props }) => {
       .then(res => res.json())
       .then(json => {
         if (!json.success) throw Error(json.message);
+        console.log(json.elections);
         json.elections = json.elections
           .filter(e => {
-            return e.active;
+            return !e.winners;
           })
           .map(e => {
             return { label: e.name, value: e.id };
@@ -57,6 +60,62 @@ const Results = ({ history, currentUser, ...props }) => {
   const handleChange = e => {
     setData(data => ({ ...data, [e.field]: e.value }));
   };
+
+  const handleSubmit = () => {
+    setLoading(true);
+    Promise.all([
+      fetchApi(`/admin/generateElectionResults/${data.election}`, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      }),
+      fetchApi(`/admin/generateGlobalElectionResults/${data.election}`, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentUser.token}`,
+        },
+      }),
+    ])
+      .then(function (responses) {
+        return Promise.all(
+          responses.map(function (response) {
+            return response.json();
+          })
+        );
+      })
+      .then(function (json) {
+        if (!json[0].success && !json[1].success) throw Error(json.message);
+        toast({
+          position: 'bottom-left',
+          title: 'Results processed and declared',
+          status: 'success',
+          duration: 1500,
+          isClosable: true,
+        });
+        setLoading(false);
+        history.push('/dashboard');
+      })
+      .catch(function (err) {
+        console.log(err);
+        toast({
+          position: 'bottom-left',
+          title: 'Could not load data',
+          description: err.message,
+          status: 'error',
+          duration: 1000,
+          isClosable: true,
+        });
+        setLoading(false);
+      });
+  };
+
+  if (value.length === 0) {
+    return <Spinner colorScheme="teal" />;
+  }
+
   return (
     <Flex justifyContent="center" alignItems="center">
       <Flex
@@ -130,7 +189,12 @@ const Results = ({ history, currentUser, ...props }) => {
               width="100%"
               m={3}
             >
-              <Button colorScheme="teal" disabled={election ? false : true}>
+              <Button
+                colorScheme="teal"
+                disabled={election ? false : true}
+                onClick={handleSubmit}
+                isLoading={loading}
+              >
                 Count and Publish
               </Button>
             </Stack>

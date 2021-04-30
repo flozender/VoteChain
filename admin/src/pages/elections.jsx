@@ -144,7 +144,17 @@ const Elections = ({ history, currentUser, ...props }) => {
             </Button>
           );
         } else {
-          return <Text>N/A</Text>;
+          return (
+            <Button
+              alignSelf="center"
+              size="sm"
+              colorScheme="teal"
+              variant="outline"
+              disabled
+            >
+              N/A
+            </Button>
+          );
         }
       },
     },
@@ -175,7 +185,13 @@ const Elections = ({ history, currentUser, ...props }) => {
     {
       name: 'Winner',
       sortable: true,
-      cell: row => <Text fontWeight="bold">{row.winner?.name}</Text>,
+      cell: row => {
+        return (
+          <Text fontWeight="bold">
+            {row.winners ? row.winners[0].name : ''}
+          </Text>
+        );
+      },
     },
     {
       name: 'Votes',
@@ -211,6 +227,12 @@ const Elections = ({ history, currentUser, ...props }) => {
                 onOpenAdd();
               }}
             >
+              ADD
+            </Button>
+          );
+        } else {
+          return (
+            <Button size="sm" colorScheme="teal" disabled>
               ADD
             </Button>
           );
