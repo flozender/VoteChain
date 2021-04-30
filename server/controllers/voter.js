@@ -3,8 +3,10 @@ const moment = require('moment');
 const Bluebird = require('bluebird');
 const utils = require('../helpers/utils');
 const voterRepo = require('../models/voterRepo.js');
+const regionRepo = require('../models/regionRepo.js');
 const electionRepo = require('../models/electionRepo.js');
 const candidateElectionRepo = require('../models/candidateElectionRepo.js');
+voterRepo;
 const smartContract = require('../blockchain/Methods.js');
 
 exports.createVoter = async data => {
@@ -164,12 +166,15 @@ exports.getEligibleElections = async voterId => {
       ) {
         elections.push(element);
       }
-      delete element.regions;
+      // delete element.regions;
     });
     return {
       success: true,
       elections,
-      region: voter.regionName,
+      region: {
+        regionID: voter.assemblyConstituency,
+        regionName: voter.regionName,
+      },
     };
   } catch (err) {
     console.log(err);
