@@ -32,35 +32,30 @@ export const ResultsScreen = ({ navigation, route }) => {
     <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
   );
 
-  const { electionId, electionName, currentVotes } = route.params;
-  const doesExist = currentVotes || votes;
-  console.log(doesExist);
-  if (doesExist.length === 0) {
-    useEffect(() => {
-      setLoading(true);
-      fetch(`${url}/getRegionWiseVotes/${electionId}`, {
-        method: 'get',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: GLOBAL.token,
-        },
+  const { electionId, electionName } = route.params;
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`${url}/getRegionWiseVotes/${electionId}`, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: GLOBAL.token,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        setVotes(json.votes);
+        setLoading(false);
       })
-        .then(res => res.json())
-        .then(json => {
-          if (!json.success) throw Error(json.message);
-          setVotes(json.votes);
-          setLoading(false);
-        })
-        .catch(err => {
-          console.log(err);
-          setMessage("Couldn't load data!");
-          setVisible(true);
-          setLoading(false);
-        });
-    }, [url]);
-  } else {
-    setVotes(currentVotes);
-  }
+      .catch(err => {
+        console.log(err);
+        setMessage("Couldn't load data!");
+        setVisible(true);
+        setLoading(false);
+      });
+  }, [url]);
 
   return (
     <>
