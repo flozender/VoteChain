@@ -43,7 +43,10 @@ export const ConfirmationScreen = ({ navigation, route }) => {
   };
 
   const navigatePartyResults = () => {
-    navigation.navigate('PartyResults', { electionId, electionName, currentVotes: votes });
+    navigation.navigate('Party Results', {
+      electionId,
+      electionName,
+    });
   };
 
   let { electionId, electionName, region } = route.params;
@@ -165,6 +168,7 @@ export const ConfirmationScreen = ({ navigation, route }) => {
             <Text
               style={{
                 fontSize: 23,
+                marginBottom: 5,
               }}
             >
               {winners
@@ -178,7 +182,7 @@ export const ConfirmationScreen = ({ navigation, route }) => {
                 marginBottom: 20,
               }}
               onPress={navigatePartyResults}
-              // disabled={votes ? false : true}
+              disabled={votes ? false : true}
             >
               Details
             </Button>

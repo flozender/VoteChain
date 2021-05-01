@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Divider,
   Icon,
@@ -22,6 +22,7 @@ export const ResultsScreen = ({ navigation, route }) => {
   const [votes, setVotes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('Error!');
+  const [visible, setVisible] = useState(false);
 
   const navigateBack = () => {
     navigation.goBack();
@@ -32,8 +33,9 @@ export const ResultsScreen = ({ navigation, route }) => {
   );
 
   const { electionId, electionName, currentVotes } = route.params;
-
-  if (!currentVotes) {
+  const doesExist = currentVotes || votes;
+  console.log(doesExist);
+  if (doesExist.length === 0) {
     useEffect(() => {
       setLoading(true);
       fetch(`${url}/getRegionWiseVotes/${electionId}`, {
@@ -137,8 +139,9 @@ export const ResultsScreen = ({ navigation, route }) => {
 };
 
 const CandidateMenu = ({ candidates }) => {
-  return candidates.map(e => (
+  return candidates.map((e, i) => (
     <MenuItem
+      key={i}
       title={e.name}
       accessoryRight={props => {
         return <Text {...props}>{e.votes}</Text>;
