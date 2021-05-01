@@ -24,6 +24,10 @@ exports.getAllElections = async () => {
           )
           ? 1
           : 0;
+      let winnerArray = String(element.winner).split(',');
+      let winners = await electionRepo.getWinnerNames(winnerArray, element.id);
+
+      element.winner = element.winner ? JSON.parse(winners.winners) : [];
       element.candidates = await candidateElectionRepo.getAssignedCandidatesElectionForAdmin(
         element.id
       );

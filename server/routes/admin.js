@@ -435,6 +435,40 @@ module.exports = app => {
     }
   );
 
+  app.get(
+    '/admin/getRegionWiseVotes/:electionId',
+    auth.adminTokenValidate,
+    async (req, res) => {
+      try {
+        let votes = await electionController.getRegionWiseVotes(
+          req.params.electionId
+        );
+        res.status(200).send(votes);
+      } catch (error) {
+        res.status(400).send({
+          error: JSON.stringify(error),
+        });
+      }
+    }
+  );
+
+  app.get(
+    '/admin/getPartyWiseVotes/:electionId',
+    auth.adminTokenValidate,
+    async (req, res) => {
+      try {
+        let votes = await electionController.getPartyWiseResults(
+          req.params.electionId
+        );
+        res.status(200).send(votes);
+      } catch (error) {
+        res.status(400).send({
+          error: JSON.stringify(error),
+        });
+      }
+    }
+  );
+
   app.delete(
     `/admin/deleteCandidate/:candidateId`,
     auth.adminTokenValidate,

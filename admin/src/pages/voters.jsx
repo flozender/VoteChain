@@ -211,12 +211,14 @@ const CreateModal = ({
 
   useEffect(() => {
     if (prefilled) {
+      const dateObj = new Date(prefilled.dob);
+      const offset = dateObj.getTimezoneOffset();
+      const dob = new Date(dateObj.getTime() - offset * 60 * 1000);
+
       setData({
         id: prefilled.id,
         name: prefilled.name,
-        dob: prefilled.dob
-          ? new Date(prefilled.dob).toISOString().slice(0, 10)
-          : '',
+        dob: prefilled.dob ? dob.toISOString().split('T')[0] : '',
         gender: prefilled.gender?.toString(),
         assemblyConstituency: prefilled.assemblyConstituency,
         education: prefilled.education?.toString(),

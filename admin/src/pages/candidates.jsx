@@ -56,7 +56,7 @@ const Candidates = ({ history, currentUser, ...props }) => {
         }
       },
     },
-    { name: 'Party ID', selector: 'partyID', sortable: true },
+    { name: 'Party Name', selector: 'partyName', sortable: true },
     {
       name: 'Manage',
       right: true,
@@ -176,12 +176,13 @@ const CreateModal = ({
     gender: '',
     assemblyConstituency: '',
     education: '0',
-    partyID: '',
+    party: '',
   });
 
   const [values, setValues] = useState({
     states: [],
     assemblyConstituencies: [],
+    parties: [],
   });
 
   useEffect(() => {
@@ -191,7 +192,7 @@ const CreateModal = ({
         age: prefilled.age,
         gender: prefilled.gender?.toString(),
         assemblyConstituency: prefilled.assemblyConstituency,
-        partyID: prefilled.partyID,
+        party: prefilled.party,
         education: prefilled.education?.toString(),
       });
     }
@@ -213,6 +214,33 @@ const CreateModal = ({
           label: e.name,
         }));
         setValues(values => ({ ...values, states: stateMap }));
+      })
+      .catch(err => {
+        console.log(err);
+        toast({
+          position: 'bottom-left',
+          title: 'Could not load states',
+          description: err.message,
+          status: 'error',
+          duration: 1000,
+          isClosable: true,
+        });
+      });
+    fetchApi('/admin/parties', {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${currentUser.token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        const partyMap = json.parties.map((e, i) => ({
+          value: e.id,
+          label: e.name,
+        }));
+        setValues(values => ({ ...values, parties: partyMap }));
       })
       .catch(err => {
         console.log(err);
@@ -275,6 +303,13 @@ const CreateModal = ({
     }));
   };
 
+  const handleChangeParty = e => {
+    setData(data => ({
+      ...data,
+      party: e.value,
+    }));
+  };
+
   const handleSubmit = () => {
     setLoading(true);
     if (Object.values(data).includes('')) {
@@ -334,9 +369,8 @@ const CreateModal = ({
     }
   };
 
-  const { name, age, gender, assemblyConstituency, partyID, education } = data;
-  const { states, assemblyConstituencies } = values;
-  console.log(assemblyConstituency);
+  const { name, age, gender, education } = data;
+  const { states, assemblyConstituencies, parties } = values;
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -460,14 +494,15 @@ const CreateModal = ({
               justifyContent="space-between"
               width="100%"
             >
-              {/* TODO: This should be a dynamic dropdown */}
-              <Text size="md">Party ID</Text>
-              <Input
-                name="partyID"
-                placeholder="Enter Party ID"
-                onChange={handleChange}
+              <Text size="md">Party</Text>
+              <Dropdown
+                text="Party"
+                id="party"
+                name="party"
+                placeholder="Select Party"
+                data={parties}
+                handleCustomChange={handleChangeParty}
                 width="80%"
-                value={partyID}
               />
             </Stack>
           </VStack>

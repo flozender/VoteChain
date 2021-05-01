@@ -188,7 +188,9 @@ const Elections = ({ history, currentUser, ...props }) => {
       cell: row => {
         return (
           <Text fontWeight="bold">
-            {row.winners ? row.winners[0].name : ''}
+            {row.winner.length > 0
+              ? `${row.winner[0].name} - ${row.winner[0].partyName}`
+              : '-'}
           </Text>
         );
       },
