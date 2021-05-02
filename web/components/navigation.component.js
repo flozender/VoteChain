@@ -15,7 +15,6 @@ const { Navigator, Screen } = createStackNavigator();
 
 const HomeNavigator = () => (
   <Navigator headerMode="none">
-    <Screen name="Party Results" component={PartyResultsScreen} />
     <Screen name="Auth" component={AuthScreen} />
     <Screen name="OTP" component={OTPScreen} />
     <Screen name="Elections" component={ElectionsScreen} />
@@ -23,6 +22,7 @@ const HomeNavigator = () => (
     <Screen name="Confirm Vote" component={ConfirmVoteScreen} />
     <Screen name="Confirmation" component={ConfirmationScreen} />
     <Screen name="Results" component={ResultsScreen} />
+    <Screen name="Party Results" component={PartyResultsScreen} />
     <Screen name="Sign Out" component={SignOutScreen} />
   </Navigator>
 );

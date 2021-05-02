@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Divider,
   Icon,
@@ -15,6 +15,7 @@ import {
 
 import { styles } from './styles';
 import Popup from './popup.component';
+import { url } from '../services/constants';
 
 const BackIcon = props => <Icon {...props} name="arrow-back" />;
 
@@ -22,6 +23,7 @@ export const ResultsScreen = ({ navigation, route }) => {
   const [votes, setVotes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('Error!');
+  const [visible, setVisible] = useState(false);
 
   const navigateBack = () => {
     navigation.goBack();
@@ -31,34 +33,30 @@ export const ResultsScreen = ({ navigation, route }) => {
     <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
   );
 
-  const { electionId, electionName, currentVotes } = route.params;
+  const { electionId, electionName } = route.params;
 
-  if (!currentVotes) {
-    useEffect(() => {
-      setLoading(true);
-      fetch(`${url}/getRegionWiseVotes/${electionId}`, {
-        method: 'get',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: GLOBAL.token,
-        },
+  useEffect(() => {
+    setLoading(true);
+    fetch(`${url}/getRegionWiseVotes/${electionId}`, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: GLOBAL.token,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        setVotes(json.votes);
+        setLoading(false);
       })
-        .then(res => res.json())
-        .then(json => {
-          if (!json.success) throw Error(json.message);
-          setVotes(json.votes);
-          setLoading(false);
-        })
-        .catch(err => {
-          console.log(err);
-          setMessage("Couldn't load data!");
-          setVisible(true);
-          setLoading(false);
-        });
-    }, [url]);
-  } else {
-    setVotes(currentVotes);
-  }
+      .catch(err => {
+        console.log(err);
+        setMessage("Couldn't load data!");
+        setVisible(true);
+        setLoading(false);
+      });
+  }, [url]);
 
   return (
     <>
@@ -137,8 +135,9 @@ export const ResultsScreen = ({ navigation, route }) => {
 };
 
 const CandidateMenu = ({ candidates }) => {
-  return candidates.map(e => (
+  return candidates.map((e, i) => (
     <MenuItem
+      key={i}
       title={e.name}
       accessoryRight={props => {
         return <Text {...props}>{e.votes}</Text>;

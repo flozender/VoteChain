@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Divider,
   Icon,
@@ -13,11 +13,13 @@ import {
 } from '@ui-kitten/components';
 
 import { styles } from './styles';
+import { url } from '../services/constants';
 
 const BackIcon = props => <Icon {...props} name="arrow-back" />;
 
 export const PartyResultsScreen = ({ navigation, route }) => {
   const [party, setParty] = useState([]);
+  const [loading, setLoading] = useState(false);
   const navigateBack = () => {
     navigation.goBack();
   };
@@ -26,7 +28,30 @@ export const PartyResultsScreen = ({ navigation, route }) => {
     <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
   );
 
-  // const { electionId, electionName, currentVotes } = route.params;
+  const { electionId, electionName } = route.params;
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`${url}/getPartyWiseVotes/${electionId}`, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: GLOBAL.token,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) throw Error(json.message);
+        setParty(json.parties);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+        setMessage("Couldn't load data!");
+        setVisible(true);
+        setLoading(false);
+      });
+  }, [url]);
 
   return (
     <>
@@ -69,8 +94,7 @@ export const PartyResultsScreen = ({ navigation, route }) => {
               fontWeight: 'bold',
             }}
           >
-            {/* {electionName} */}
-            National Elections
+            {electionName}
           </Text>
         </Layout>
         <Layout
@@ -86,9 +110,9 @@ export const PartyResultsScreen = ({ navigation, route }) => {
           }}
         >
           <Menu style={{ backgroundColor: '#fff', width: 'auto' }}>
-            {/* {party.map(e => {
-              return <partyMenu party={e.party} />;
-            })} */}
+            {party.map(e => {
+              return <PartyMenu party={e} />;
+            })}
           </Menu>
         </Layout>
       </Layout>
@@ -96,13 +120,13 @@ export const PartyResultsScreen = ({ navigation, route }) => {
   );
 };
 
-const partyMenu = ({ party }) => {
-  return party.map(e => (
+const PartyMenu = ({ party }) => {
+  return (
     <MenuItem
-      title={e.name}
+      title={party.name}
       accessoryRight={props => {
-        return <Text {...props}>{e.votes}</Text>;
+        return <Text {...props}>{party.votes}</Text>;
       }}
     />
-  ));
+  );
 };
