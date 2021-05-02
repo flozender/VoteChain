@@ -215,7 +215,7 @@ exports.vote = async details => {
           message: 'Candidate does not exist',
         };
       } else {
-        const receipt = await smartContract.vote(
+        await smartContract.vote(
           details.id,
           details.electionID,
           details.regionID,

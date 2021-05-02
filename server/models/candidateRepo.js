@@ -51,10 +51,25 @@ module.exports = {
     return candidate
       .findAll({
         attributes,
-        where: condition
+        where: condition,
       })
       .then(data => data)
       .error(error => {
+        throw error;
+      });
+  },
+
+  getAllCandidatesWithParty: () => {
+    let query = `SELECT C.*, P.name AS partyName FROM Candidate C
+    LEFT JOIN Party P ON P.id = C.partyID`;
+
+    return db
+      .query(query, {
+        replacements: {},
+        type: db.QueryTypes.SELECT,
+      })
+      .then(data => data)
+      .catch(error => {
         throw error;
       });
   },

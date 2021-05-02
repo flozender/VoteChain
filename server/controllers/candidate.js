@@ -6,7 +6,7 @@ const candidateElectionRepo = require('../models/candidateElectionRepo.js');
 
 exports.getAllCandidates = async () => {
   try {
-    let candidates = await candidateRepo.getAll({ exclude: [] }, {});
+    let candidates = await candidateRepo.getAllCandidatesWithParty();
     return {
       success: true,
       candidates,
@@ -31,17 +31,15 @@ exports.createCandidate = async data => {
   }
 };
 
-exports.getAllCandidatesOfParty = async (partyId) => {
+exports.getAllCandidatesOfParty = async partyID => {
   try {
-    let candidates = await candidateRepo.getAll({ exclude: [] }, { partyId });
+    let candidates = await candidateRepo.getAll({ exclude: [] }, { partyID });
     return {
       success: true,
       candidates,
     };
-  } catch (error) {
-
-  }
-}
+  } catch (error) {}
+};
 
 exports.getCandidate = async candidateId => {
   try {
@@ -85,17 +83,24 @@ exports.deleteCandidate = async candidateId => {
   }
 };
 
-exports.getAssignedCandidatesElectionFromVoter = async (electionId, voterId) => {
+exports.getAssignedCandidatesElectionFromVoter = async (
+  electionId,
+  voterId
+) => {
   try {
     let candidates = await candidateElectionRepo.getAssignedCandidatesElectionFromVoter(
-      electionId, voterId);
+      electionId,
+      voterId
+    );
     candidates.forEach(element => {
-      element.candidate = element.candidate ? JSON.parse(element.candidate) : null;
+      element.candidate = element.candidate
+        ? JSON.parse(element.candidate)
+        : null;
       element.region = element.region ? JSON.parse(element.region) : null;
-    })
+    });
     return {
       success: true,
-      candidates
+      candidates,
     };
   } catch (err) {
     console.log(err);
@@ -103,17 +108,20 @@ exports.getAssignedCandidatesElectionFromVoter = async (electionId, voterId) => 
   }
 };
 
-exports.getAssignedCandidatesElectionForAdmin = async (electionId) => {
+exports.getAssignedCandidatesElectionForAdmin = async electionId => {
   try {
     let candidates = await candidateElectionRepo.getAssignedCandidatesElectionForAdmin(
-      electionId);
+      electionId
+    );
     candidates.forEach(element => {
-      element.candidate = element.candidate ? JSON.parse(element.candidate) : null;
+      element.candidate = element.candidate
+        ? JSON.parse(element.candidate)
+        : null;
       element.region = element.region ? JSON.parse(element.region) : null;
-    })
+    });
     return {
       success: true,
-      candidates
+      candidates,
     };
   } catch (err) {
     console.log(err);

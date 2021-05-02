@@ -3,9 +3,10 @@ let db = require('../db/database');
 
 module.exports = {
   add: function (data) {
-    return party.create(data, {
-      raw: true
-    })
+    return party
+      .create(data, {
+        raw: true,
+      })
       .then(res => res)
       .catch(error => {
         throw error;
@@ -25,9 +26,10 @@ module.exports = {
   },
 
   update: function (update_object, condition) {
-    return party.update(update_object, {
-      where: condition
-    })
+    return party
+      .update(update_object, {
+        where: condition,
+      })
       .then(data => data)
       .error(error => {
         throw error;
@@ -35,9 +37,10 @@ module.exports = {
   },
 
   delete: function (condition) {
-    return party.destroy({
-      where: condition
-    })
+    return party
+      .destroy({
+        where: condition,
+      })
       .then(data => data)
       .catch(error => {
         throw error;
@@ -45,13 +48,31 @@ module.exports = {
   },
 
   get: function (attributes, condition) {
-    return party.findOne({
-      attributes,
-      where: condition
-    })
+    return party
+      .findOne({
+        attributes,
+        where: condition,
+      })
       .then(data => data)
       .error(error => {
         throw error;
       });
-  }
-}
+  },
+
+  getDetails: partyId => {
+    let query = `SELECT P.*, C.name AS president
+    FROM Party P
+    LEFT JOIN Candidate C ON P.president = C.id
+    WHERE P.id = :partyId`;
+
+    return db
+      .query(query, {
+        replacements: { partyId },
+        type: db.QueryTypes.SELECT,
+      })
+      .then(data => data[0])
+      .catch(error => {
+        throw error;
+      });
+  },
+};

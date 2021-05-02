@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
+var text = require('textbelt');
 app.use(bodyParser({ limit: '50mb' }));
 app.use(cors());
 app.use(bodyParser.json());

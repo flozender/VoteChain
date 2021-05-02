@@ -77,7 +77,7 @@ module.exports = {
   },
 
   getWinnerNames: (winners, electionId) => {
-    let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('name', C.name, 'partyName', P.name)) AS winners
+    let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('name', C.name, 'partyID', P.id, 'partyName', P.name, 'president', P.president)) AS winners
     FROM Election E
     LEFT JOIN Candidate C ON C.id IN (:winners)
     LEFT JOIN Party P ON P.id = C.partyID

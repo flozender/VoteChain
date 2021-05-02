@@ -28,6 +28,10 @@ exports.getAllElections = async () => {
       let winners = await electionRepo.getWinnerNames(winnerArray, element.id);
 
       element.winner = element.winner ? JSON.parse(winners.winners) : [];
+      await Bluebird.each(element.winner, async el => {
+        let partyDetails = await partyRepo.getDetails(el.partyID);
+        el.president = partyDetails.president;
+      });
       element.candidates = await candidateElectionRepo.getAssignedCandidatesElectionForAdmin(
         element.id
       );
@@ -209,6 +213,10 @@ exports.getRegionWiseVotes = async electionID => {
     if (election.winner) {
       winners = await electionRepo.getWinnerNames(election.winner, electionID);
       winners.winners = JSON.parse(winners.winners);
+      await Bluebird.each(winners.winners, async el => {
+        let partyDetails = await partyRepo.getDetails(el.partyID);
+        el.president = partyDetails.president;
+      });
     }
     console;
     return {
@@ -267,7 +275,7 @@ exports.getPartyWiseResults = async electionID => {
     parties.partyIDs = Array.from(set);
     await Bluebird.each(parties.partyIDs, async party => {
       let votes = await smartContract.getGlobalWinners(party, electionID);
-      let selectedParty = await partyRepo.get({ exclude: [] }, { id: party });
+      let selectedParty = await partyRepo.getDetails(party);
       partyVotes.push({
         id: party,
         votes,
