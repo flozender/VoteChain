@@ -205,7 +205,7 @@ const Elections = ({ history, currentUser, ...props }) => {
           <Button
             size="sm"
             colorScheme="teal"
-            onClick={() => history.push(`/elections/${row.id}`)}
+            onClick={() => history.push(`/electionVotes/${row.id}`)}
           >
             View
           </Button>
@@ -341,7 +341,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
     assemblyConstituency: [],
     education: '',
     type: '',
-    state: '',
+    stateID: '',
   });
 
   const [values, setValues] = useState({
@@ -352,7 +352,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
   const { states, assemblyConstituencies } = values;
 
   const handleChangeState = e => {
-    setData(data => ({ ...data, [e.field]: e.label, state: e.value }));
+    setData(data => ({ ...data, [e.field]: e.label, stateID: e.value }));
   };
 
   useEffect(() => {
@@ -394,8 +394,8 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
         });
       });
 
-    if (data.state) {
-      fetchApi(`/admin/regions/${data.state}`, {
+    if (data.stateID) {
+      fetchApi(`/admin/regions/${data.stateID}`, {
         method: 'get',
         headers: {
           'Content-Type': 'application/json',
@@ -426,7 +426,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
           });
         });
     }
-  }, [currentUser, toast, data.state]);
+  }, [currentUser, toast, data.stateID]);
 
   const submitData = data => {
     setLoading(true);
@@ -506,13 +506,13 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
             <Input
               name="startDate"
               placeholder="Start Date"
-              type="date"
+              type="datetime-local"
               onChange={handleChange}
             />
             <Input
               name="endDate"
               placeholder="End Date"
-              type="date"
+              type="datetime-local"
               onChange={handleChange}
             />
             <RadioGroup
@@ -612,7 +612,7 @@ const AddModal = ({ isOpen, onClose, currentUser, electionID }) => {
 
   const toast = useToast();
   const [data, setData] = useState({
-    state: '',
+    stateID: '',
     assemblyConstituency: '',
     party: '',
     candidate: '',
@@ -687,8 +687,8 @@ const AddModal = ({ isOpen, onClose, currentUser, electionID }) => {
         });
       });
 
-    if (data.state) {
-      fetchApi(`/admin/regions/${data.state}`, {
+    if (data.stateID) {
+      fetchApi(`/admin/regions/${data.stateID}`, {
         method: 'get',
         headers: {
           'Content-Type': 'application/json',
@@ -842,7 +842,7 @@ const AddModal = ({ isOpen, onClose, currentUser, electionID }) => {
                 <Text size="md">State</Text>
                 <Dropdown
                   text="State"
-                  id="state"
+                  id="stateID"
                   placeholder="Select State"
                   data={states}
                   handleCustomChange={handleChange}
