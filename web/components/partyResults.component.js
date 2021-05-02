@@ -42,7 +42,7 @@ export const PartyResultsScreen = ({ navigation, route }) => {
       .then(res => res.json())
       .then(json => {
         if (!json.success) throw Error(json.message);
-        setParty(json.votes);
+        setParty(json.parties);
         setLoading(false);
       })
       .catch(err => {
@@ -111,11 +111,11 @@ export const PartyResultsScreen = ({ navigation, route }) => {
             marginBottom: 90,
           }}
         >
-          <MenuGroup style={{ backgroundColor: '#fff', width: 'auto' }}>
-            {/* {party.map(e => {
-              return <PartyMenu party={e.party} />;
-            })} */}
-          </MenuGroup>
+          <Menu style={{ backgroundColor: '#fff', width: 'auto' }}>
+            {party.map(e => {
+              return <PartyMenu party={e} />;
+            })}
+          </Menu>
         </Layout>
       </Layout>
     </>
@@ -123,12 +123,12 @@ export const PartyResultsScreen = ({ navigation, route }) => {
 };
 
 const PartyMenu = ({ party }) => {
-  return party.map(e => (
+  return (
     <MenuItem
-      title={e.name}
+      title={party.name}
       accessoryRight={props => {
-        return <Text {...props}>{e.currentVotes}</Text>;
+        return <Text {...props}>{party.votes}</Text>;
       }}
     />
-  ));
+  );
 };

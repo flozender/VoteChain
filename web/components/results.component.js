@@ -15,6 +15,7 @@ import {
 
 import { styles } from './styles';
 import Popup from './popup.component';
+import { url } from '../services/constants';
 
 const BackIcon = props => <Icon {...props} name="arrow-back" />;
 
