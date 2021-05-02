@@ -56,6 +56,7 @@ export const ConfirmVoteScreen = ({ navigation, route }) => {
     })
       .then(res => res.json())
       .then(json => {
+        console.log(json);
         if (!json.success) throw Error(json.message);
         success();
       })

@@ -103,7 +103,7 @@ const App = props => {
           />
           <ResRoute
             exact
-            path="/elections/:electionID"
+            path="/electionVotes/:electionID"
             currentUser={currentUser}
             component={
               <ViewResults

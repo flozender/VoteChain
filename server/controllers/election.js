@@ -20,7 +20,9 @@ exports.getAllElections = async () => {
           .utc()
           .isBetween(
             moment(element.startDate).utc(),
-            moment(element.endDate).utc()
+            moment(element.endDate).utc(),
+            'minutes',
+            '[]'
           )
           ? 1
           : 0;

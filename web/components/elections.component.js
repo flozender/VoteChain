@@ -32,10 +32,11 @@ export const ElectionsScreen = ({ navigation }) => {
     });
   };
 
-  const navigateResults = (id, name) => {
-    navigation.navigate('Results', {
+  const navigateConfirmation = (id, name, region) => {
+    navigation.navigate('Confirmation', {
       electionId: id,
       electionName: name,
+      region,
     });
   };
 
@@ -58,7 +59,7 @@ export const ElectionsScreen = ({ navigation }) => {
           if (item.active) {
             navigateCastVote(item.id, item.name, item.candidates, region);
           } else {
-            navigateResults(item.id, item.name);
+            navigateConfirmation(item.id, item.name, region);
           }
         }}
       >

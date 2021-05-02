@@ -208,7 +208,9 @@ exports.vote = async details => {
         .utc()
         .isBetween(
           moment(election.startDate).utc(),
-          moment(election.endDate).utc()
+          moment(election.endDate).utc(),
+          'minutes',
+          '[]'
         )
     ) {
       if (!checkCandidate) {
@@ -238,7 +240,8 @@ exports.vote = async details => {
             details.candidateID
           );
           await utils.sendVoteSuccessEmail(
-            details.voterName,
+            voter.name,
+            voter.email,
             details.electionID
           );
           res = {
@@ -260,6 +263,7 @@ exports.vote = async details => {
     }
     return res;
   } catch (err) {
+    console.log(err);
     return {
       success: false,
       message: err.data[Object.keys(err.data)[0]].reason,

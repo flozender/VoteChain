@@ -178,7 +178,7 @@ const CreateModal = ({
     gender: '',
     assemblyConstituency: '',
     education: '0',
-    party: '',
+    partyID: '',
   });
 
   const [values, setValues] = useState({
@@ -194,7 +194,7 @@ const CreateModal = ({
         age: prefilled.age,
         gender: prefilled.gender?.toString(),
         assemblyConstituency: prefilled.assemblyConstituency,
-        party: prefilled.party,
+        partyID: prefilled.partyID,
         education: prefilled.education?.toString(),
       });
     }
@@ -308,7 +308,7 @@ const CreateModal = ({
   const handleChangeParty = e => {
     setData(data => ({
       ...data,
-      party: e.value,
+      partyID: e.value,
     }));
   };
 
@@ -500,8 +500,8 @@ const CreateModal = ({
               <Text size="md">Party</Text>
               <Dropdown
                 text="Party"
-                id="party"
-                name="party"
+                id="partyID"
+                name="partyID"
                 placeholder="Select Party"
                 data={parties}
                 handleCustomChange={handleChangeParty}

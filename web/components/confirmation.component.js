@@ -22,6 +22,7 @@ const BackwardIcon = props => (
 export const ConfirmationScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [isDeclared, setIsDeclared] = useState(false);
   const [message, setMessage] = useState('Error!');
   const [votes, setVotes] = useState([]);
   const [winners, setWinners] = useState([]);
@@ -174,18 +175,20 @@ export const ConfirmationScreen = ({ navigation, route }) => {
               {winners
                 ? winners.length == 1
                   ? winners[0].name
-                  : 'TIE'
-                : 'The Election Commission has been notified of the tie.'}
+                  : 'Awaiting EC decision'
+                : '-'}
             </Text>
-            <Button
-              style={{
-                marginBottom: 20,
-              }}
-              onPress={navigatePartyResults}
-              disabled={votes ? false : true}
-            >
-              Details
-            </Button>
+            {winners ? (
+              <Button
+                style={{
+                  marginBottom: 20,
+                }}
+                onPress={navigatePartyResults}
+                disabled={votes ? false : true}
+              >
+                Details
+              </Button>
+            ) : null}
           </Layout>
           <Text
             style={{
@@ -193,7 +196,11 @@ export const ConfirmationScreen = ({ navigation, route }) => {
               marginBottom: 0,
             }}
           >
-            {votes.length > 0 ? `${currentRegion.regionName}'s winner` : ''}
+            {winners
+              ? votes.length > 0
+                ? `${currentRegion.regionName}'s winner`
+                : ''
+              : ''}
           </Text>
           <Text
             style={{
@@ -201,19 +208,23 @@ export const ConfirmationScreen = ({ navigation, route }) => {
               fontWeight: 'bold',
             }}
           >
-            {votes.length > 0
-              ? `${currentRegion.candidates[0].name}, ${currentRegion.candidates[0].partyName}`
+            {winners
+              ? votes.length > 0
+                ? `${currentRegion.candidates[0].name}, ${currentRegion.candidates[0].partyName}`
+                : ''
               : ''}
           </Text>
-          <Button
-            style={{
-              marginBottom: 20,
-            }}
-            onPress={navigateResults}
-            disabled={votes ? false : true}
-          >
-            Breakdown
-          </Button>
+          {winners ? (
+            <Button
+              style={{
+                marginBottom: 20,
+              }}
+              onPress={navigateResults}
+              disabled={votes ? false : true}
+            >
+              Breakdown
+            </Button>
+          ) : null}
         </Layout>
         <Button accessoryLeft={BackwardIcon} onPress={navigateAuth}>
           Go Home

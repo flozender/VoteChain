@@ -41,10 +41,15 @@ const ViewResults = ({ history, currentUser, ...props }) => {
 
   const [parties, setParties] = useState([]);
   const [votes, setVotes] = useState([]);
+  const [isDeclared, setIsDeclared] = useState(false);
+  const [loadingParties, setLoadingParties] = useState(false);
+  const [loadingVotes, setLoadingVotes] = useState(false);
   const [candidates, setCandidates] = useState([]);
   const [selectedRegion, setSelectedRegion] = useState('');
 
   useEffect(() => {
+    setLoadingParties(true);
+    setLoadingVotes(true);
     fetchApi(`/admin/getPartyWiseVotes/${electionID}`, {
       method: 'get',
       headers: {
@@ -54,8 +59,10 @@ const ViewResults = ({ history, currentUser, ...props }) => {
     })
       .then(res => res.json())
       .then(json => {
+        console.log('party', json);
         if (!json.success) throw Error(json.message);
         setParties(json.parties);
+        setLoadingParties(false);
       })
       .catch(err => {
         console.log(err);
@@ -78,7 +85,10 @@ const ViewResults = ({ history, currentUser, ...props }) => {
       .then(res => res.json())
       .then(json => {
         if (!json.success) throw Error(json.message);
+        console.log('votes', json);
         setVotes(json.votes);
+        setLoadingVotes(false);
+        setIsDeclared(json.winners?.length > 0);
       })
       .catch(err => {
         console.log(err);
@@ -93,7 +103,8 @@ const ViewResults = ({ history, currentUser, ...props }) => {
       });
   }, [currentUser, toast, electionID]);
 
-  if (parties.length === 0 || votes.length === 0) {
+  console.log(parties, votes);
+  if (loadingParties || loadingVotes) {
     return <Spinner />;
   }
 
@@ -158,7 +169,11 @@ const ViewResults = ({ history, currentUser, ...props }) => {
               width="100%"
             >
               <Heading>
-                {parties.length === 1 ? parties[0].name : 'TIE'}
+                {isDeclared
+                  ? parties.length === 1
+                    ? parties[0].name
+                    : 'TIE'
+                  : 'TBD'}
               </Heading>
             </Stack>
             <Stack
@@ -168,9 +183,11 @@ const ViewResults = ({ history, currentUser, ...props }) => {
               width="100%"
             >
               <Text>
-                {parties.length === 1
-                  ? parties[0].president
-                  : 'The Election Commission has been notified of the tie.'}
+                {isDeclared
+                  ? parties.length === 1
+                    ? parties[0].president
+                    : 'The Election Commission has been notified of the tie.'
+                  : 'Results not declared'}
               </Text>
             </Stack>
             <Button variant="ghost" colorScheme="teal" onClick={onOpenParty}>

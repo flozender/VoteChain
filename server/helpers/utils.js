@@ -75,7 +75,7 @@ exports.sendEmailWithOTP = async (voterName, voterEmail, otp) => {
   return result;
 };
 
-exports.sendVoteSuccessEmail = async (voterName, electionName) => {
+exports.sendVoteSuccessEmail = async (voterName, voterEmail, electionName) => {
   const accessToken = oauth2Client.getAccessToken();
   const transporter = nodemailer.createTransport({
     service: 'gmail',
