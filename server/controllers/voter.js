@@ -221,6 +221,7 @@ exports.vote = async details => {
           details.regionID,
           details.candidateID
         );
+        await utils.sendVoteSuccessEmail(details.voterName, details.electionID);
         res = {
           success: true,
           message: 'Voted Successfully',

@@ -61,6 +61,7 @@ module.exports = app => {
     try {
       let body = Object.assign({}, req.body);
       body.id = req.token_data.data.id;
+      body.voterName = req.token_data.data.name;
       body.regionID = req.token_data.data.regionID;
       let vote = await voterController.vote(body);
       res.status(200).send(vote);
