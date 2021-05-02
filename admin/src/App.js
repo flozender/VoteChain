@@ -62,60 +62,60 @@ const App = props => {
           <ResRoute
             path="/elections"
             currentUser={currentUser}
-            component={() => (
+            component={
               <Elections
                 currentUser={currentUser}
                 setCurrentUser={setCurrentUser}
               />
-            )}
+            }
           />
           <ResRoute
             path="/voters"
             currentUser={currentUser}
-            component={() => (
+            component={
               <Voters
                 currentUser={currentUser}
                 setCurrentUser={setCurrentUser}
               />
-            )}
+            }
           />
           <ResRoute
             exact
             path="/candidates"
             currentUser={currentUser}
-            component={() => (
+            component={
               <Candidates
                 currentUser={currentUser}
                 setCurrentUser={setCurrentUser}
               />
-            )}
+            }
           />
           <ResRoute
             exact
             path="/results"
             currentUser={currentUser}
-            component={() => (
+            component={
               <Results
                 currentUser={currentUser}
                 setCurrentUser={setCurrentUser}
               />
-            )}
+            }
           />
           <ResRoute
             exact
             path="/elections/:electionID"
             currentUser={currentUser}
-            component={() => (
+            component={
               <ViewResults
                 currentUser={currentUser}
                 setCurrentUser={setCurrentUser}
               />
-            )}
+            }
           />
           <ResRoute
             exact
             path="/dashboard"
-            component={() => <Dashboard />}
+            component={<Dashboard />}
             currentUser={currentUser}
           />
           <Route
