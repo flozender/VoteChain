@@ -65,14 +65,14 @@ module.exports = {
   getVoter: function (voterId) {
     let query = `SELECT V.*,
     CONCAT(R.name, ', ', L.name, ', ', S.name) AS assemblyConstituency,
-    R.pincode
+    R.pincode, S.id AS stateID
     FROM Voter V
     LEFT JOIN Region R
     ON R.id = V.assemblyConstituency
     LEFT JOIN Locality L
-    ON L.id = R.id
+    ON L.id = R.localityID
     LEFT JOIN State S
-    ON S.id = L.id
+    ON S.id = L.stateID
     WHERE V.id = :voterId`;
 
     return db
@@ -150,10 +150,14 @@ module.exports = {
   },
 
   getAssemblyConstituency: function (voterId) {
-    let query = `SELECT V.assemblyConstituency, R.name AS regionName
+    let query = `SELECT V.assemblyConstituency, R.name AS regionName, S.id AS stateID
     FROM Voter V
     LEFT JOIN Region R
     ON V.assemblyConstituency = R.id
+    LEFT JOIN Locality L
+    ON R.localityID = L.id
+    LEFT JOIN State S
+    ON S.id = L.stateID
     WHERE V.id = :voterId`;
 
     return db

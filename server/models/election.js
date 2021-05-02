@@ -32,6 +32,9 @@ var DB = require('../db/database'),
       isTie: {
         type: db_sequelize.INTEGER,
       },
+      stateID: {
+        type: db_sequelize.INTEGER,
+      },
       assemblyConstituencies: {
         type: db_sequelize.TEXT,
       },
