@@ -164,7 +164,8 @@ exports.getEligibleElections = async voterId => {
         : null;
       if (
         (!element.assemblyConstituencies ||
-          element.regions.includes(voter.assemblyConstituency)) &&
+          element.regions.includes(voter.assemblyConstituency) ||
+          voter.stateID == element.stateID) &&
         element.candidates &&
         element.candidates.length
       ) {
@@ -197,8 +198,9 @@ exports.vote = async details => {
       }
     );
     let res = {};
+    let voter = await voterRepo.getVoter(details.id);
     let election = await electionRepo.get(
-      { election: [] },
+      { exclude: [] },
       { id: details.electionID }
     );
     if (
@@ -215,17 +217,40 @@ exports.vote = async details => {
           message: 'Candidate does not exist',
         };
       } else {
-        await smartContract.vote(
-          details.id,
-          details.electionID,
-          details.regionID,
-          details.candidateID
-        );
-        await utils.sendVoteSuccessEmail(details.voterName, details.electionID);
-        res = {
-          success: true,
-          message: 'Voted Successfully',
-        };
+        let canVote = false;
+        if (election.type == 2) {
+          if (voter.stateID == election.stateID) {
+            canVote = true;
+          }
+        } else if (election.type == 3) {
+          let regions = election.assemblyConstituencies.split(',');
+          if (regions.includes(voter.assemblyConstituency)) {
+            canVote = true;
+          }
+        } else {
+          canVote = true;
+        }
+        if (canVote) {
+          await smartContract.vote(
+            details.id,
+            details.electionID,
+            details.regionID,
+            details.candidateID
+          );
+          await utils.sendVoteSuccessEmail(
+            details.voterName,
+            details.electionID
+          );
+          res = {
+            success: true,
+            message: 'Voted Successfully',
+          };
+        } else {
+          res = {
+            success: false,
+            message: 'You are not allowed to vote',
+          };
+        }
       }
     } else {
       res = {
