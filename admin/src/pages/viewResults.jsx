@@ -29,6 +29,11 @@ import fetchApi from '../services/fetch-custom.js';
 
 const ViewResults = ({ history, currentUser, ...props }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenParty,
+    onOpen: onOpenParty,
+    onClose: onCloseParty,
+  } = useDisclosure();
 
   const toast = useToast();
 
@@ -37,6 +42,7 @@ const ViewResults = ({ history, currentUser, ...props }) => {
   const [parties, setParties] = useState([]);
   const [votes, setVotes] = useState([]);
   const [candidates, setCandidates] = useState([]);
+  const [selectedRegion, setSelectedRegion] = useState('');
 
   useEffect(() => {
     fetchApi(`/admin/getPartyWiseVotes/${electionID}`, {
@@ -49,7 +55,6 @@ const ViewResults = ({ history, currentUser, ...props }) => {
       .then(res => res.json())
       .then(json => {
         if (!json.success) throw Error(json.message);
-        console.log(json.parties);
         setParties(json.parties);
       })
       .catch(err => {
@@ -163,7 +168,7 @@ const ViewResults = ({ history, currentUser, ...props }) => {
             >
               <Text>{parties[0].president}</Text>
             </Stack>
-            <Button variant="ghost" colorScheme="teal">
+            <Button variant="ghost" colorScheme="teal" onClick={onOpenParty}>
               Details
             </Button>
           </VStack>
@@ -202,6 +207,7 @@ const ViewResults = ({ history, currentUser, ...props }) => {
                             size="sm"
                             onClick={() => {
                               setCandidates(e.candidates);
+                              setSelectedRegion(e.regionName);
                               onOpen();
                             }}
                           >
@@ -219,6 +225,12 @@ const ViewResults = ({ history, currentUser, ...props }) => {
             isOpen={isOpen}
             onClose={onClose}
             candidates={candidates}
+            selectedRegion={selectedRegion}
+          />
+          <ViewModalParty
+            isOpen={isOpenParty}
+            onClose={onCloseParty}
+            parties={parties}
           />
         </Flex>
       </Flex>
@@ -226,12 +238,12 @@ const ViewResults = ({ history, currentUser, ...props }) => {
   );
 };
 
-const ViewModal = ({ isOpen, onClose, candidates }) => {
+const ViewModal = ({ isOpen, onClose, candidates, selectedRegion }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="4xl">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader alignSelf="center">Region Name</ModalHeader>
+        <ModalHeader alignSelf="center">{selectedRegion}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={4}>
@@ -260,6 +272,61 @@ const ViewModal = ({ isOpen, onClose, candidates }) => {
                         <Td>{i + 1}</Td>
                         <Td>{e.name}</Td>
                         <Td>{e.partyName}</Td>
+                        <Td>{e.votes}</Td>
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            </VStack>
+          </VStack>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button variant="ghost" onClick={onClose}>
+            OK
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+const ViewModalParty = ({ isOpen, onClose, parties }) => {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} size="4xl">
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader alignSelf="center">Party Wise Breakdown</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <VStack spacing={4}>
+            <VStack
+              spacing={4}
+              border="1px"
+              borderColor="gray.200"
+              p={5}
+              width="100%"
+              height="60vh"
+              overflow="auto"
+            >
+              <Table variant="striped" size="sm" colorScheme="teal">
+                <Thead>
+                  <Tr>
+                    <Th>Position</Th>
+                    <Th>Party Name</Th>
+                    <Th>President</Th>
+                    <Th>Votes</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {parties.map((e, i) => {
+                    console.log(e);
+                    return (
+                      <Tr>
+                        <Td>{i + 1}</Td>
+                        <Td>{e.name}</Td>
+                        <Td>{e.president}</Td>
                         <Td>{e.votes}</Td>
                       </Tr>
                     );
