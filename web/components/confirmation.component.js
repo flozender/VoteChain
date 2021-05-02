@@ -175,7 +175,7 @@ export const ConfirmationScreen = ({ navigation, route }) => {
                 ? winners.length == 1
                   ? winners[0].name
                   : 'TIE'
-                : 'TBD'}
+                : 'The Election Commission has been notified of the tie.'}
             </Text>
             <Button
               style={{

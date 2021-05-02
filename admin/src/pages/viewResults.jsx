@@ -78,7 +78,6 @@ const ViewResults = ({ history, currentUser, ...props }) => {
       .then(res => res.json())
       .then(json => {
         if (!json.success) throw Error(json.message);
-        console.log(json.votes);
         setVotes(json.votes);
       })
       .catch(err => {
@@ -158,7 +157,9 @@ const ViewResults = ({ history, currentUser, ...props }) => {
               justifyContent="Center"
               width="100%"
             >
-              <Heading>{parties[0].name}</Heading>
+              <Heading>
+                {parties.length === 1 ? parties[0].name : 'TIE'}
+              </Heading>
             </Stack>
             <Stack
               direction="row"
@@ -166,7 +167,11 @@ const ViewResults = ({ history, currentUser, ...props }) => {
               justifyContent="center"
               width="100%"
             >
-              <Text>{parties[0].president}</Text>
+              <Text>
+                {parties.length === 1
+                  ? parties[0].president
+                  : 'The Election Commission has been notified of the tie.'}
+              </Text>
             </Stack>
             <Button variant="ghost" colorScheme="teal" onClick={onOpenParty}>
               Details
@@ -256,7 +261,7 @@ const ViewModal = ({ isOpen, onClose, candidates, selectedRegion }) => {
               height="60vh"
               overflow="auto"
             >
-              <Table variant="striped" size="sm" colorScheme="teal">
+              <Table size="sm">
                 <Thead>
                   <Tr>
                     <Th>Position</Th>
@@ -310,7 +315,7 @@ const ViewModalParty = ({ isOpen, onClose, parties }) => {
               height="60vh"
               overflow="auto"
             >
-              <Table variant="striped" size="sm" colorScheme="teal">
+              <Table size="sm">
                 <Thead>
                   <Tr>
                     <Th>Position</Th>

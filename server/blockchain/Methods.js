@@ -75,7 +75,7 @@ let smartContract = {
       .getVotesForParty(partyID, electionID)
       .call()
       .then(value => {
-        console.log('Number of votes: ', value);
+        console.log('Number of votes for partyID: ', partyID, value);
         return value;
       })
       .catch(err => {

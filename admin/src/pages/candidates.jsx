@@ -299,7 +299,7 @@ const CreateModal = ({
   const handleChangeAC = e => {
     setData(data => ({
       ...data,
-      assemblyConstituency: e.value,
+      assemblyConstituency: e.label,
     }));
   };
 
