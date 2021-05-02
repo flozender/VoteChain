@@ -219,7 +219,7 @@ exports.vote = async details => {
       } else {
         let canVote = false;
         if (election.type == 2) {
-          if (voter.stateID == details.stateID) {
+          if (voter.stateID == election.stateID) {
             canVote = true;
           }
         } else if (election.type == 3) {
