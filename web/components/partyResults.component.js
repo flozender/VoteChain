@@ -53,8 +53,6 @@ export const PartyResultsScreen = ({ navigation, route }) => {
       });
   }, [url]);
 
-  console.log(party);
-
   return (
     <>
       <TopNavigation
