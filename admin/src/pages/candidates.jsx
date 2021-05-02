@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { withRouter } from 'react-router-dom';
 import Select from 'react-select';
 import {
@@ -25,6 +25,7 @@ import {
 import DataTable from 'react-data-table-component';
 import fetchApi from '../services/fetch-custom.js';
 import '../assets/scroll.css';
+import { ReloadContext } from '../App';
 
 const Candidates = ({ history, currentUser, ...props }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -168,6 +169,7 @@ const CreateModal = ({
   prefilled,
   setPrefilled,
 }) => {
+  const { reload, triggerReload } = useContext(ReloadContext);
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
@@ -348,11 +350,12 @@ const CreateModal = ({
             duration: 1000,
             isClosable: true,
           });
-          setLoading(false);
           onClose();
           if (prefilled) {
             setPrefilled({});
           }
+          setLoading(false);
+          triggerReload();
         })
         .catch(err => {
           console.log(err);

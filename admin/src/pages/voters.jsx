@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { withRouter } from 'react-router-dom';
 import Select from 'react-select';
 import {
@@ -25,6 +25,7 @@ import {
 import DataTable from 'react-data-table-component';
 import fetchApi from '../services/fetch-custom.js';
 import '../assets/scroll.css';
+import { ReloadContext } from '../App';
 
 const conditionalRowStyles = [
   {
@@ -191,6 +192,7 @@ const CreateModal = ({
   prefilled,
   setPrefilled,
 }) => {
+  const { reload, triggerReload } = useContext(ReloadContext);
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
@@ -350,6 +352,7 @@ const CreateModal = ({
             setPrefilled({});
           }
           setLoading(false);
+          triggerReload();
         })
         .catch(err => {
           console.log(err);

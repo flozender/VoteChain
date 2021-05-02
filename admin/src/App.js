@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, createContext } from 'react';
 import {
   Button,
   Box,
@@ -26,85 +26,97 @@ import Results from './pages/results';
 import Logout from './pages/logout';
 import ViewResults from './pages/viewResults';
 
+export const ReloadContext = createContext(null);
+
 const App = props => {
   let user = JSON.parse(localStorage.getItem('app-user')) || null;
-
   const [currentUser, setCurrentUser] = useState(user);
+  const [reload, setReload] = useState(true);
+
+  const triggerReload = () => {
+    setReload(reload => !reload);
+  };
+
   return (
-    <ChakraProvider theme={theme}>
-      <Nav history={props.history} currentUser={currentUser} />
-      <Switch>
-        <Route
-          exact
-          path="/"
-          component={() => {
-            return currentUser ? (
-              <Redirect to="/dashboard" />
-            ) : (
-              <Redirect to="/login" />
-            );
-          }}
-        />
-        <Route
-          exact
-          path="/login"
-          component={() => <Login setCurrentUser={setCurrentUser} />}
-        />
-        <Route
-          exact
-          path="/elections"
-          component={() => (
-            <Elections
-              currentUser={currentUser}
-              setCurrentUser={setCurrentUser}
-            />
-          )}
-        />
-        <Route
-          exact
-          path="/voters"
-          component={() => (
-            <Voters currentUser={currentUser} setCurrentUser={setCurrentUser} />
-          )}
-        />
-        <Route
-          exact
-          path="/candidates"
-          component={() => (
-            <Candidates
-              currentUser={currentUser}
-              setCurrentUser={setCurrentUser}
-            />
-          )}
-        />
-        <Route
-          exact
-          path="/results"
-          component={() => (
-            <Results
-              currentUser={currentUser}
-              setCurrentUser={setCurrentUser}
-            />
-          )}
-        />
-        <Route
-          exact
-          path="/elections/:electionID"
-          component={() => (
-            <ViewResults
-              currentUser={currentUser}
-              setCurrentUser={setCurrentUser}
-            />
-          )}
-        />
-        <Route exact path="/dashboard" component={() => <Dashboard />} />
-        <Route
-          exact
-          path="/logout"
-          component={() => <Logout setCurrentUser={setCurrentUser} />}
-        />
-      </Switch>
-    </ChakraProvider>
+    <ReloadContext.Provider value={{ reload, triggerReload }}>
+      <ChakraProvider theme={theme}>
+        <Nav history={props.history} currentUser={currentUser} />
+        <Switch>
+          <Route
+            exact
+            path="/"
+            component={() => {
+              return currentUser ? (
+                <Redirect to="/dashboard" />
+              ) : (
+                <Redirect to="/login" />
+              );
+            }}
+          />
+          <Route
+            exact
+            path="/login"
+            component={() => <Login setCurrentUser={setCurrentUser} />}
+          />
+          <Route
+            exact
+            path="/elections"
+            component={() => (
+              <Elections
+                currentUser={currentUser}
+                setCurrentUser={setCurrentUser}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/voters"
+            component={() => (
+              <Voters
+                currentUser={currentUser}
+                setCurrentUser={setCurrentUser}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/candidates"
+            component={() => (
+              <Candidates
+                currentUser={currentUser}
+                setCurrentUser={setCurrentUser}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/results"
+            component={() => (
+              <Results
+                currentUser={currentUser}
+                setCurrentUser={setCurrentUser}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/elections/:electionID"
+            component={() => (
+              <ViewResults
+                currentUser={currentUser}
+                setCurrentUser={setCurrentUser}
+              />
+            )}
+          />
+          <Route exact path="/dashboard" component={() => <Dashboard />} />
+          <Route
+            exact
+            path="/logout"
+            component={() => <Logout setCurrentUser={setCurrentUser} />}
+          />
+        </Switch>
+      </ChakraProvider>
+    </ReloadContext.Provider>
   );
 };
 

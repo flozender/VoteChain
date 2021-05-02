@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { withRouter } from 'react-router-dom';
 import Select from 'react-select';
 import {
@@ -36,7 +36,7 @@ import { CheckCircleIcon } from '@chakra-ui/icons';
 import DataTable from 'react-data-table-component';
 import fetchApi from '../services/fetch-custom.js';
 import '../assets/scroll.css';
-
+import { ReloadContext } from '../App';
 const conditionalRowStyles = [
   {
     when: row => row.active,
@@ -330,6 +330,7 @@ const ChildTable = ({ data }) => {
 };
 
 const CreateModal = ({ isOpen, onClose, currentUser }) => {
+  const { reload, triggerReload } = useContext(ReloadContext);
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
@@ -460,6 +461,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
           });
           setLoading(false);
           onClose();
+          triggerReload();
         })
         .catch(err => {
           console.log(err);
@@ -606,6 +608,8 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
 };
 
 const AddModal = ({ isOpen, onClose, currentUser, electionID }) => {
+  const { reload, triggerReload } = useContext(ReloadContext);
+
   const toast = useToast();
   const [data, setData] = useState({
     state: '',
@@ -790,6 +794,7 @@ const AddModal = ({ isOpen, onClose, currentUser, electionID }) => {
           });
           setLoading(false);
           onClose();
+          triggerReload();
         })
         .catch(err => {
           console.log(err);
