@@ -13,6 +13,7 @@ import {
   theme,
 } from '@chakra-ui/react';
 import { Redirect, Route, Switch, withRouter } from 'react-router-dom';
+import ResRoute from './pages/resRoute';
 import { ColorModeSwitcher } from './ColorModeSwitcher';
 import logo from './assets/icon.png';
 
@@ -58,9 +59,9 @@ const App = props => {
             path="/login"
             component={() => <Login setCurrentUser={setCurrentUser} />}
           />
-          <Route
-            exact
+          <ResRoute
             path="/elections"
+            currentUser={currentUser}
             component={() => (
               <Elections
                 currentUser={currentUser}
@@ -68,9 +69,9 @@ const App = props => {
               />
             )}
           />
-          <Route
-            exact
+          <ResRoute
             path="/voters"
+            currentUser={currentUser}
             component={() => (
               <Voters
                 currentUser={currentUser}
@@ -78,9 +79,10 @@ const App = props => {
               />
             )}
           />
-          <Route
+          <ResRoute
             exact
             path="/candidates"
+            currentUser={currentUser}
             component={() => (
               <Candidates
                 currentUser={currentUser}
@@ -88,9 +90,10 @@ const App = props => {
               />
             )}
           />
-          <Route
+          <ResRoute
             exact
             path="/results"
+            currentUser={currentUser}
             component={() => (
               <Results
                 currentUser={currentUser}
@@ -98,9 +101,10 @@ const App = props => {
               />
             )}
           />
-          <Route
+          <ResRoute
             exact
             path="/elections/:electionID"
+            currentUser={currentUser}
             component={() => (
               <ViewResults
                 currentUser={currentUser}
@@ -108,7 +112,12 @@ const App = props => {
               />
             )}
           />
-          <Route exact path="/dashboard" component={() => <Dashboard />} />
+          <ResRoute
+            exact
+            path="/dashboard"
+            component={() => <Dashboard />}
+            currentUser={currentUser}
+          />
           <Route
             exact
             path="/logout"
