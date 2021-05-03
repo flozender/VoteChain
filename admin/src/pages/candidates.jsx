@@ -28,6 +28,7 @@ import '../assets/scroll.css';
 import { ReloadContext } from '../App';
 
 const Candidates = ({ history, currentUser, ...props }) => {
+  const { reload, triggerReload } = useContext(ReloadContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const [data, setData] = useState([]);
@@ -100,7 +101,7 @@ const Candidates = ({ history, currentUser, ...props }) => {
           isClosable: true,
         });
       });
-  }, [currentUser, toast]);
+  }, [currentUser, toast, reload]);
 
   return (
     <Flex justifyContent="center" alignItems="center">

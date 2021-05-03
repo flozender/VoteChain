@@ -143,6 +143,7 @@ exports.getEligibleElections = async voterId => {
       )
         ? 1
         : 0;
+      // active should be false if voted or winner declared
       element.candidates = await candidateElectionRepo.getAssignedCandidatesElectionFromVoter(
         element.id,
         voterId
@@ -219,6 +220,7 @@ exports.vote = async details => {
           message: 'Candidate does not exist',
         };
       } else {
+        console.log('EELC', election, voter);
         let canVote = false;
         if (election.type == 2) {
           if (voter.stateID == election.stateID) {
@@ -226,7 +228,7 @@ exports.vote = async details => {
           }
         } else if (election.type == 3) {
           let regions = election.assemblyConstituencies.split(',');
-          if (regions.includes(voter.assemblyConstituency)) {
+          if (regions.includes(voter.ac.toString())) {
             canVote = true;
           }
         } else {

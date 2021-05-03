@@ -7,6 +7,7 @@ import {
   TopNavigation,
   TopNavigationAction,
   Button,
+  Spinner
 } from '@ui-kitten/components';
 
 import { styles } from './styles';
@@ -27,8 +28,8 @@ export const ConfirmationScreen = ({ navigation, route }) => {
   const [votes, setVotes] = useState([]);
   const [winners, setWinners] = useState([]);
 
-  const navigateAuth = () => {
-    navigation.navigate('Auth');
+  const navigateElections = () => {
+    navigation.navigate('Elections', { reload: true });
   };
 
   const BackAction = () => (
@@ -77,6 +78,7 @@ export const ConfirmationScreen = ({ navigation, route }) => {
   }, [url]);
 
   const currentRegion = votes.filter(e => e.regionID == region.regionID)[0];
+  if (loading) return <Spinner />;
 
   return (
     <>
@@ -226,7 +228,7 @@ export const ConfirmationScreen = ({ navigation, route }) => {
             </Button>
           ) : null}
         </Layout>
-        <Button accessoryLeft={BackwardIcon} onPress={navigateAuth}>
+        <Button accessoryLeft={BackwardIcon} onPress={navigateElections}>
           Go Home
         </Button>
       </Layout>

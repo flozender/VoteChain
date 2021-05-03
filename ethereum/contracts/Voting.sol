@@ -144,7 +144,7 @@ contract Voting {
      *  Getter Functions, marked by the key word "view" *
      * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    function hasVoterVoted(string memory voterID, uint electionID) private view returns(bool) {
+    function hasVoterVoted(string memory voterID, uint electionID) public view returns(bool) {
         bool voted = false;
         for (uint i = 0; i < numVoterElections; i++){
             if (keccak256(bytes(voterElections[i].voterID)) == keccak256(bytes(voterID)) && voterElections[i].electionID == electionID) {

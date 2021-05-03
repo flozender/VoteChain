@@ -9,13 +9,16 @@ import {
   ListItem,
   useTheme,
   Spinner,
+  Icon,
+  TopNavigationAction,
 } from '@ui-kitten/components';
 
 import { styles } from './styles';
 import { url } from '../services/constants';
 import Popup from './popup.component';
 
-export const ElectionsScreen = ({ navigation }) => {
+export const ElectionsScreen = ({ navigation, route }) => {
+  const [reload, setReload] = useState(false);
   const theme = useTheme();
   const [data, setData] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -112,8 +115,16 @@ export const ElectionsScreen = ({ navigation }) => {
     );
   };
 
+  const ReloadIcon = props => <Icon {...props} name="refresh-outline" />;
+  const ReloadAction = () => (
+    <TopNavigationAction icon={ReloadIcon} onPress={() => {
+      setReload(reload => !reload);
+    }} />
+  );
+
   useEffect(() => {
     setLoading(true);
+    console.log("LOADING")
     fetch(`${url}/eligibleElections`, {
       method: 'get',
       headers: {
@@ -135,11 +146,14 @@ export const ElectionsScreen = ({ navigation }) => {
         setVisible(true);
         setLoading(false);
       });
-  }, [url]);
+  }, [url, reload]);
+
 
   return (
     <>
-      <TopNavigation title="VoteChain" alignment="center" />
+      <TopNavigation title="VoteChain" alignment="center"  
+        accessoryLeft={ReloadAction}
+      />
       <Divider />
       <Layout style={styles.container}>
         <Layout

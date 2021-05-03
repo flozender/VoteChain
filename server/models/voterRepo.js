@@ -65,6 +65,7 @@ module.exports = {
   getVoter: function (voterId) {
     let query = `SELECT V.*,
     CONCAT(R.name, ', ', L.name, ', ', S.name) AS assemblyConstituency,
+    V.assemblyConstituency AS ac,
     R.pincode, S.id AS stateID
     FROM Voter V
     LEFT JOIN Region R

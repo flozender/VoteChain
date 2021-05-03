@@ -42,7 +42,7 @@ export const OTPScreen = ({ navigation, route }) => {
       console.log('voter', json.voter);
       console.log('token', json.token);
       setLoading(false);
-      navigation.navigate('Elections');
+      navigation.navigate('Elections', { reload: false });
     };
 
     if (!state.OTP) {

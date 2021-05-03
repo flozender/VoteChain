@@ -51,6 +51,8 @@ const conditionalRowStyles = [
 ];
 
 const Elections = ({ history, currentUser, ...props }) => {
+  const { reload, triggerReload } = useContext(ReloadContext);
+
   const {
     isOpen: isOpenCreate,
     onOpen: onOpenCreate,
@@ -98,7 +100,7 @@ const Elections = ({ history, currentUser, ...props }) => {
           isClosable: true,
         });
       });
-  }, [currentUser, toast]);
+  }, [currentUser, toast, reload]);
 
   const columns = [
     { name: 'Election ID', selector: 'id', sortable: true },
@@ -440,6 +442,7 @@ const CreateModal = ({ isOpen, onClose, currentUser }) => {
       });
       setLoading(false);
     } else {
+      console.log(data);
       fetchApi('/admin/createElection', {
         method: 'post',
         body: JSON.stringify(data),
