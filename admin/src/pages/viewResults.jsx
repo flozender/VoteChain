@@ -45,6 +45,7 @@ const ViewResults = ({ history, currentUser, ...props }) => {
   const [loadingParties, setLoadingParties] = useState(false);
   const [loadingVotes, setLoadingVotes] = useState(false);
   const [candidates, setCandidates] = useState([]);
+  const [winners, setWinners] = useState([]);
   const [selectedRegion, setSelectedRegion] = useState('');
 
   useEffect(() => {
@@ -89,6 +90,7 @@ const ViewResults = ({ history, currentUser, ...props }) => {
         setVotes(json.votes);
         setLoadingVotes(false);
         setIsDeclared(json.winners?.length > 0);
+        setWinners(json.winners)
       })
       .catch(err => {
         console.log(err);
@@ -170,7 +172,7 @@ const ViewResults = ({ history, currentUser, ...props }) => {
             >
               <Heading>
                 {isDeclared
-                  ? parties.length === 1
+                  ? winners.length === 1
                     ? parties[0].name
                     : 'TIE'
                   : 'TBD'}
@@ -184,7 +186,7 @@ const ViewResults = ({ history, currentUser, ...props }) => {
             >
               <Text>
                 {isDeclared
-                  ? parties.length === 1
+                  ? winners.length === 1
                     ? parties[0].president
                     : 'The Election Commission has been notified of the tie.'
                   : 'Results not declared'}
