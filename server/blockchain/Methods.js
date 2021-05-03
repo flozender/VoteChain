@@ -85,6 +85,22 @@ let smartContract = {
     return votes;
   },
 
+  hasVoterVoted: async (voterID, electionID) => {
+    let accounts = await web3.eth.getAccounts();
+    let isVoted = await instance.methods
+      .hasVoterVoted(voterID, electionID)
+      .call()
+      .then(value => {
+        console.log('Has Voter voted: ', value);
+        return value;
+      })
+      .catch(err => {
+        console.log(err);
+        throw err;
+      });
+    return isVoted;
+  },
+
   getNumOfCandidates: async electionID => {
     instance.methods
       .getNumOfCandidates(electionID)

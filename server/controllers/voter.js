@@ -137,13 +137,14 @@ exports.getEligibleElections = async voterId => {
     let allElections = await electionRepo.getAll({ exclude: [] }, {});
     let elections = [];
     await Bluebird.each(allElections, async element => {
-      element.active = moment().isBetween(
-        moment(element.startDate),
-        moment(element.endDate)
-      )
-        ? 1
-        : 0;
-      // active should be false if voted or winner declared
+      let isVoted = await smartContract.hasVoterVoted(voterId, element.id);
+      element.active =
+        moment().isBetween(
+          moment(element.startDate),
+          moment(element.endDate)
+        ) && !isVoted
+          ? 1
+          : 0;
       element.candidates = await candidateElectionRepo.getAssignedCandidatesElectionFromVoter(
         element.id,
         voterId
