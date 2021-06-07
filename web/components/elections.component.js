@@ -117,14 +117,17 @@ export const ElectionsScreen = ({ navigation, route }) => {
 
   const ReloadIcon = props => <Icon {...props} name="refresh-outline" />;
   const ReloadAction = () => (
-    <TopNavigationAction icon={ReloadIcon} onPress={() => {
-      setReload(reload => !reload);
-    }} />
+    <TopNavigationAction
+      icon={ReloadIcon}
+      onPress={() => {
+        setReload(reload => !reload);
+      }}
+    />
   );
 
   useEffect(() => {
     setLoading(true);
-    console.log("LOADING")
+    console.log('LOADING');
     fetch(`${url}/eligibleElections`, {
       method: 'get',
       headers: {
@@ -136,7 +139,7 @@ export const ElectionsScreen = ({ navigation, route }) => {
       .then(json => {
         if (!json.success) throw Error(json.message);
         console.log(json.elections);
-        setData(json.elections);
+        setData(json.elections.reverse());
         setRegion(json.region);
         setLoading(false);
       })
@@ -148,10 +151,11 @@ export const ElectionsScreen = ({ navigation, route }) => {
       });
   }, [url, reload]);
 
-
   return (
     <>
-      <TopNavigation title="VoteChain" alignment="center"  
+      <TopNavigation
+        title="VoteChain"
+        alignment="center"
         accessoryLeft={ReloadAction}
       />
       <Divider />
