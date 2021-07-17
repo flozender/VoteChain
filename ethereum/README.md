@@ -12,3 +12,8 @@ npm install
 npm run dev
 ```
 
+## Tests
+to run the Mocha tests
+```
+npm test
+```
