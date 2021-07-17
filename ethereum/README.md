@@ -1,4 +1,4 @@
-# Truffle and webpack for dApps built on Ethereum
+# Truffle and webpack for VoteChain smart contract
 
 ### Dependencies:
 - [Nodejs 5.0+](https://nodejs.org/en/)
